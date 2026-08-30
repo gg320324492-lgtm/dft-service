@@ -43,6 +43,10 @@ RUNNERS = {
     "psi4": run_psi4,
 }
 
+# task → Gaussian 路由关键字 (SP 是文档化合法关键字; properties 无独立关键字, 用 sp)
+_GAUSS_JOB = {"energy": "sp", "optimize": "opt", "opt": "opt", "freq": "freq",
+              "frequency": "freq", "properties": "sp", "prop": "sp"}
+
 
 # ------------------------------------------------------------------
 # request / response models
@@ -216,7 +220,13 @@ async def submit_auto(req: AutoRequest, submitter: Optional[str] = None):
         "multiplicity": req.multiplicity,
     }
     if tool == "gaussian":
-        p.update({"xc": req.xc, "basis": req.basis, "job": req.task, "solvent": req.solvent})
+        # 缺口 #1 修复 (2026-08-30): req.task 原样进路由会把 "energy"/"optimize"
+        # 拼成非法 Gaussian 关键字 → Error termination。按映射表归一化。
+        p.update({
+            "xc": req.xc, "basis": req.basis,
+            "job": _GAUSS_JOB.get(task_norm, "sp"),
+            "solvent": req.solvent,
+        })
         timeout = req.timeout_s or 7200.0
     elif tool == "psi4":
         p.update({"method": req.xc, "basis": req.basis, "operation": operation})

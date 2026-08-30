@@ -49,6 +49,7 @@ def _isolate(monkeypatch):
     monkeypatch.setattr(runner_paths, "gaussian_binary_exists", lambda: False)
     monkeypatch.setattr(runner_paths, "scichem_has", lambda m: False)
     monkeypatch.setattr(runner_paths, "detect_wsl_gromacs_distro", lambda: None)
+    monkeypatch.setattr(runner_paths, "detect_wsl_pyscf_distro", lambda: None)
     yield
     taskstore._TASKS.clear()
 
@@ -263,6 +264,57 @@ def test_auto_md_selects_gromacs(client, monkeypatch):
 
     r = client.post("/dft/auto", headers=HEADERS, json={"smiles": "O", "task": "md"})
     assert r.json()["backend"] == "gromacs"
+
+
+# ---------------------------------------------------------------
+# 缺口 #1 回归: auto→gaussian job 归一化 (energy/optimize 不是合法关键字)
+# ---------------------------------------------------------------
+def _auto_capture(client, monkeypatch, task: str, avail: dict) -> dict:
+    import time
+
+    import dft_service.runners as runners_pkg
+    import dft_service.runners.tool_definitions as td
+
+    captured = {}
+
+    async def fake(tool, workdir, driver, params, timeout_s):
+        captured["tool"] = tool
+        captured["params"] = params
+        return {"status": "success", "tool": tool}
+
+    monkeypatch.setattr(runners_pkg, "execute_driver", fake)
+    monkeypatch.setattr(td, "availability_map", lambda: avail)
+    r = client.post("/dft/auto", headers=HEADERS,
+                    json={"smiles": "O", "task": task, "quality": "accurate"})
+    assert r.status_code == 200
+    # _execute 是响应后才跑的后台任务, 等它落地
+    for _ in range(100):
+        if "params" in captured:
+            break
+        time.sleep(0.05)
+    return captured
+
+
+def test_auto_gaussian_energy_maps_to_sp(client, monkeypatch):
+    cap = _auto_capture(client, monkeypatch, "energy", {
+        "gaussian": True, "gromacs": False, "mace": False, "pyscf": False, "psi4": False,
+    })
+    assert cap["tool"] == "gaussian"
+    assert cap["params"]["job"] == "sp"  # 不再是非法关键字 "energy"
+
+
+def test_auto_gaussian_optimize_maps_to_opt(client, monkeypatch):
+    cap = _auto_capture(client, monkeypatch, "optimize", {
+        "gaussian": True, "gromacs": False, "mace": False, "pyscf": False, "psi4": False,
+    })
+    assert cap["params"]["job"] == "opt"  # 不再是非法关键字 "optimize"
+
+
+def test_auto_properties_prefers_psi4(client, monkeypatch):
+    cap = _auto_capture(client, monkeypatch, "properties", {
+        "gaussian": True, "gromacs": False, "mace": False, "pyscf": True, "psi4": True,
+    })
+    assert cap["tool"] == "psi4"  # properties 是 Psi4 独有能力
 
 
 # ---------------------------------------------------------------

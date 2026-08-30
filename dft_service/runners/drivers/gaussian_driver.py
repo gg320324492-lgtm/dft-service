@@ -64,7 +64,10 @@ def _gen_gjf(workdir: Path, smiles: str, p: dict) -> Path:
     """自建 gjf 生成 (支持 SCRF) — 不用 workflows.gen_gjf 因为它 route 写死"""
     atoms, coords = _smiles_to_coords(smiles)
 
-    route_parts = [f"{p['xc']}/{p['basis']}", p["job"]]
+    # job 可能归一化为空串 (单点是 Gaussian 默认), 过滤防双空格
+    route_parts = [f"{p['xc']}/{p['basis']}"]
+    if p.get("job"):
+        route_parts.append(p["job"])
     solvent = (p.get("solvent") or "none").strip()
     if solvent.lower() not in _SOLVENT_NONE:
         g16_name = _SOLVENT_MAP.get(solvent.lower(), solvent.capitalize())

@@ -77,7 +77,10 @@ def select_backend(task: str, quality: str = "auto") -> tuple[str | None, str]:
         return None, "无任何可用后端 (mace/psi4/pyscf/gaussian 全不可用)"
 
     # accurate / auto / freq / properties → 量子化学
-    tool = _accurate_fallback(avail)
+    # properties 优先 Psi4 (dipole/HOMO-LUMO 是它独有能力; Gaussian 无该任务)
+    order = ("psi4", "gaussian", "pyscf") if task == "properties" \
+        else ("gaussian", "psi4", "pyscf")
+    tool = _accurate_fallback(avail, order)
     if tool:
         why = {
             "gaussian": "Gaussian 16W (商业金标准, SMD 溶剂支持)",
@@ -88,8 +91,11 @@ def select_backend(task: str, quality: str = "auto") -> tuple[str | None, str]:
     return None, "无任何可用量子化学后端 (psi4/pyscf/gaussian 全不可用)"
 
 
-def _accurate_fallback(avail: dict[str, bool]) -> str | None:
-    for t in ("gaussian", "psi4", "pyscf"):
+def _accurate_fallback(
+    avail: dict[str, bool],
+    order: tuple[str, ...] = ("gaussian", "psi4", "pyscf"),
+) -> str | None:
+    for t in order:
         if avail[t]:
             return t
     return None
