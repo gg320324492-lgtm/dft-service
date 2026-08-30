@@ -60,7 +60,7 @@ def client():
         yield c
 
 
-async def _fake_driver_success(tool: str, workdir, driver, params, timeout_s):
+async def _fake_driver_success(tool: str, workdir, driver, params, timeout_s, **_):
     from dft_service.runners.executor import make_workdir
 
     make_workdir(tool, "fake")  # 确保 workdir 参数真实
@@ -133,7 +133,7 @@ def test_gaussian_full_flow(client, monkeypatch):
 
     captured = {}
 
-    async def fake(tool, workdir, driver, params, timeout_s):
+    async def fake(tool, workdir, driver, params, timeout_s, **_):
         captured["tool"] = tool
         captured["params"] = params
         return await _fake_driver_success(tool, workdir, driver, params, timeout_s)
@@ -204,7 +204,7 @@ def test_auto_fast_selects_mace(client, monkeypatch):
     import dft_service.runners as runners_pkg
     import dft_service.runners.tool_definitions as td
 
-    async def fake(tool, workdir, driver, params, timeout_s):
+    async def fake(tool, workdir, driver, params, timeout_s, **_):
         return {"status": "success", "tool": tool}
 
     monkeypatch.setattr(runners_pkg, "execute_driver", fake)
@@ -225,7 +225,7 @@ def test_auto_accurate_freq_selects_gaussian(client, monkeypatch):
     import dft_service.runners as runners_pkg
     import dft_service.runners.tool_definitions as td
 
-    async def fake(tool, workdir, driver, params, timeout_s):
+    async def fake(tool, workdir, driver, params, timeout_s, **_):
         return {"status": "success", "tool": tool}
 
     monkeypatch.setattr(runners_pkg, "execute_driver", fake)
@@ -254,7 +254,7 @@ def test_auto_md_selects_gromacs(client, monkeypatch):
     import dft_service.runners as runners_pkg
     import dft_service.runners.tool_definitions as td
 
-    async def fake(tool, workdir, driver, params, timeout_s):
+    async def fake(tool, workdir, driver, params, timeout_s, **_):
         return {"status": "success", "tool": tool}
 
     monkeypatch.setattr(runners_pkg, "execute_driver", fake)
@@ -277,7 +277,7 @@ def _auto_capture(client, monkeypatch, task: str, avail: dict) -> dict:
 
     captured = {}
 
-    async def fake(tool, workdir, driver, params, timeout_s):
+    async def fake(tool, workdir, driver, params, timeout_s, **_):
         captured["tool"] = tool
         captured["params"] = params
         return {"status": "success", "tool": tool}
@@ -323,7 +323,7 @@ def test_auto_properties_prefers_psi4(client, monkeypatch):
 def test_jobs_list_and_filter(client, monkeypatch):
     import dft_service.runners as runners_pkg
 
-    async def fake(tool, workdir, driver, params, timeout_s):
+    async def fake(tool, workdir, driver, params, timeout_s, **_):
         return {"status": "success", "tool": tool}
 
     monkeypatch.setattr(runners_pkg, "execute_driver", fake)
@@ -352,7 +352,7 @@ def test_jobs_list_and_filter(client, monkeypatch):
 def test_status_survives_memory_loss(client, monkeypatch):
     import dft_service.runners as runners_pkg
 
-    async def fake(tool, workdir, driver, params, timeout_s):
+    async def fake(tool, workdir, driver, params, timeout_s, **_):
         return {"status": "success", "tool": tool, "energy_hartree": -76.4}
 
     monkeypatch.setattr(runners_pkg, "execute_driver", fake)
@@ -387,6 +387,64 @@ def test_status_survives_memory_loss(client, monkeypatch):
 def test_status_404_unknown(client):
     r = client.get("/dft/status/deadbeefdeadbeef", headers=HEADERS)
     assert r.status_code == 404
+
+
+# ---------------------------------------------------------------
+# 取消 (缺口 #6)
+# ---------------------------------------------------------------
+def test_cancel_unknown_404(client):
+    r = client.delete("/dft/jobs/nope123456789", headers=HEADERS)
+    assert r.status_code == 404
+
+
+def test_cancel_finished_task_idempotent(client, monkeypatch):
+    import dft_service.runners as runners_pkg
+    import time
+
+    async def fake(tool, workdir, driver, params, timeout_s, **_):
+        return {"status": "success", "tool": tool}
+
+    monkeypatch.setattr(runners_pkg, "execute_driver", fake)
+    tid = client.post("/dft/mace", headers=HEADERS,
+                      json={"smiles": "O"}).json()["task_id"]
+    for _ in range(100):
+        rr = client.get(f"/dft/status/{tid}", headers=HEADERS).json()
+        if rr.get("status") not in ("queued", "running"):
+            break
+        time.sleep(0.05)
+
+    r = client.delete(f"/dft/jobs/{tid}", headers=HEADERS)
+    assert r.status_code == 200
+    body = r.json()
+    assert body["status"] == "success"      # 终态不被改写
+    assert body["process_killed"] is False
+
+
+def test_cancel_queued_task_semantics():
+    """taskstore 层: queued → cancelled; finish_task 不覆盖取消态"""
+    import asyncio
+
+    async def _go():
+        rec = taskstore.create_task("gaussian", "O", {}, None)
+        await taskstore.persist_new_task(rec)
+        tid = rec["task_id"]
+        assert await taskstore.cancel_task(tid) is True
+        # 已取消: 再取消幂等 False
+        assert await taskstore.cancel_task(tid) is False
+        # 后台执行完回来写结果: 不允许覆盖取消态
+        await taskstore.finish_task(tid, "success", {"energy_hartree": -1.0})
+        cur = await taskstore.get_task(tid, include_result=True)
+        return cur
+
+    cur = asyncio.run(_go())
+    assert cur["status"] == "cancelled"
+    assert cur["result"] is None  # 取消后结果被丢弃
+
+
+def test_kill_task_process_unregistered_is_noop():
+    from dft_service.runners.executor import kill_task_process
+
+    assert kill_task_process("never000registered") is False
 
 
 # ---------------------------------------------------------------

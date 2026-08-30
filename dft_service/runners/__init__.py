@@ -26,7 +26,7 @@ async def run_gaussian(task_id: str, p: dict[str, Any], timeout_s: float) -> dic
     }
     return await execute_driver(
         "gaussian", make_workdir("gaussian", task_id),
-        "gaussian_driver.py", params, timeout_s + 120,
+        "gaussian_driver.py", params, timeout_s + 120, task_id=task_id,
     )
 
 
@@ -46,9 +46,12 @@ async def run_gromacs(task_id: str, p: dict[str, Any], timeout_s: float) -> dict
         "temperature_K": float(p.get("temperature_K", 300.0)),
         "wsl_distro": distro,
     }
+    workdir = make_workdir("gromacs", task_id)
+    # WSL 清理标签: driver 内 gmx 的 cmdline 都含 /tmp/<workdir.name>
     return await execute_driver(
-        "gromacs", make_workdir("gromacs", task_id),
+        "gromacs", workdir,
         "gromacs_driver.py", params, timeout_s,
+        task_id=task_id, wsl_cleanup=(workdir.name, distro),
     )
 
 
@@ -62,7 +65,7 @@ async def run_mace(task_id: str, p: dict[str, Any], timeout_s: float) -> dict:
     }
     return await execute_driver(
         "mace", make_workdir("mace", task_id),
-        "mace_driver.py", params, timeout_s,
+        "mace_driver.py", params, timeout_s, task_id=task_id,
     )
 
 
@@ -86,7 +89,7 @@ async def run_pyscf(task_id: str, p: dict[str, Any], timeout_s: float) -> dict:
     geom_params = {"smiles": p["smiles"]}
     geom = await execute_driver(
         "pyscf", make_workdir("pyscf", task_id),
-        "geom_driver.py", geom_params, min(timeout_s, 300),
+        "geom_driver.py", geom_params, min(timeout_s, 300), task_id=task_id,
     )
     if geom.get("status") != "success":
         return {
@@ -121,10 +124,11 @@ async def run_pyscf(task_id: str, p: dict[str, Any], timeout_s: float) -> dict:
     if backend == "scichem":
         return await execute_driver(
             "pyscf", workdir, "pyscf_driver.py", calc_params, timeout_s,
+            task_id=task_id,
         )
     return await execute_driver_wsl(
         "pyscf", workdir, "pyscf_driver.py", calc_params, timeout_s,
-        backend.split(":", 1)[1],
+        backend.split(":", 1)[1], task_id=task_id,
     )
 
 
@@ -141,7 +145,7 @@ async def run_psi4(task_id: str, p: dict[str, Any], timeout_s: float) -> dict:
     }
     return await execute_driver(
         "psi4", make_workdir("psi4", task_id),
-        "psi4_driver.py", params, timeout_s,
+        "psi4_driver.py", params, timeout_s, task_id=task_id,
     )
 
 

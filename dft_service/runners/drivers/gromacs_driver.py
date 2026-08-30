@@ -66,10 +66,12 @@ def compute(params: dict, workdir: Path) -> dict:
     out["gro_path"] = str(paths["gro"])
     out["top_path"] = str(paths["top"])
 
-    # 2) energy minimize (小盒子自适应 mdp + 显式拓扑路径)
+    # 2) energy minimize (小盒子自适应 mdp + 显式拓扑 + 唯一 WSL 工作目录)
+    # wsl_work 用 workdir 名 (含唯一 task_id): 取消/超时可按名 pkill 不误伤
     em = energy_minimize(
         paths["gro"], _make_mdp("em", workdir, box_nm),
         workdir / "em", wsl_distro=distro, top_path=paths["top"],
+        wsl_work=f"/tmp/{workdir.name}",
     )
     out["em_gro"] = str(em["gro"])
     out["em_log"] = str(em["log"])
@@ -84,6 +86,7 @@ def compute(params: dict, workdir: Path) -> dict:
             nsteps=int(time_ns * 500000), temp=temp,
         ),
         top_path=paths["top"],
+        wsl_work=f"/tmp/{workdir.name}",
     )
     out["trajectory_path"] = str(md["xtc"])
     out["md_log"] = str(md["log"])

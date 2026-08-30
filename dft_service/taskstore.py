@@ -20,6 +20,9 @@ logger = logging.getLogger("dft_service.taskstore")
 # 内存态 (per-process), 重启后自然回退 DB
 _TASKS: dict[str, dict[str, Any]] = {}
 
+_TERMINAL = {"success", "failed", "unavailable", "completed_with_warnings",
+             "cancelled", "interrupted", "timeout"}
+
 
 def create_task(
     tool: str, smiles: str, params: dict, submitter: str | None = None,
@@ -88,10 +91,41 @@ async def mark_interrupted_on_startup() -> int:
         return 0
 
 
+async def cancel_task(task_id: str) -> bool:
+    """标记任务为 cancelled (缺口 #6)。返回是否发生了标记 (已是终态则 False)"""
+    rec = _TASKS.get(task_id)
+    if rec is not None:
+        if rec["status"] in _TERMINAL:
+            return False
+        rec["status"] = "cancelled"
+        rec["error_msg"] = "cancelled by user"
+        rec["finish_time"] = datetime.now(timezone.utc).isoformat()
+
+    try:
+        async with SessionFactory() as session:
+            row = await session.get(DFTJob, task_id)
+            if row is None:
+                return bool(rec is not None)
+            if row.status in _TERMINAL:
+                return False
+            row.status = "cancelled"
+            row.error_msg = "cancelled by user"
+            row.finish_time = datetime.now(timezone.utc)
+            await session.commit()
+            return True
+    except Exception:
+        logger.exception("cancel_task DB update failed for %s", task_id)
+        return False
+
+
 async def finish_task(
     task_id: str, status: str, result: dict | None, error_msg: str | None = None,
 ) -> None:
-    """任务结束: 更新内存 + DB"""
+    """任务结束: 更新内存 + DB。已取消的任务不覆盖 (取消竞态保护)"""
+    cur = _TASKS.get(task_id, {}).get("status")
+    if cur == "cancelled":
+        logger.info("task %s already cancelled, discarding result", task_id)
+        return
     finish_iso = datetime.now(timezone.utc).isoformat()
     rec = _TASKS.get(task_id)
     if rec is not None:

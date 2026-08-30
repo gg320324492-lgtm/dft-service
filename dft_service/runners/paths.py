@@ -47,7 +47,7 @@ def _scichem_import_check(module: str) -> bool:
     try:
         proc = subprocess.run(
             [str(settings.scichem_python), "-c", f"import {module}"],
-            capture_output=True, text=True, timeout=120,
+            capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=120,
         )
         return proc.returncode == 0
     except Exception:
@@ -61,7 +61,7 @@ def scichem_has(module: str) -> bool:
 def _list_wsl_distros() -> list[str]:
     try:
         proc = subprocess.run(
-            ["wsl.exe", "-l", "-q"], capture_output=True, text=True, timeout=15,
+            ["wsl.exe", "-l", "-q"], capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=15,
         )
         # WSL 输出是 UTF-16, 可能带 \x00; git-bash 下 text=True 已经 decode 过一部分
         raw = (proc.stdout or "") + (proc.stderr or "")
@@ -90,7 +90,7 @@ def detect_wsl_gromacs_distro() -> str | None:
             try:
                 proc = subprocess.run(
                     ["wsl.exe", "-d", distro, "bash", "-c", "command -v gmx"],
-                    capture_output=True, text=True, timeout=15,
+                    capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=15,
                 )
                 out = (proc.stdout or "").replace("\x00", "")
                 if proc.returncode == 0 and "gmx" in out:
@@ -113,7 +113,7 @@ def check_wsl_gromacs(distro: str) -> bool:
     try:
         proc = subprocess.run(
             ["wsl.exe", "-d", distro, "bash", "-c", "command -v gmx"],
-            capture_output=True, text=True, timeout=15,
+            capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=15,
         )
         out = (proc.stdout or "").replace("\x00", "")
         return proc.returncode == 0 and "gmx" in out
@@ -126,7 +126,7 @@ def check_wsl_python3_module(distro: str, module: str) -> bool:
     try:
         proc = subprocess.run(
             ["wsl.exe", "-d", distro, "python3", "-c", f"import {module}"],
-            capture_output=True, text=True, timeout=30,
+            capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=30,
         )
         return proc.returncode == 0
     except Exception:

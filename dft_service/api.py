@@ -131,6 +131,11 @@ class TaskIdResponse(BaseModel):
 # 内部: 提交 + 后台执行
 # ------------------------------------------------------------------
 async def _execute(tool: str, task_id: str, p: dict[str, Any], timeout_s: float) -> None:
+    # 取消竞态保护: 任务在排队期间被 DELETE → 直接放弃执行
+    cur = await taskstore.get_task(task_id)
+    if cur is not None and cur.get("status") == "cancelled":
+        logger.info("task %s cancelled before dispatch, skipping", task_id)
+        return
     try:
         result = await RUNNERS[tool](task_id, p, timeout_s)
     except Exception as e:  # noqa: BLE001 — 执行器兜底
@@ -286,3 +291,33 @@ async def jobs(
 ):
     """任务列表 (重启后仍可查 — 数据在 SQLite)"""
     return await taskstore.list_jobs(tool=tool, status=status, limit=limit, offset=offset)
+
+
+@router.delete("/jobs/{task_id}", dependencies=[Depends(require_api_key)])
+async def cancel_job(task_id: str):
+    """取消任务 (缺口 #6)
+
+    - queued: 直接标 cancelled, 派发前会被跳过
+    - running: 树杀进程树 (Windows taskkill /T 连杀 g16 孙进程;
+      WSL 侧按唯一 workdir 名 pkill 清残留 gmx/pyscf)
+    - 终态: 幂等返回当前状态
+    """
+    from dft_service.runners.executor import kill_task_process
+
+    rec = await taskstore.get_task(task_id)
+    if rec is None:
+        raise HTTPException(status_code=404, detail=f"task {task_id} not found")
+    status = rec.get("status")
+    if status in ("cancelled", "interrupted", "success", "failed",
+                  "unavailable", "completed_with_warnings", "timeout"):
+        return {"task_id": task_id, "status": status,
+                "process_killed": False, "message": "task already finished"}
+    killed = kill_task_process(task_id)
+    await taskstore.cancel_task(task_id)
+    return {
+        "task_id": task_id,
+        "status": "cancelled",
+        "process_killed": killed,
+        "message": "running process tree killed" if killed
+                   else "marked cancelled (no live process)",
+    }
