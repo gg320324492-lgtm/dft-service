@@ -293,16 +293,20 @@ def cmd_list(args, client) -> int:
     return EXIT_OK
 
 
-def cmd_cleanup(args, client) -> int:  # noqa: ARG001 — 本地操作, 不需要 client
-    """缺口 #10: 本地清理 (直接读 SQLite + 扫目录, 无需服务在跑)"""
+def run_cleanup(days: int = 7, dry_run: bool = False,
+                purge_rows: bool = False) -> tuple[int, int]:
+    """缺口 #10: 清理过期 job 目录 (直接读 SQLite + 扫目录, 无需服务在跑)。
+
+    只动终态任务; 运行中/排队中的目录绝不碰。返回 (removed, kept)。
+    """
     db_path = ROOT / "data" / "dft_service.db"
     jobs_root = ROOT / "data" / "jobs"
     if not db_path.exists():
         print("no DB yet — nothing to clean")
-        return EXIT_OK
+        return 0, 0
     conn = sqlite3.connect(db_path)
     rows = dict(conn.execute("SELECT id, status FROM dft_jobs").fetchall())
-    cutoff = time.time() - args.days * 86400
+    cutoff = time.time() - days * 86400
     victims: list[Path] = []
     for d in sorted(jobs_root.glob("*")) if jobs_root.exists() else []:
         if not d.is_dir():
@@ -310,18 +314,18 @@ def cmd_cleanup(args, client) -> int:  # noqa: ARG001 — 本地操作, 不需�
         task_id = d.name.rsplit("_", 1)[-1]
         status = rows.get(task_id)
         if status not in _TERMINAL:
-            continue  # 运行中/排队中的任务绝不动
+            continue
         if d.stat().st_mtime < cutoff:
             victims.append(d)
     for d in victims:
-        if args.dry_run:
+        if dry_run:
             print(f"[dry-run] would remove {d.name}")
         else:
             import shutil
 
             shutil.rmtree(d, ignore_errors=True)
             print(f"removed {d.name}")
-    if args.purge_rows and not args.dry_run:
+    if purge_rows and not dry_run:
         ids = [d.name.rsplit("_", 1)[-1] for d in victims]
         if ids:
             marks = ",".join("?" * len(ids))
@@ -329,9 +333,14 @@ def cmd_cleanup(args, client) -> int:  # noqa: ARG001 — 本地操作, 不需�
             conn.commit()
             print(f"purged {len(ids)} DB rows")
     total = sum(1 for _ in jobs_root.glob("*")) if jobs_root.exists() else 0
-    print(f"{len(victims)} job dir(s) older than {args.days}d "
-          f"(total {total}, kept {total - len(victims)})")
+    kept = total - len(victims)
+    print(f"{len(victims)} job dir(s) older than {days}d (total {total}, kept {kept})")
     conn.close()
+    return len(victims), kept
+
+
+def cmd_cleanup(args, client) -> int:  # noqa: ARG001 — 本地操作, 不需要 client
+    removed, _ = run_cleanup(args.days, args.dry_run, args.purge_rows)
     return EXIT_OK
 
 
