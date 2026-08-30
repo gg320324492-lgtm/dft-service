@@ -6,6 +6,7 @@
 """
 from __future__ import annotations
 
+import re
 import sys
 import time
 from pathlib import Path
@@ -34,6 +35,42 @@ _SOLVENT_MAP = {
     "octanol": "n-Octanol", "n-octanol": "n-Octanol",
 }
 _SOLVENT_NONE = {"none", "gas", "gasphase", "vacuum", ""}
+
+# 缺口 #3: freq 任务的频率与热化学量标记 (Gaussian log 标准输出行)
+_THERMO_KEYS = {
+    "zero_point_correction_hartree": "Zero-point correction=",
+    "thermal_correction_energy_hartree": "Thermal correction to Energy=",
+    "thermal_correction_enthalpy_hartree": "Thermal correction to Enthalpy=",
+    "thermal_correction_gibbs_hartree": "Thermal correction to Gibbs Free Energy=",
+    "sum_elec_zpe_hartree": "Sum of electronic and zero-point Energies=",
+    "sum_elec_thermal_energy_hartree": "Sum of electronic and thermal Energies=",
+    "sum_elec_thermal_enthalpy_hartree": "Sum of electronic and thermal Enthalpies=",
+    "sum_elec_thermal_gibbs_hartree": "Sum of electronic and thermal Free Energies=",
+}
+
+
+def _parse_freq_thermo(log_text: str) -> dict:
+    """从 Gaussian freq 输出提取频率 (cm⁻¹) 与热化学量 (Hartree)。
+
+    纯函数, 无外部依赖, 可独立单测。负频率 = 虚频 (TS 特征)。
+    """
+    freqs = [
+        float(v)
+        for chunk in re.findall(r"Frequencies\s+--\s+([-\d.\s]+)", log_text)
+        for v in chunk.split()
+    ]
+    thermo = {}
+    for key, marker in _THERMO_KEYS.items():
+        m = re.search(re.escape(marker) + r"\s*(-?\d+\.\d+)", log_text)
+        if m:
+            thermo[key] = float(m.group(1))
+    out: dict = {"n_frequencies": len(freqs), "n_imaginary": sum(1 for f in freqs if f < 0)}
+    if freqs:
+        out["lowest_freq_cm_1"] = min(freqs)
+        out["frequencies_cm_1"] = freqs
+    if thermo:
+        out["thermochemistry"] = thermo
+    return out
 
 
 def _smiles_to_coords(smiles: str):
@@ -130,6 +167,17 @@ def compute(params: dict, workdir: Path) -> dict:
     )
     parsed = parse_log(log_path)
     elapsed = time.time() - t0
+
+    # 缺口 #3: freq 任务提取频率 + 热化学量 (旧行为只回 SCF 能量, 频率全留在 log 里)
+    if "freq" in (params.get("job") or "").lower():
+        freq_data = _parse_freq_thermo(
+            Path(log_path).read_text(encoding="utf-8", errors="ignore"))
+        result.update(freq_data)
+        if freq_data.get("n_imaginary"):
+            result["warning"] = (
+                f"{freq_data['n_imaginary']} 个虚频 — 若优化目标是极小值"
+                f"(非过渡态), 该结构未收敛到极小值"
+            )
 
     result = {
         "status": "success" if parsed.converged else "completed_with_warnings",
