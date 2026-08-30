@@ -6,6 +6,7 @@
 """
 from __future__ import annotations
 
+import os
 import re
 import sys
 import time
@@ -145,7 +146,10 @@ def _gen_gjf(workdir: Path, smiles: str, p: dict) -> Path:
 
 
 def compute(params: dict, workdir: Path) -> dict:
-    from gaussian_runner import parse_log, submit_gjf  # E:\sci-software\workflows
+    import subprocess
+    import time as _time
+
+    from gaussian_runner import parse_log  # 只复用解析; 提交自建 (见下)
 
     t0 = time.time()
 
@@ -161,17 +165,79 @@ def compute(params: dict, workdir: Path) -> dict:
 
     gjf_path = _gen_gjf(workdir, params["smiles"], params)
 
-    gaussian_bin = params.get("gaussian_bin")
-    log_path = submit_gjf(
-        gjf_path, gaussian_path=gaussian_bin, timeout=float(params.get("timeout_s", 7200)),
+    # ------------------------------------------------------------------
+    # 提交 (2026-08-30 重写) — workflows.submit_gjf 的两个 Windows 不兼容:
+    #   ① cwd=job 目录时 l1.exe 链起不来 (exit 127/静默死), 实证配方是
+    #      cwd = g16 安装目录 (8/5 B1 验收 .out 头部 Output=D:\G16W\*.out 为证)
+    #   ② G16W 输出扩展名是 .out 不是 .log, submit_gjf 轮询 .log 永远等不到
+    # 配方: cwd=g16 目录 + 唯一 stem (并发安全, 信号量限 gaussian≤2) +
+    #       干净 PATH (防 MSYS 污染) + 轮询 .out + 产物拷回 + 残留清理
+    # ------------------------------------------------------------------
+    g16_exe = Path(params.get("gaussian_bin") or r"D:\G16W\g16.exe").resolve()
+    g16_dir = g16_exe.parent
+    if not g16_exe.exists():
+        return {
+            "status": "unavailable",
+            "error_msg": f"g16.exe not found: {g16_exe}",
+        }
+
+    stem = f"job_{workdir.name}"  # workdir 名含唯一 task_id
+    (g16_dir / f"{stem}.gjf").write_bytes(gjf_path.read_bytes())
+
+    env = {
+        "PATH": r"C:\Windows\System32;C:\Windows;" + str(g16_dir),
+        "SYSTEMROOT": os.environ.get("SYSTEMROOT", r"C:\Windows"),
+        "GAUSS_EXEDIR": str(g16_dir),
+        "GAUSS_SCRDIR": str(workdir),
+    }
+    proc = subprocess.Popen(
+        [str(g16_exe), f"{stem}.gjf"], cwd=str(g16_dir),
+        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, env=env,
     )
-    parsed = parse_log(log_path)
+
+    out_path = g16_dir / f"{stem}.out"
+    deadline = _time.time() + float(params.get("timeout_s", 7200))
+    while _time.time() < deadline:
+        if proc.poll() is not None and proc.returncode != 0:
+            return {
+                "status": "failed",
+                "error_msg": f"Gaussian exited with code {proc.returncode}",
+                "stage": "submit",
+            }
+        if out_path.exists():
+            try:
+                tail = out_path.read_text(encoding="utf-8", errors="ignore")[-4096:]
+            except OSError:
+                tail = ""
+            if "Normal termination" in tail or "Error termination" in tail:
+                _time.sleep(1.0)  # 让缓冲写完
+                break
+        _time.sleep(3.0)
+    else:
+        proc.kill()
+        return {
+            "status": "failed",
+            "error_msg": f"Gaussian timeout after {params.get('timeout_s')}s",
+            "stage": "submit",
+        }
+
+    # 产物拷回 + 安装目录残留清理
+    local_out = workdir / "input.out"
+    local_out.write_bytes(out_path.read_bytes())
+    for f in (g16_dir / f"{stem}.gjf", out_path):
+        try:
+            f.unlink()
+        except OSError:
+            pass
+    log_for_parse = local_out
+
+    parsed = parse_log(log_for_parse)
     elapsed = time.time() - t0
 
     # 缺口 #3: freq 任务提取频率 + 热化学量 (旧行为只回 SCF 能量, 频率全留在 log 里)
     if "freq" in (params.get("job") or "").lower():
         freq_data = _parse_freq_thermo(
-            Path(log_path).read_text(encoding="utf-8", errors="ignore"))
+            local_out.read_text(encoding="utf-8", errors="ignore"))
         result.update(freq_data)
         if freq_data.get("n_imaginary"):
             result["warning"] = (
@@ -181,13 +247,14 @@ def compute(params: dict, workdir: Path) -> dict:
 
     result = {
         "status": "success" if parsed.converged else "completed_with_warnings",
+        "tool": "gaussian",
         "energy_hartree": parsed.energy_hartree,
         "energy_ev": parsed.energy_ev,
         "n_opt_steps": parsed.n_opt_steps,
         "converged": parsed.converged,
         "charge": params["charge"],
         "multiplicity": params["multiplicity"],
-        "log_path": str(log_path),
+        "log_path": str(local_out),
         "gjf_path": str(gjf_path),
         "work_dir": str(workdir),
         "smiles": params["smiles"],
