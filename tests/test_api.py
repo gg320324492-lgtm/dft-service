@@ -267,6 +267,50 @@ def test_auto_md_selects_gromacs(client, monkeypatch):
 
 
 # ---------------------------------------------------------------
+# 缺口 #13: auto 丢参数告警
+# ---------------------------------------------------------------
+def test_auto_warns_when_solvent_dropped_for_mace(client, monkeypatch):
+    import dft_service.runners as runners_pkg
+    import dft_service.runners.tool_definitions as td
+
+    async def fake(tool, workdir, driver, params, timeout_s, **_):
+        return {"status": "success", "tool": tool}
+
+    monkeypatch.setattr(runners_pkg, "execute_driver", fake)
+    monkeypatch.setattr(td, "availability_map", lambda: {
+        "gaussian": False, "gromacs": False, "mace": True, "pyscf": False, "psi4": False,
+    })
+
+    r = client.post("/dft/auto", headers=HEADERS, json={
+        "smiles": "O", "task": "optimize", "quality": "fast", "solvent": "water",
+    })
+    body = r.json()
+    assert body["backend"] == "mace"
+    assert body["warnings"] and "mace" in body["warnings"][0] \
+        and "solvent" in body["warnings"][0]
+
+
+def test_auto_no_warning_when_solvent_supported(client, monkeypatch):
+    import dft_service.runners as runners_pkg
+    import dft_service.runners.tool_definitions as td
+
+    async def fake(tool, workdir, driver, params, timeout_s, **_):
+        return {"status": "success", "tool": tool}
+
+    monkeypatch.setattr(runners_pkg, "execute_driver", fake)
+    monkeypatch.setattr(td, "availability_map", lambda: {
+        "gaussian": True, "gromacs": False, "mace": False, "pyscf": False, "psi4": False,
+    })
+
+    r = client.post("/dft/auto", headers=HEADERS, json={
+        "smiles": "O", "task": "energy", "quality": "accurate", "solvent": "water",
+    })
+    body = r.json()
+    assert body["backend"] == "gaussian"
+    assert body["warnings"] == []  # gaussian 支持溶剂, 不告警
+
+
+# ---------------------------------------------------------------
 # 缺口 #1 回归: auto→gaussian job 归一化 (energy/optimize 不是合法关键字)
 # ---------------------------------------------------------------
 def _auto_capture(client, monkeypatch, task: str, avail: dict) -> dict:

@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import logging
+import logging.handlers
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
@@ -17,11 +18,25 @@ logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s %(levelname)s %(name)s: %(message)s",
 )
+
+
+def _setup_file_logging() -> None:
+    """缺口 #11: 文件日志 (5MB × 3 轮转), 后台排查不再依赖 stdout"""
+    log_dir = settings.service_root / "data" / "logs"
+    log_dir.mkdir(parents=True, exist_ok=True)
+    handler = logging.handlers.RotatingFileHandler(
+        log_dir / "dft-service.log",
+        maxBytes=5 * 1024 * 1024, backupCount=3, encoding="utf-8",
+    )
+    handler.setFormatter(logging.Formatter(
+        "%(asctime)s %(levelname)s %(name)s: %(message)s"))
+    logging.getLogger().addHandler(handler)
 logger = logging.getLogger("dft_service.main")
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    _setup_file_logging()
     await init_db()
     # 缺口 #4: 重启清扫 — 上次中途死掉的任务不可能复活, 全部标 interrupted
     interrupted = await taskstore.mark_interrupted_on_startup()

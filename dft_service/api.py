@@ -219,7 +219,12 @@ async def submit_psi4(req: Psi4Request, submitter: Optional[str] = None):
 
 @router.post("/auto", dependencies=[Depends(require_api_key)])
 async def submit_auto(req: AutoRequest, submitter: Optional[str] = None):
-    """智能选路: task+quality → 最快可用后端, 派发并返回 task_id + 选路理由"""
+    """智能选路: task+quality → 最快可用后端, 派发并返回 task_id + 选路理由
+
+    返回带 warnings 列表 (缺口 #13): 后端不支持你传的参数时明确告知,
+    不静默丢弃。
+    """
+    warnings: list[str] = []
     tool, reason = select_backend(req.task, req.quality)
     if tool is None:
         return {
@@ -265,8 +270,24 @@ async def submit_auto(req: AutoRequest, submitter: Optional[str] = None):
         p = {"smiles": req.smiles}
         timeout = req.timeout_s or 14400.0
 
+    # 缺口 #13: 被选后端不支持的参数明确告警, 不静默丢弃
+    solvent = (req.solvent or "none").lower()
+    if solvent not in ("", "none", "gas", "gasphase", "vacuum"):
+        if tool in ("mace", "gromacs"):
+            warnings.append(
+                f"{tool} 不支持溶剂模型, solvent={req.solvent} 被忽略 (需溶剂请选 "
+                "gaussian/pyscf/psi4)")
+    if tool in ("mace", "gromacs") and (
+            req.charge not in (None, 0) or req.multiplicity not in (None, 1)):
+        warnings.append(
+            f"{tool} 无电荷/自旋概念, charge/multiplicity 被忽略")
+    if req.task.strip().lower() in ("properties", "prop") and tool == "gaussian":
+        warnings.append("Gaussian 无独立 properties 任务, 已降级为 sp 单点 "
+                        "(偶极/HOMO-LUMO 请用 psi4)")
+
     resp = await _submit(tool, req.smiles, p, timeout, submitter)
-    return {**resp.model_dump(), "backend": tool, "reason": reason}
+    return {**resp.model_dump(), "backend": tool, "reason": reason,
+            "warnings": warnings}
 
 
 @router.get("/status/{task_id}", dependencies=[Depends(require_api_key)])
