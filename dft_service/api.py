@@ -130,6 +130,17 @@ class TaskIdResponse(BaseModel):
 # ------------------------------------------------------------------
 # 内部: 提交 + 后台执行
 # ------------------------------------------------------------------
+# 缺口 #8: 每工具并发上限 — mace 单并发防 GPU 显存争抢, 其余 2; 超出的
+# 任务保持 queued 自动排队。auto 继承所选后端的限制。
+_SEMAPHORES: dict[str, asyncio.Semaphore] = {
+    "gaussian": asyncio.Semaphore(2),
+    "gromacs": asyncio.Semaphore(2),
+    "mace": asyncio.Semaphore(1),
+    "pyscf": asyncio.Semaphore(2),
+    "psi4": asyncio.Semaphore(2),
+}
+
+
 async def _execute(tool: str, task_id: str, p: dict[str, Any], timeout_s: float) -> None:
     # 取消竞态保护: 任务在排队期间被 DELETE → 直接放弃执行
     cur = await taskstore.get_task(task_id)
@@ -137,7 +148,13 @@ async def _execute(tool: str, task_id: str, p: dict[str, Any], timeout_s: float)
         logger.info("task %s cancelled before dispatch, skipping", task_id)
         return
     try:
-        result = await RUNNERS[tool](task_id, p, timeout_s)
+        async with _SEMAPHORES[tool]:
+            # 拿到并发额度后再查一次 (可能在信号量排队期间被取消)
+            cur = await taskstore.get_task(task_id)
+            if cur is not None and cur.get("status") == "cancelled":
+                logger.info("task %s cancelled while queued, skipping", task_id)
+                return
+            result = await RUNNERS[tool](task_id, p, timeout_s)
     except Exception as e:  # noqa: BLE001 — 执行器兜底
         logger.exception("task %s (%s) crashed", task_id, tool)
         result = {"status": "failed", "error_msg": repr(e)}
