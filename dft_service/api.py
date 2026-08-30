@@ -57,8 +57,10 @@ class GaussianRequest(BaseModel):
     basis: str = "6-31G(d)"
     job: str = Field("opt", description="opt / sp / freq")
     solvent: str = Field("none", description="SCRF 溶剂 (water/ethanol/...; none=气相)")
-    charge: int = 0
-    multiplicity: int = Field(1, ge=1)
+    charge: Optional[int] = Field(None, ge=-10, le=10,
+                                  description="缺省从 SMILES 自动推断")
+    multiplicity: Optional[int] = Field(None, ge=1, le=10,
+                                        description="缺省从 SMILES 自动推断")
     nproc: int = Field(8, ge=1)
     mem: str = "8GB"
     timeout_s: float = Field(7200.0, ge=10.0)

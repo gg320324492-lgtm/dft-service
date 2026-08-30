@@ -60,6 +60,19 @@ def _smiles_to_coords(smiles: str):
     return atoms, coords
 
 
+def _infer_charge_mult(smiles: str) -> tuple[int, int]:
+    """从 SMILES 推断 (电荷, 自旋多重度) — 与 pyscf geom_driver 同逻辑"""
+    from rdkit import Chem
+
+    mol = Chem.MolFromSmiles(smiles)
+    if mol is None:
+        raise RuntimeError(f"Failed to parse SMILES: {smiles}")
+    charge = Chem.GetFormalCharge(mol)
+    n_radical = sum(a.GetNumRadicalElectrons() for a in mol.GetAtoms())
+    multiplicity = 1 + 2 * n_radical if n_radical > 0 else 1
+    return charge, multiplicity
+
+
 def _gen_gjf(workdir: Path, smiles: str, p: dict) -> Path:
     """自建 gjf 生成 (支持 SCRF) — 不用 workflows.gen_gjf 因为它 route 写死"""
     atoms, coords = _smiles_to_coords(smiles)
@@ -83,7 +96,7 @@ def _gen_gjf(workdir: Path, smiles: str, p: dict) -> Path:
         "",
         f"{smiles} {p['xc']}/{p['basis']} {p['job']} solvent={solvent}",
         "",
-        f"{p.get('charge', 0)} {p.get('multiplicity', 1)}",
+        f"{p['charge']} {p['multiplicity']}",
     ]
     lines += [
         f"{a:2s}  {c[0]:14.8f}  {c[1]:14.8f}  {c[2]:14.8f}"
@@ -98,6 +111,17 @@ def compute(params: dict, workdir: Path) -> dict:
     from gaussian_runner import parse_log, submit_gjf  # E:\sci-software\workflows
 
     t0 = time.time()
+
+    # 缺口 #2: charge/multiplicity 未提供时从 SMILES 推断 —
+    # 旧行为默默按 0/1 跑, 阳离子/自由基返回看似成功的错误能量
+    charge = params.get("charge")
+    multiplicity = params.get("multiplicity")
+    if charge is None or multiplicity is None:
+        inf_charge, inf_mult = _infer_charge_mult(params["smiles"])
+        charge = int(charge) if charge is not None else inf_charge
+        multiplicity = int(multiplicity) if multiplicity is not None else inf_mult
+    params = {**params, "charge": int(charge), "multiplicity": int(multiplicity)}
+
     gjf_path = _gen_gjf(workdir, params["smiles"], params)
 
     gaussian_bin = params.get("gaussian_bin")
@@ -113,6 +137,8 @@ def compute(params: dict, workdir: Path) -> dict:
         "energy_ev": parsed.energy_ev,
         "n_opt_steps": parsed.n_opt_steps,
         "converged": parsed.converged,
+        "charge": params["charge"],
+        "multiplicity": params["multiplicity"],
         "log_path": str(log_path),
         "gjf_path": str(gjf_path),
         "work_dir": str(workdir),
