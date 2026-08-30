@@ -1,3 +1,4 @@
 -r requirements.txt
 pytest>=8.0
 httpx>=0.27
+mcp<2  # MCP server (mcp_server.py; 2.x 改 API, 固定 v1)

@@ -60,3 +60,10 @@ stop.bat                                               # 停止
   容器内 URL 是 `http://host.docker.internal:8620` (docker-compose 已注入)
 - 工具名/schema 与服务端点一一对应; 本服务加参数不破坏 microbubble
   (pydantic 忽略多余字段), 删参数前先改 microbubble
+
+## MCP server (mcp_server.py)
+
+已注册到 Claude Code user 作用域 (`claude mcp list` 可见, 全会话可用):
+7 个原生工具 (dft_tools/dft_wait/dft_submit/dft_status/dft_result/dft_cancel/dft_list)。
+改 mcp_server.py 后需在新会话生效 (stdio 进程随会话启动); SDK 固定 mcp<2
+(2.x 把 FastMCP 改名为 MCPServer)。注册命令见文件头 docstring。
