@@ -176,9 +176,10 @@ def wait_one(client: httpx.Client, tool: str, payload: dict,
                                  f"{task_id} 再查"}
         n += 1
         if not quiet:
+            # 进程度打 stderr — stdout 永远只有结果 (--json 可直接管道)
             print(f"\r  poll#{n} status={rec.get('status')} "
                   f"elapsed={int(n * POLL_INTERVAL_S)}s   ",
-                  end="", flush=True)
+                  end="", file=sys.stderr, flush=True)
         time.sleep(POLL_INTERVAL_S)
 
 
@@ -378,6 +379,13 @@ def add_tool_args(p: argparse.ArgumentParser) -> None:
 
 
 def build_parser() -> argparse.ArgumentParser:
+    # 共享旗标 (SUPPRESS 默认: 子命令未显式给时保留顶层解析值)
+    common = argparse.ArgumentParser(add_help=False)
+    common.add_argument("--json", action="store_true",
+                        default=argparse.SUPPRESS, help="输出原始 JSON")
+    common.add_argument("--url", default=argparse.SUPPRESS)
+    common.add_argument("--api-key", default=argparse.SUPPRESS)
+
     ap = argparse.ArgumentParser(prog="dft", description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--url", default=DEFAULT_URL)
@@ -387,7 +395,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     for name, help_ in [("wait", "提交 + 轮询到完成 (阻塞, 人类可读摘要)"),
                         ("submit", "只提交, 返回 task_id (长任务用)")]:
-        sp = sub.add_parser(name, help=help_)
+        sp = sub.add_parser(name, help=help_, parents=[common])
         sp.add_argument("tool", choices=["gaussian", "gromacs", "mace",
                                          "pyscf", "psi4", "auto"])
         if name == "wait":
@@ -396,24 +404,26 @@ def build_parser() -> argparse.ArgumentParser:
         add_tool_args(sp)
         sp.set_defaults(func=cmd_wait if name == "wait" else cmd_submit)
 
-    sp = sub.add_parser("tools", help="5 后端健康状态")
+    sp = sub.add_parser("tools", help="5 后端健康状态", parents=[common])
     sp.set_defaults(func=cmd_tools)
-    sp = sub.add_parser("status", help="查任务状态")
+    sp = sub.add_parser("status", help="查任务状态", parents=[common])
     sp.add_argument("task_id")
     sp.set_defaults(func=cmd_status)
-    sp = sub.add_parser("result", help="拿任务结果")
+    sp = sub.add_parser("result", help="拿任务结果", parents=[common])
     sp.add_argument("task_id")
     sp.set_defaults(func=cmd_result)
-    sp = sub.add_parser("cancel", help="取消任务 (树杀运行中进程)")
+    sp = sub.add_parser("cancel", help="取消任务 (树杀运行中进程)",
+                        parents=[common])
     sp.add_argument("task_id")
     sp.set_defaults(func=cmd_cancel)
-    sp = sub.add_parser("list", help="任务列表")
+    sp = sub.add_parser("list", help="任务列表", parents=[common])
     sp.add_argument("--tool")
     sp.add_argument("--status")
     sp.add_argument("--limit", type=int, default=20)
     sp.add_argument("--offset", type=int, default=0)
     sp.set_defaults(func=cmd_list)
-    sp = sub.add_parser("cleanup", help="清理过期 job 目录 (本地操作)")
+    sp = sub.add_parser("cleanup", help="清理过期 job 目录 (本地操作)",
+                        parents=[common])
     sp.add_argument("--days", type=int, default=7)
     sp.add_argument("--dry-run", action="store_true")
     sp.add_argument("--purge-rows", action="store_true",
