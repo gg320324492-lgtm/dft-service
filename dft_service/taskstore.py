@@ -63,6 +63,31 @@ async def persist_new_task(rec: dict[str, Any]) -> None:
         logger.exception("Failed to persist task %s", rec["task_id"])
 
 
+async def mark_interrupted_on_startup() -> int:
+    """启动清扫: 上次进程死于中途的任务标为 interrupted (缺口 #4)
+
+    服务重启时 driver 子进程随进程消亡, SQLite 里的 queued/running 是假状态。
+    全部标 interrupted + error_msg, 避免 /jobs 里积累永远"运行中"的幽灵任务。
+    返回受影响行数。
+    """
+    try:
+        from sqlalchemy import func, update
+
+        async with SessionFactory() as session:
+            result = await session.execute(
+                update(DFTJob)
+                .where(DFTJob.status.in_(("queued", "running")))
+                .values(status="interrupted",
+                        error_msg="service restarted mid-run",
+                        finish_time=func.now())
+            )
+            await session.commit()
+            return result.rowcount or 0
+    except Exception:
+        logger.exception("startup sweep failed")
+        return 0
+
+
 async def finish_task(
     task_id: str, status: str, result: dict | None, error_msg: str | None = None,
 ) -> None:

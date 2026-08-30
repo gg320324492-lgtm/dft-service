@@ -7,7 +7,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from dft_service import __version__
+from dft_service import __version__, taskstore
 from dft_service.auth import require_api_key
 from dft_service.config import settings
 from dft_service.db import init_db
@@ -23,6 +23,11 @@ logger = logging.getLogger("dft_service.main")
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await init_db()
+    # 缺口 #4: 重启清扫 — 上次中途死掉的任务不可能复活, 全部标 interrupted
+    interrupted = await taskstore.mark_interrupted_on_startup()
+    if interrupted:
+        logger.warning("marked %d stale queued/running task(s) as interrupted",
+                       interrupted)
     if settings.api_key is None:
         logger.warning(
             "DFT_SERVICE_API_KEY 未设置 — 鉴权关闭 (本地/内网模式); "
