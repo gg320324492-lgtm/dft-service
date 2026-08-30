@@ -1,0 +1,142 @@
+"""任务存储 — 内存 dict (快) + SQLite (持久) 双写
+
+修复 microbubble 版两个缺口:
+- /status 重启后不再 404: 内存 miss → DB 回退
+- 新增 /jobs 列表查询 (按 tool / status 过滤 + 分页)
+"""
+from __future__ import annotations
+
+import logging
+from datetime import datetime, timezone
+from typing import Any
+
+from sqlalchemy import func, select
+
+from dft_service.db import SessionFactory
+from dft_service.models import DFTJob, new_task_id
+
+logger = logging.getLogger("dft_service.taskstore")
+
+# 内存态 (per-process), 重启后自然回退 DB
+_TASKS: dict[str, dict[str, Any]] = {}
+
+
+def create_task(
+    tool: str, smiles: str, params: dict, submitter: str | None = None,
+) -> dict[str, Any]:
+    """登记新任务 (内存 + DB), 返回内存记录"""
+    task_id = new_task_id()
+    rec: dict[str, Any] = {
+        "task_id": task_id,
+        "tool": tool,
+        "smiles": smiles,
+        "params": params,
+        "status": "queued",
+        "submitter": submitter,
+        "submit_time": datetime.now(timezone.utc).isoformat(),
+        "finish_time": None,
+        "result": None,
+        "error_msg": None,
+        "log_path": None,
+    }
+    _TASKS[task_id] = rec
+    # 真正落库由调用方在事件循环内调 persist_new_task 完成
+    rec["_needs_db_insert"] = True
+    return rec
+
+
+async def persist_new_task(rec: dict[str, Any]) -> None:
+    """在事件循环内落库新任务"""
+    if not rec.get("_needs_db_insert"):
+        return
+    rec["_needs_db_insert"] = False
+    try:
+        async with SessionFactory() as session:
+            session.add(DFTJob(
+                id=rec["task_id"], submitter=rec.get("submitter"),
+                tool=rec["tool"], smiles=rec["smiles"],
+                params=rec["params"], status=rec["status"],
+                submit_time=datetime.fromisoformat(rec["submit_time"]),
+            ))
+            await session.commit()
+    except Exception:
+        logger.exception("Failed to persist task %s", rec["task_id"])
+
+
+async def finish_task(
+    task_id: str, status: str, result: dict | None, error_msg: str | None = None,
+) -> None:
+    """任务结束: 更新内存 + DB"""
+    finish_iso = datetime.now(timezone.utc).isoformat()
+    rec = _TASKS.get(task_id)
+    if rec is not None:
+        rec["status"] = status
+        rec["result"] = result
+        rec["error_msg"] = error_msg
+        rec["finish_time"] = finish_iso
+        if result:
+            rec["log_path"] = result.get("log_path") or rec.get("log_path")
+
+    try:
+        async with SessionFactory() as session:
+            row = await session.get(DFTJob, task_id)
+            if row is not None:
+                row.status = status
+                row.result = result
+                row.error_msg = error_msg
+                row.finish_time = datetime.now(timezone.utc)
+                if result:
+                    row.log_path = result.get("log_path") or row.log_path
+                await session.commit()
+    except Exception:
+        logger.exception("Failed to persist finish state for %s", task_id)
+
+
+async def get_task(task_id: str, include_result: bool = False) -> dict | None:
+    """内存优先, DB 回退 (修复重启 404)"""
+    rec = _TASKS.get(task_id)
+    if rec is not None:
+        out = {k: v for k, v in rec.items() if not k.startswith("_")}
+        if not include_result:
+            out.pop("result", None)
+        return out
+    try:
+        async with SessionFactory() as session:
+            row = await session.get(DFTJob, task_id)
+            if row is None:
+                return None
+            return row.to_dict(include_result=include_result)
+    except Exception:
+        logger.exception("DB fallback failed for %s", task_id)
+        return None
+
+
+async def list_jobs(
+    tool: str | None = None, status: str | None = None,
+    limit: int = 50, offset: int = 0,
+) -> dict:
+    """任务列表 (DB 查询, 按提交时间倒序)"""
+    limit = min(max(limit, 1), 200)
+    conditions = []
+    if tool:
+        conditions.append(DFTJob.tool == tool)
+    if status:
+        conditions.append(DFTJob.status == status)
+    try:
+        async with SessionFactory() as session:
+            q = select(DFTJob).order_by(DFTJob.submit_time.desc())
+            count_q = select(func.count()).select_from(DFTJob)
+            if conditions:
+                q = q.where(*conditions)
+                count_q = count_q.where(*conditions)
+            total = (await session.execute(count_q)).scalar() or 0
+            rows = (await session.execute(q.limit(limit).offset(offset))).scalars().all()
+            return {
+                "total": total,
+                "limit": limit,
+                "offset": offset,
+                "jobs": [r.to_dict() for r in rows],
+            }
+    except Exception:
+        logger.exception("list_jobs query failed")
+        return {"total": 0, "limit": limit, "offset": offset, "jobs": []}
