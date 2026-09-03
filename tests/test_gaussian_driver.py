@@ -173,6 +173,34 @@ def test_gjf_unknown_solvent_capitalized(tmp_path, monkeypatch):
     assert "Solvent=Pyridine" in txt
 
 
+def test_gjf_extra_route(tmp_path, monkeypatch):
+    """缺口 #28: extra_route 追加进路由行 (逃生舱)"""
+    txt = _gjf_text(tmp_path, monkeypatch,
+                    {"extra_route": "int=ultrafine scf=(qc,maxcycle=200)"})
+    assert "# B3LYP/6-31G(d) opt int=ultrafine scf=(qc,maxcycle=200)" in txt
+
+
+def test_opt_freq_route(tmp_path, monkeypatch):
+    """缺口 #27: opt freq 联跑 — 路由同时含两关键字"""
+    txt = _gjf_text(tmp_path, monkeypatch, {"job": "opt freq"})
+    assert "# B3LYP/6-31G(d) opt freq" in txt
+
+
+def test_extra_route_rejects_newline_injection():
+    """缺口 #28: 换行/#/% 注入被 driver 层兜底拒绝 (auto 路径不过 API 校验)"""
+    p = {"xc": "B3LYP", "basis": "6-31G(d)", "job": "sp", "solvent": "none",
+         "extra_route": "int=ultrafine\n# pop"}
+    with pytest.raises(ValueError, match="非法字符"):
+        gd._build_route(p)
+
+
+def test_solvent_rejects_injection():
+    p = {"xc": "B3LYP", "basis": "6-31G(d)", "job": "sp",
+         "solvent": "Water) weird("}
+    with pytest.raises(ValueError, match="溶剂名"):
+        gd._build_route(p)
+
+
 # ---------------------------------------------------------------
 # #22: write_progress 原子写
 # ---------------------------------------------------------------

@@ -16,6 +16,7 @@ async def run_gaussian(task_id: str, p: dict[str, Any], timeout_s: float) -> dic
         "basis": p.get("basis", "6-31G(d)"),
         "job": p.get("job", "opt"),
         "solvent": p.get("solvent", "none"),
+        "extra_route": p.get("extra_route", ""),  # 缺口 #28 逃生舱
         # None = 未提供, driver 侧从 SMILES 推断 (缺口 #2); int() 强转会炸 None
         "charge": p.get("charge"),
         "multiplicity": p.get("multiplicity"),

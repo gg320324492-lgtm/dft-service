@@ -267,6 +267,74 @@ def test_auto_md_selects_gromacs(client, monkeypatch):
 
 
 # ---------------------------------------------------------------
+# #27 / #28: opt_freq 联跑 + extra_route 白名单
+# ---------------------------------------------------------------
+def test_extra_route_and_job_validation(client, monkeypatch):
+    """注入面 422; 合法 extra_route / opt freq 透传到 driver"""
+    import dft_service.runners as runners_pkg
+
+    captured = {}
+
+    async def fake(tool, workdir, driver, params, timeout_s, **_):
+        captured["params"] = params
+        return {"status": "success", "tool": tool}
+
+    monkeypatch.setattr(runners_pkg, "execute_driver", fake)
+
+    for bad in ({"smiles": "O", "extra_route": "int=ultrafine\n#evil"},
+                {"smiles": "O", "extra_route": "%mkchg /usr"},
+                {"smiles": "O", "job": "opt\nsp"},
+                {"smiles": "O", "solvent": "water) x(1"}):
+        r = client.post("/dft/gaussian", headers=HEADERS, json=bad)
+        assert r.status_code == 422, f"{bad} 应 422"
+
+    r = client.post("/dft/gaussian", headers=HEADERS, json={
+        "smiles": "O", "job": "opt freq", "extra_route": "int=ultrafine"})
+    assert r.status_code == 200
+    body = _poll_result(client, r.json()["task_id"])
+    assert body["status"] == "success"
+    assert captured["params"]["job"] == "opt freq"
+    assert captured["params"]["extra_route"] == "int=ultrafine"
+
+
+def test_auto_opt_freq_maps_to_gaussian(client, monkeypatch):
+    """缺口 #27: auto task=opt+freq → gaussian, job='opt freq'"""
+    import dft_service.runners as runners_pkg
+    import dft_service.runners.tool_definitions as td
+
+    captured = {}
+
+    async def fake(tool, workdir, driver, params, timeout_s, **_):
+        captured["tool"] = tool
+        captured["params"] = params
+        return {"status": "success", "tool": tool}
+
+    monkeypatch.setattr(runners_pkg, "execute_driver", fake)
+    monkeypatch.setattr(td, "availability_map", lambda: {
+        "gaussian": True, "gromacs": False, "mace": False, "pyscf": True, "psi4": True,
+    })
+    r = client.post("/dft/auto", headers=HEADERS,
+                    json={"smiles": "O", "task": "opt+freq", "quality": "accurate"})
+    assert r.json()["backend"] == "gaussian"
+    _poll_result(client, r.json()["task_id"])
+    assert captured["params"]["job"] == "opt freq"
+
+
+def test_auto_opt_freq_guards_non_gaussian(client, monkeypatch):
+    """gaussian 不可用时 opt_freq 明确 unavailable, 不落到 pyscf (其无频率解析)"""
+    import dft_service.runners.tool_definitions as td
+
+    monkeypatch.setattr(td, "availability_map", lambda: {
+        "gaussian": False, "gromacs": False, "mace": False, "pyscf": True, "psi4": True,
+    })
+    r = client.post("/dft/auto", headers=HEADERS,
+                    json={"smiles": "O", "task": "opt_freq"})
+    body = r.json()
+    assert body["status"] == "unavailable"
+    assert "Gaussian" in body["reason"]
+
+
+# ---------------------------------------------------------------
 # 缺口 #13: auto 丢参数告警
 # ---------------------------------------------------------------
 def test_auto_warns_when_solvent_dropped_for_mace(client, monkeypatch):

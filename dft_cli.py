@@ -60,6 +60,7 @@ _FLAG_MAP = {
     "method": "method",
     "basis": "basis",
     "job": "job",
+    "extra_route": "extra_route",
     "operation": "operation",
     "solvent": "solvent",
     "charge": "charge",
@@ -497,7 +498,9 @@ def add_tool_args(p: argparse.ArgumentParser) -> None:
     p.add_argument("--xc", help="gaussian 泛函")
     p.add_argument("--method", help="pyscf/psi4 方法")
     p.add_argument("--basis")
-    p.add_argument("--job", help="gaussian: opt/sp/freq")
+    p.add_argument("--job", help="gaussian: opt/sp/freq/opt freq")
+    p.add_argument("--extra-route", dest="extra_route",
+                   help="gaussian 路由追加关键字 (int=ultrafine / scf qc 等)")
     p.add_argument("--operation", help="pyscf/psi4: energy/optimize/properties")
     p.add_argument("--solvent", help="gaussian SMD / pyscf C-PCM 溶剂")
     p.add_argument("--charge", type=int)

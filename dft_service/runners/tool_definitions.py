@@ -53,6 +53,9 @@ _TASK_ALIASES = {
     "energy": "energy", "sp": "energy", "single": "energy", "single_point": "energy",
     "optimize": "optimize", "opt": "optimize", "geometry": "optimize",
     "freq": "freq", "frequency": "freq", "frequencies": "freq",
+    # 缺口 #27: opt+freq 联跑 (仅 Gaussian 支持, 走 freq 同类守卫)
+    "opt_freq": "opt_freq", "opt+freq": "opt_freq", "optfreq": "opt_freq",
+    "freq_opt": "opt_freq", "freqopt": "opt_freq",
     "properties": "properties", "prop": "properties",
     "md": "md", "dynamics": "md", "molecular_dynamics": "md",
 }

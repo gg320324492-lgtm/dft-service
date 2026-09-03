@@ -111,6 +111,38 @@ def _infer_charge_mult(smiles: str) -> tuple[int, int]:
     return charge, multiplicity
 
 
+def _build_route(p: dict) -> str:
+    """拼 Gaussian 路由行 (缺口 #28: extra_route 逃生舱追加在末尾)
+
+    各字段已在 API 层用 _ROUTE_SAFE_RE 白名单过滤 (防换行/#/% 注入 gjf),
+    这里信任输入。
+    """
+    # 纵深防御 (auto 路径不经 GaussianRequest 校验): 路由各元素必须纯安全字符,
+    # 挡换行/#/% 注入 gjf (route 行之外的 %chk/%mem 行同理不可被越权改写)
+    _elem_re = re.compile(r"[A-Za-z0-9=,()+.*\- ]{1,60}")
+    for key in ("xc", "basis", "job"):
+        val = str(p.get(key) or "")
+        if val and not _elem_re.fullmatch(val):
+            raise ValueError(f"路由字段 {key} 含非法字符: {val!r}")
+
+    route_parts = [f"{p['xc']}/{p['basis']}"]
+    if p.get("job"):
+        route_parts.append(p["job"])
+    solvent = (p.get("solvent") or "none").strip()
+    if solvent.lower() not in _SOLVENT_NONE:
+        g16_name = _SOLVENT_MAP.get(solvent.lower(), solvent.capitalize())
+        # 溶剂名必须纯字母/连字符
+        if not re.fullmatch(r"[A-Za-z][A-Za-z0-9\-]{0,30}", g16_name):
+            raise ValueError(f"非法溶剂名: {solvent!r}")
+        route_parts.append(f"SCRF=(SMD,Solvent={g16_name})")
+    extra = (p.get("extra_route") or "").strip()
+    if extra:
+        if not re.fullmatch(r"[A-Za-z0-9=,()+.*\- \t]{1,200}", extra):
+            raise ValueError(f"extra_route 含非法字符 (换行/#/% 等): {extra!r}")
+        route_parts.append(extra)
+    return "# " + " ".join(route_parts)
+
+
 def _gen_gjf(workdir: Path, smiles: str, p: dict, chk_stem: str) -> Path:
     """自建 gjf 生成 (支持 SCRF) — 不用 workflows.gen_gjf 因为它 route 写死
 
@@ -119,24 +151,18 @@ def _gen_gjf(workdir: Path, smiles: str, p: dict, chk_stem: str) -> Path:
     """
     atoms, coords = _smiles_to_coords(smiles)
 
-    # job 可能归一化为空串 (单点是 Gaussian 默认), 过滤防双空格
-    route_parts = [f"{p['xc']}/{p['basis']}"]
-    if p.get("job"):
-        route_parts.append(p["job"])
+    route = _build_route(p)
     solvent = (p.get("solvent") or "none").strip()
-    if solvent.lower() not in _SOLVENT_NONE:
-        g16_name = _SOLVENT_MAP.get(solvent.lower(), solvent.capitalize())
-        route_parts.append(f"SCRF=(SMD,Solvent={g16_name})")
-    route = "# " + " ".join(route_parts)
 
     stem = "input"
+    title = " ".join(smiles.split())[:100]  # 压掉换行 (smiles 直通 gjf 标题注释行)
     lines = [
         f"%nproc={p.get('nproc', 8)}",
         f"%mem={p.get('mem', '8GB')}",
         f"%chk={chk_stem}.chk",
         route,
         "",
-        f"{smiles} {p['xc']}/{p['basis']} {p['job']} solvent={solvent}",
+        f"{title} {p['xc']}/{p['basis']} {p['job']} solvent={solvent}",
         "",
         f"{p['charge']} {p['multiplicity']}",
     ]
@@ -286,6 +312,7 @@ def compute(params: dict, workdir: Path) -> dict:
         "xc": params["xc"],
         "basis": params["basis"],
         "job": params["job"],
+        "route": _build_route(params),  # 缺口 #28: 回显最终路由 (含 SCRF/extra)
         "solvent": params.get("solvent", "none"),
         "elapsed_s": round(elapsed, 2),
         "extra": parsed.extra or {},

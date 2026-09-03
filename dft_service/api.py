@@ -44,8 +44,17 @@ RUNNERS = {
 }
 
 # task → Gaussian 路由关键字 (SP 是文档化合法关键字; properties 无独立关键字, 用 sp)
+# 缺口 #27: opt_freq 一次任务同时拿几何 + 频率/热化学量 (省一半机时)
 _GAUSS_JOB = {"energy": "sp", "optimize": "opt", "opt": "opt", "freq": "freq",
-              "frequency": "freq", "properties": "sp", "prop": "sp"}
+              "frequency": "freq", "properties": "sp", "prop": "sp",
+              "opt_freq": "opt freq", "opt+freq": "opt freq",
+              "optfreq": "opt freq", "freqopt": "opt freq"}
+
+# 缺口 #28: extra_route 白名单 — 只留 route 行合法字符, 挡换行/#/%/\ (gjf 注入面)。
+# 允许 opt=calclevel、int=ultrafine、iop(6/7=...) 之类: 字母数字 = , ( ) + * . 空格制表
+# (- 放末尾, 类内 . + ( ) 皆字面量; extra_route 用 * 允许留空)
+_ROUTE_SAFE_RE = r"^[A-Za-z0-9=,()+.*\- \t]+$"
+_ROUTE_SAFE_OR_EMPTY_RE = r"^[A-Za-z0-9=,()+.*\- \t]*$"
 
 
 # ------------------------------------------------------------------
@@ -58,10 +67,17 @@ _TIMEOUT_LE = 604800.0  # 7 天 (gromacs 长 MD)
 
 class GaussianRequest(BaseModel):
     smiles: str = Field(..., min_length=1, max_length=2000)
-    xc: str = "B3LYP"
-    basis: str = "6-31G(d)"
-    job: str = Field("opt", description="opt / sp / freq")
-    solvent: str = Field("none", description="SCRF 溶剂 (water/ethanol/...; none=气相)")
+    xc: str = Field("B3LYP", pattern=_ROUTE_SAFE_RE)
+    basis: str = Field("6-31G(d)", pattern=_ROUTE_SAFE_RE)
+    job: str = Field("opt", pattern=_ROUTE_SAFE_RE,
+                     description="opt / sp / freq / opt freq (联跑一次拿几何+热化学)")
+    solvent: str = Field("none", pattern=r"^[A-Za-z\-]{1,30}$",
+                         description="SCRF 溶剂 (water/ethanol/...; none=气相)")
+    extra_route: str = Field(
+        "", pattern=_ROUTE_SAFE_OR_EMPTY_RE, max_length=200,
+        description="追加进路由行的额外关键字 (缺口 #28 逃生舱): "
+                    "int=ultrafine / scf=(qc,xqd) / geom=check / gpush 等; "
+                    "换行/#/% 被白名单挡")
     charge: Optional[int] = Field(None, ge=-10, le=10,
                                   description="缺省从 SMILES 自动推断")
     multiplicity: Optional[int] = Field(None, ge=1, le=10,
@@ -119,7 +135,7 @@ class AutoRequest(BaseModel):
     quality: str = Field("auto", description="fast (MACE) / accurate (量子化学) / auto")
     xc: str = "B3LYP"
     basis: str = "6-31G*"
-    solvent: str = "none"
+    solvent: str = Field("none", pattern=r"^[A-Za-z\-]{1,30}$")  # 直通 gaussian SCRF
     charge: Optional[int] = Field(None, ge=-10, le=10)
     multiplicity: Optional[int] = Field(None, ge=1, le=10)
     timeout_s: Optional[float] = Field(None, ge=10.0, le=_TIMEOUT_LE)
@@ -239,15 +255,18 @@ async def submit_auto(req: AutoRequest, submitter: Optional[str] = None):
             "reason": reason,
             "availability": list_available_tools(),
         }
-    if req.task.lower() in ("freq", "frequency", "frequencies") and tool != "gaussian":
+    task_norm = req.task.strip().lower()
+    from dft_service.runners.tool_definitions import _TASK_ALIASES
+    task_alias = _TASK_ALIASES.get(task_norm, task_norm)
+    # 缺口 #27: freq / opt_freq 仅 Gaussian 支持 (pyscf/psi4 无频率解析)
+    if task_alias in ("freq", "opt_freq") and tool != "gaussian":
         return {
             "status": "unavailable",
-            "reason": f"freq 任务当前仅 Gaussian 支持 (选中 {tool})",
+            "reason": f"{req.task} 任务当前仅 Gaussian 支持 (选中 {tool})",
         }
 
-    task_norm = req.task.strip().lower()
-    operation = "optimize" if task_norm in ("optimize", "opt", "geometry") else (
-        "properties" if task_norm in ("properties", "prop") else "energy"
+    operation = "optimize" if task_alias in ("optimize",) else (
+        "properties" if task_alias == "properties" else "energy"
     )
     p: dict[str, Any] = {
         "smiles": req.smiles,
@@ -260,7 +279,7 @@ async def submit_auto(req: AutoRequest, submitter: Optional[str] = None):
         # 拼成非法 Gaussian 关键字 → Error termination。按映射表归一化。
         p.update({
             "xc": req.xc, "basis": req.basis,
-            "job": _GAUSS_JOB.get(task_norm, "sp"),
+            "job": _GAUSS_JOB.get(task_alias, "sp"),  # 用归一化别名: geometry→opt 等
             "solvent": req.solvent,
         })
         timeout = req.timeout_s or 7200.0
