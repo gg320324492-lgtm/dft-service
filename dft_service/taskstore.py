@@ -55,6 +55,7 @@ def _evict_mem() -> int:
 
 def create_task(
     tool: str, smiles: str, params: dict, submitter: str | None = None,
+    callback_url: str | None = None,
 ) -> dict[str, Any]:
     """登记新任务 (内存 + DB), 返回内存记录"""
     _evict_mem()  # 缺口 #21: 提交时摊还清扫过期终态内存条目 (DB 仍是权威)
@@ -66,6 +67,8 @@ def create_task(
         "params": params,
         "status": "queued",
         "submitter": submitter,
+        # 缺口 #37: 仅存内存 (不落 DB) — 重启丢回调可接受, 由 _execute 持有引用
+        "callback_url": callback_url,
         "submit_time": datetime.now(timezone.utc).isoformat(),
         "finish_time": None,
         "result": None,
@@ -198,6 +201,70 @@ async def get_task(task_id: str, include_result: bool = False) -> dict | None:
     except Exception:
         logger.exception("DB fallback failed for %s", task_id)
         return None
+
+
+async def stats() -> dict:
+    """缺口 #36: 运营统计 (SQLite 聚合, 全历史 + 近 24h)
+
+    每后端: 总数/各状态计数/成功率 (success+warnings / 已终结)/平均耗时 (分钟);
+    全局: 排队深度 (queued+running) 与近 24h 提交量。
+    """
+    try:
+        from sqlalchemy import case
+        from sqlalchemy import func as f
+
+        dur_min = (f.julianday(DFTJob.finish_time) - f.julianday(DFTJob.submit_time)) * 1440.0
+        finished = DFTJob.status.in_(_TERMINAL)
+        ok = DFTJob.status.in_(("success", "completed_with_warnings"))
+        q = (
+            select(
+                DFTJob.tool,
+                f.count().label("n_total"),
+                f.sum(case((finished, 1), else_=0)).label("n_finished"),
+                f.sum(case((ok, 1), else_=0)).label("n_ok"),
+                f.avg(case((ok, dur_min), else_=None)).label("avg_min"),
+                f.sum(case((DFTJob.status == "failed", 1), else_=0)).label("n_failed"),
+                f.sum(case((DFTJob.status == "timeout", 1), else_=0)).label("n_timeout"),
+            )
+            .group_by(DFTJob.tool)
+        )
+        now_epoch = datetime.now(timezone.utc).timestamp()
+        async with SessionFactory() as session:
+            rows = (await session.execute(q)).all()
+            queue_depth = (await session.execute(
+                select(func.count()).select_from(DFTJob)
+                .where(DFTJob.status.in_(("queued", "running")))
+            )).scalar() or 0
+            recent = (await session.execute(
+                select(func.count()).select_from(DFTJob)
+                .where(DFTJob.submit_time >= func.datetime(
+                    (now_epoch - 86400), "unixepoch"))
+            )).scalar() or 0
+        return {
+            "status": "success",
+            "per_tool": sorted(
+                [
+                    {
+                        "tool": r.tool,
+                        "n_total": r.n_total,
+                        "n_finished": int(r.n_finished or 0),
+                        "n_ok": int(r.n_ok or 0),
+                        "n_failed": int(r.n_failed or 0),
+                        "n_timeout": int(r.n_timeout or 0),
+                        "success_rate": (round(r.n_ok / r.n_finished, 3)
+                                         if r.n_finished else None),
+                        "avg_minutes": round(r.avg_min, 1) if r.avg_min else None,
+                    }
+                    for r in rows
+                ],
+                key=lambda t: -t["n_total"],
+            ),
+            "queue_depth": queue_depth,
+            "submissions_last_24h": recent,
+        }
+    except Exception:
+        logger.exception("stats aggregation failed")
+        return {"status": "failed", "error_msg": "stats query failed"}
 
 
 async def list_jobs(

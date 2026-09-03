@@ -23,6 +23,7 @@ from pydantic import BaseModel, Field, model_validator
 from dft_service import taskstore
 from dft_service.auth import require_api_key
 from dft_service.runners import (
+    run_conformers,
     run_gaussian,
     run_gromacs,
     run_mace,
@@ -41,6 +42,7 @@ RUNNERS = {
     "mace": run_mace,
     "pyscf": run_pyscf,
     "psi4": run_psi4,
+    "conformers": run_conformers,  # 缺口 #32 工作流 (非独立后端, 走 mace)
 }
 
 # task → Gaussian 路由关键字 (SP 是文档化合法关键字; properties 无独立关键字, 用 sp)
@@ -64,6 +66,13 @@ _ROUTE_SAFE_OR_EMPTY_RE = r"^[A-Za-z0-9=,()+.*\- \t]*$"
 # 上限按课题组机器 (16 核 / 单卡 GPU / WSL 4 线程) 的合理用量放宽。
 _TIMEOUT_LE = 604800.0  # 7 天 (gromacs 长 MD)
 _XYZ_MAX = 200_000      # 内联 xyz 尺寸上限 (~4000 原子)
+
+
+class _CallbackMixin(BaseModel):
+    """缺口 #37: callback_url — 任务终态时服务端 POST 回该 URL (fire-and-forget)"""
+    callback_url: Optional[str] = Field(
+        None, max_length=2000,
+        description="任务完成/取消后 POST {task_id,status,tool,result,error_msg} 到此 URL")
 
 
 class _XyzCapableMixin(BaseModel):
@@ -90,7 +99,7 @@ class _XyzNeedsChargeMixin(_XyzCapableMixin):
         return self
 
 
-class GaussianRequest(_XyzNeedsChargeMixin):
+class GaussianRequest(_CallbackMixin, _XyzNeedsChargeMixin):
     xc: str = Field("B3LYP", pattern=_ROUTE_SAFE_RE)
     basis: str = Field("6-31G(d)", pattern=_ROUTE_SAFE_RE)
     job: str = Field("opt", pattern=_ROUTE_SAFE_RE,
@@ -111,7 +120,7 @@ class GaussianRequest(_XyzNeedsChargeMixin):
     timeout_s: float = Field(7200.0, ge=10.0, le=_TIMEOUT_LE)
 
 
-class GromacsRequest(BaseModel):
+class GromacsRequest(_CallbackMixin):
     smiles: str = Field(..., min_length=1, max_length=2000)
     n_molecules: int = Field(100, ge=1, le=20000)
     box_nm: float = Field(3.0, gt=0.0, le=30.0)
@@ -122,7 +131,7 @@ class GromacsRequest(BaseModel):
     timeout_s: float = Field(14400.0, ge=10.0, le=_TIMEOUT_LE)
 
 
-class MaceRequest(_XyzCapableMixin):
+class MaceRequest(_CallbackMixin, _XyzCapableMixin):
     fmax_ev_A: float = Field(0.05, gt=0.0, le=10.0)
     max_steps: int = Field(200, ge=1, le=10000)
     model: str = "medium"
@@ -130,7 +139,7 @@ class MaceRequest(_XyzCapableMixin):
     timeout_s: float = Field(900.0, ge=10.0, le=_TIMEOUT_LE)
 
 
-class PyscfRequest(_XyzNeedsChargeMixin):
+class PyscfRequest(_CallbackMixin, _XyzNeedsChargeMixin):
     method: str = "B3LYP"
     basis: str = "6-31G*"
     operation: str = Field("energy", description="energy / optimize")
@@ -144,7 +153,7 @@ class PyscfRequest(_XyzNeedsChargeMixin):
     timeout_s: float = Field(1800.0, ge=10.0, le=_TIMEOUT_LE)
 
 
-class Psi4Request(BaseModel):
+class Psi4Request(_CallbackMixin):
     smiles: str = Field(..., min_length=1, max_length=2000)
     method: str = "B3LYP"
     basis: str = "6-31G*"
@@ -156,7 +165,19 @@ class Psi4Request(BaseModel):
     timeout_s: float = Field(3600.0, ge=10.0, le=_TIMEOUT_LE)
 
 
-class AutoRequest(BaseModel):
+class ConformersRequest(_CallbackMixin):
+    """缺口 #32: 构象搜索 (ETKDG + MACE) — 返回 top_k 构象 xyz 与相对能量"""
+    smiles: str = Field(..., min_length=1, max_length=2000)
+    n_conformers: int = Field(20, ge=2, le=100)
+    top_k: int = Field(5, ge=1, le=20)
+    fmax_ev_A: float = Field(0.05, gt=0.0, le=10.0)
+    max_steps: int = Field(100, ge=1, le=5000)
+    model: str = "medium"
+    device: str = Field("auto", description="cuda / cpu / auto")
+    timeout_s: float = Field(1800.0, ge=10.0, le=_TIMEOUT_LE)
+
+
+class AutoRequest(_CallbackMixin):
     smiles: str = Field(..., min_length=1, max_length=2000)
     task: str = Field("energy", description="energy / optimize / freq / properties / md")
     quality: str = Field("auto", description="fast (MACE) / accurate (量子化学) / auto")
@@ -191,10 +212,37 @@ _SEMAPHORES: dict[str, asyncio.Semaphore] = {
     "mace": asyncio.Semaphore(1),
     "pyscf": asyncio.Semaphore(2),
     "psi4": asyncio.Semaphore(2),
+    "conformers": asyncio.Semaphore(1),  # 与 mace 共用 GPU, 单并发
 }
 
 
-async def _execute(tool: str, task_id: str, p: dict[str, Any], timeout_s: float) -> None:
+async def _post_callback(url: str, body: dict) -> None:
+    """缺口 #37: fire-and-forget 回调 — 失败只 warning, 绝不影响任务状态"""
+    if not url.startswith(("http://", "https://")):
+        logger.warning("callback url rejected (non-http): %r", url[:80])
+        return
+    try:
+        import httpx
+
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            await client.post(url, json=body)
+    except Exception as e:  # noqa: BLE001
+        logger.warning("callback failed task=%s url=%s: %r",
+                       body.get("task_id"), url[:120], e)
+
+
+async def _fire_callback(callback_url: str | None, tool: str, task_id: str) -> None:
+    if not callback_url:
+        return
+    rec = await taskstore.get_task(task_id, include_result=True) or {}
+    asyncio.create_task(_post_callback(callback_url, {
+        "task_id": task_id, "tool": tool, "status": rec.get("status"),
+        "result": rec.get("result"), "error_msg": rec.get("error_msg"),
+    }))
+
+
+async def _execute(tool: str, task_id: str, p: dict[str, Any], timeout_s: float,
+                   callback_url: str | None = None) -> None:
     # 取消竞态保护: 任务在排队期间被 DELETE → 直接放弃执行
     cur = await taskstore.get_task(task_id)
     if cur is not None and cur.get("status") == "cancelled":
@@ -217,16 +265,18 @@ async def _execute(tool: str, task_id: str, p: dict[str, Any], timeout_s: float)
                       "completed_with_warnings", "timeout"):
         status = "failed"
     await taskstore.finish_task(task_id, status, result, result.get("error_msg"))
+    await _fire_callback(callback_url, tool, task_id)  # 缺口 #37
 
 
 async def _submit(
     tool: str, smiles: str, p: dict[str, Any],
     timeout_s: float, submitter: Optional[str],
 ) -> TaskIdResponse:
-    rec = taskstore.create_task(tool, smiles, p, submitter)
+    callback_url = p.pop("callback_url", None)  # 缺口 #37: 不进 driver params/DB
+    rec = taskstore.create_task(tool, smiles, p, submitter, callback_url)
     await taskstore.persist_new_task(rec)
     task_id = rec["task_id"]
-    asyncio.create_task(_execute(tool, task_id, p, timeout_s))
+    asyncio.create_task(_execute(tool, task_id, p, timeout_s, callback_url))
     return TaskIdResponse(
         task_id=task_id, status="queued",
         submit_time=rec["submit_time"], tool=tool,
@@ -329,6 +379,7 @@ async def submit_auto(req: AutoRequest, submitter: Optional[str] = None):
         timeout = req.timeout_s or 14400.0
 
     # 缺口 #13: 被选后端不支持的参数明确告警, 不静默丢弃
+    p["callback_url"] = req.callback_url  # #37: _submit 会 pop 掉, 不进 runner
     solvent = (req.solvent or "none").lower()
     if solvent not in ("", "none", "gas", "gasphase", "vacuum"):
         if tool in ("mace", "gromacs"):
@@ -346,6 +397,14 @@ async def submit_auto(req: AutoRequest, submitter: Optional[str] = None):
     resp = await _submit(tool, req.smiles, p, timeout, submitter)
     return {**resp.model_dump(), "backend": tool, "reason": reason,
             "warnings": warnings}
+
+
+@router.post("/conformers", response_model=TaskIdResponse,
+             dependencies=[Depends(require_api_key)])
+async def submit_conformers(req: ConformersRequest, submitter: Optional[str] = None):
+    """构象搜索工作流 (缺口 #32): ETKDG N 构象 → MMFF 预优化 → MACE 弛豫排序"""
+    return await _submit("conformers", req.smiles, req.model_dump(),
+                         req.timeout_s, submitter)
 
 
 @router.get("/status/{task_id}", dependencies=[Depends(require_api_key)])
@@ -386,6 +445,12 @@ async def task_result(task_id: str):
     }
 
 
+@router.get("/stats", dependencies=[Depends(require_api_key)])
+async def stats():
+    """缺口 #36: 各后端成功率/平均耗时/排队深度 (SQLite 聚合)"""
+    return await taskstore.stats()
+
+
 @router.get("/jobs", dependencies=[Depends(require_api_key)])
 async def jobs(
     tool: Optional[str] = None, status: Optional[str] = None,
@@ -416,6 +481,7 @@ async def cancel_job(task_id: str):
                 "process_killed": False, "message": "task already finished"}
     killed = kill_task_process(task_id)
     await taskstore.cancel_task(task_id)
+    await _fire_callback(rec.get("callback_url"), rec.get("tool"), task_id)  # #37
     return {
         "task_id": task_id,
         "status": "cancelled",

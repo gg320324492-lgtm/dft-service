@@ -9,15 +9,22 @@ r"""dft MCP server — 把 dft-service 暴露为 Claude Code 原生工具 (stdio
 - dft_submit(task, params)           长任务只提交 → task_id
 - dft_result(task_id) / dft_status(task_id) / dft_cancel(task_id)
 - dft_list(tool, status, limit)      任务列表
+- dft_stats()                        各后端成功率/耗时/排队深度 (#36)
+- dft_cleanup(days, ...)             过期产物清理 + 归档 + DB 备份 (#39, 本地操作)
 """
 from __future__ import annotations
 
 import os
+import sys
 import time
+from pathlib import Path
 from typing import Any
 
 import httpx
 from mcp.server.fastmcp import FastMCP
+
+# dft_cleanup 直连本地实现 (run_cleanup/backup_db), 需要仓库根在 sys.path
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 BASE_URL = os.environ.get("DFT_SERVICE_URL", "http://127.0.0.1:8620").rstrip("/")
 API_KEY = os.environ.get("DFT_SERVICE_API_KEY", "")
@@ -58,8 +65,15 @@ def dft_wait(tool: str, params: dict[str, Any], timeout_s: float = 540.0) -> dic
     tool: gaussian / gromacs / mace / pyscf / psi4 / auto
     params 示例: {"smiles": "O", "basis": "sto-3g"} /
                 {"smiles": "CCO", "job": "opt", "solvent": "water"} /
+                {"smiles": "O", "job": "opt freq"} (#27 几何+热化学一次拿) /
+                {"extra_route": "int=ultrafine"} (#28 gaussian 路由逃生舱) /
+                {"xyz_content": "3\\n\\nO 0 0 0.118\\n...", "charge": 0,
+                 "multiplicity": 1} (#29 内联几何, 需显式 charge/mult) /
+                {"solvation_energy": true, "solvent": "water"} (#30 pyscf ΔGsolv) /
+                {"analyze": true} (#31 gromacs MD 后 RMSD/能量分析+出图) /
+                {"callback_url": "http://.../hook"} (#37 终态回调) /
                 {"task": "optimize", "quality": "fast"} (auto)
-    返回 status=success/failed/... + energy_hartree 等字段。
+    返回 status=success/failed/timeout/unavailable 等 + energy_hartree 等字段。
     """
     task = _call("POST", f"/dft/{tool}", params)
     if task.get("status") in ("unavailable", "failed") or not task.get("task_id"):
@@ -112,6 +126,38 @@ def dft_list(tool: str = "", status: str = "", limit: int = 20) -> dict:
     if status:
         q += f"&status={status}"
     return _call("GET", q)
+
+
+@mcp.tool()
+def dft_stats() -> dict:
+    """各后端成功率/平均耗时/排队深度 (#36, SQLite 聚合)"""
+    return _call("GET", "/dft/stats")
+
+
+@mcp.tool()
+def dft_cleanup(days: int = 7, dry_run: bool = True, archive: bool = False,
+                backup: bool = False, purge_rows: bool = False) -> dict:
+    """清理过期终态 job 目录 (本地操作, 无需服务在跑)。
+
+    默认 dry_run=True 只看不动。archive=True 删前 zip 到 data/archives;
+    backup=True 顺带 SQLite 在线备份到 data/backups。只动终态, 运行中不碰。
+    """
+    try:
+        from dft_cli import backup_db, run_cleanup
+    except Exception as e:  # noqa: BLE001
+        return {"status": "failed", "error_msg": f"import dft_cli: {e!r}"}
+    try:
+        removed, kept = run_cleanup(
+            days=days, dry_run=dry_run, purge_rows=purge_rows,
+            archive=("data/archives" if archive else None))
+        out: dict = {"status": "success", "removed": removed, "remaining": kept,
+                     "dry_run": dry_run}
+        if backup:
+            b = backup_db(dry_run=dry_run)
+            out["backup"] = str(b) if b else None
+        return out
+    except Exception as e:  # noqa: BLE001
+        return {"status": "failed", "error_msg": repr(e)}
 
 
 if __name__ == "__main__":

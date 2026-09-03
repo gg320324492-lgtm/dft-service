@@ -160,6 +160,31 @@ async def run_pyscf(task_id: str, p: dict[str, Any], timeout_s: float) -> dict:
     )
 
 
+async def run_conformers(task_id: str, p: dict[str, Any], timeout_s: float) -> dict:
+    """缺口 #32: 构象搜索 — ETKDG 多构象 → MACE 弛豫排序 (scichem 内一把做完)"""
+    from dft_service.runners.tool_definitions import availability_map
+
+    if not availability_map().get("mace"):
+        return {
+            "status": "unavailable",
+            "error_msg": "构象搜索需要 scichem 的 mace+rdkit (当前不可用) — "
+                         "先确保 /dft/tools 里 mace ✓",
+        }
+    params = {
+        "smiles": p["smiles"],
+        "n_conformers": int(p.get("n_conformers", 20)),
+        "top_k": int(p.get("top_k", 5)),
+        "fmax_ev_A": float(p.get("fmax_ev_A", 0.05)),
+        "max_steps": int(p.get("max_steps", 100)),
+        "model": p.get("model", "medium"),
+        "device": p.get("device", "auto"),
+    }
+    return await execute_driver(
+        "conformers", make_workdir("conformers", task_id),
+        "conformer_driver.py", params, timeout_s, task_id=task_id,
+    )
+
+
 async def run_psi4(task_id: str, p: dict[str, Any], timeout_s: float) -> dict:
     params = {
         "smiles": p["smiles"],

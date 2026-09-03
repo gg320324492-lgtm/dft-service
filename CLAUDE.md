@@ -9,7 +9,7 @@ MACE (GPU) / PySCF (WSL 回退) / Psi4。用户主要在 Claude Code 里通过 `
 ```bash
 cd /e/dft-service
 ./.venv/Scripts/python.exe run.py                      # 启动 (或 start.bat, 幂等)
-./.venv/Scripts/python.exe -m pytest tests/ -q         # 测试 (当前 56 PASS)
+./.venv/Scripts/python.exe -m pytest tests/ -q         # 测试 (当前 64 PASS)
 ./.venv/Scripts/python.exe dft_cli.py tools            # 健康检查
 ./.venv/Scripts/python.exe dft_cli.py wait pyscf --smiles O --basis sto-3g   # 真算冒烟
 ./.venv/Scripts/python.exe scripts/smoke_all.py        # 五后端真算一键验收 (改 driver 后必跑)

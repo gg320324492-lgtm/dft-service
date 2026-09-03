@@ -739,3 +739,167 @@ def test_status_returns_progress_for_running(client):
     finally:
         import shutil
         shutil.rmtree(wd, ignore_errors=True)
+
+
+# ---------------------------------------------------------------
+# #36: stats 聚合
+# ---------------------------------------------------------------
+def test_stats_endpoint(client):
+    """各后端计数/成功率 + 排队深度 (直接向 DB 插样本行)"""
+    import asyncio
+    from datetime import datetime, timedelta, timezone
+
+    from dft_service.db import SessionFactory
+    from dft_service.models import DFTJob, new_task_id
+
+    now = datetime.now(timezone.utc)
+
+    async def _seed():
+        async with SessionFactory() as s:
+            for tool, status, dt in [
+                ("pyscf", "success", 2), ("pyscf", "success", 4),
+                ("pyscf", "failed", 1), ("gaussian", "success", 10),
+                ("mace", "running", None),
+            ]:
+                s.add(DFTJob(
+                    id=new_task_id(), tool=tool, smiles="O", params={},
+                    status=status,
+                    submit_time=now - timedelta(minutes=(dt or 1) + 20),
+                    finish_time=(now - timedelta(minutes=dt) if dt else None),
+                ))
+            await s.commit()
+
+    asyncio.run(_seed())
+    body = client.get("/dft/stats", headers=HEADERS).json()
+    assert body["status"] == "success"
+    by = {t["tool"]: t for t in body["per_tool"]}
+    assert by["pyscf"]["n_total"] >= 3
+    assert by["pyscf"]["n_ok"] >= 2
+    assert by["pyscf"]["n_failed"] >= 1
+    assert by["pyscf"]["success_rate"] == pytest.approx(2 / 3, abs=0.15)
+    assert by["pyscf"]["avg_minutes"] is not None
+    assert body["queue_depth"] >= 1  # 至少那行 mace running
+
+
+# ---------------------------------------------------------------
+# #37: webhook 回调
+# ---------------------------------------------------------------
+def test_callback_fired_on_finish(client, monkeypatch):
+    """任务终态 → POST callback_url, payload 含 status/result; 非法 URL 不发"""
+    import httpx
+
+    sent = []
+
+    class FakeClient:
+        def __init__(self, *a, **k):
+            pass
+
+        async def __aenter__(self):
+            return self
+
+        async def __aexit__(self, *a):
+            return False
+
+        async def post(self, url, json=None):
+            sent.append((url, json))
+
+    monkeypatch.setattr(httpx, "AsyncClient", FakeClient)
+
+    import dft_service.runners as runners_pkg
+
+    async def fake(tool, workdir, driver, params, timeout_s, **_):
+        assert "callback_url" not in params  # 不进 driver
+        return {"status": "success", "tool": tool, "energy_hartree": -1.0}
+
+    monkeypatch.setattr(runners_pkg, "execute_driver", fake)
+
+    r = client.post("/dft/mace", headers=HEADERS, json={
+        "smiles": "O", "callback_url": "http://127.0.0.1:9/hook"})
+    tid = r.json()["task_id"]
+    _poll_result(client, tid)
+
+    import time
+    for _ in range(50):  # 等异步 create_task 完成投递
+        if sent:
+            break
+        time.sleep(0.05)
+    assert sent and sent[0][0] == "http://127.0.0.1:9/hook"
+    body = sent[0][1]
+    assert body["task_id"] == tid and body["status"] == "success"
+    assert body["result"]["energy_hartree"] == -1.0
+
+    # 非 http URL → 拒发 (SSRF 面收紧)
+    sent.clear()
+    r = client.post("/dft/mace", headers=HEADERS, json={
+        "smiles": "O", "callback_url": "file:///etc/passwd"})
+    _poll_result(client, r.json()["task_id"])
+    time.sleep(0.2)
+    assert not sent
+
+
+def test_callback_fired_on_cancel(client, monkeypatch):
+    import httpx
+
+    sent = []
+
+    class FakeClient:
+        def __init__(self, *a, **k): pass
+        async def __aenter__(self): return self
+        async def __aexit__(self, *a): return False
+        async def post(self, url, json=None): sent.append((url, json))
+
+    monkeypatch.setattr(httpx, "AsyncClient", FakeClient)
+    import asyncio
+
+    gate = asyncio.Event()
+    import dft_service.runners as runners_pkg
+
+    async def hang(tool, workdir, driver, params, timeout_s, **_):
+        await gate.wait()
+        return {"status": "success"}
+
+    monkeypatch.setattr(runners_pkg, "execute_driver", hang)
+    r = client.post("/dft/gaussian", headers=HEADERS, json={
+        "smiles": "O", "callback_url": "http://127.0.0.1:9/hook"})
+    tid = r.json()["task_id"]
+    import time
+    time.sleep(0.2)  # 让任务进入 running
+    client.delete(f"/dft/jobs/{tid}", headers=HEADERS)
+    for _ in range(50):
+        if sent:
+            break
+        time.sleep(0.05)
+    gate.set()
+    assert sent and sent[0][1]["status"] == "cancelled"
+
+
+# ---------------------------------------------------------------
+# #32: 构象搜索端点形状
+# ---------------------------------------------------------------
+def test_conformers_submit_shape(client, monkeypatch):
+    import dft_service.runners as runners_pkg
+    import dft_service.runners.tool_definitions as td
+
+    captured = {}
+
+    async def fake(tool, workdir, driver, params, timeout_s, **_):
+        captured.update(tool=tool, driver=driver, params=params)
+        return {"status": "success", "tool": tool, "conformers": []}
+
+    monkeypatch.setattr(runners_pkg, "execute_driver", fake)
+    monkeypatch.setattr(td, "availability_map", lambda: {
+        "gaussian": False, "gromacs": False, "mace": True, "pyscf": False,
+        "psi4": False,
+    })
+    r = client.post("/dft/conformers", headers=HEADERS,
+                    json={"smiles": "CCCCO", "n_conformers": 8, "top_k": 3})
+    assert r.status_code == 200
+    body = _poll_result(client, r.json()["task_id"])
+    assert body["status"] == "success"
+    assert captured["tool"] == "conformers"
+    assert captured["driver"] == "conformer_driver.py"
+    assert captured["params"]["n_conformers"] == 8
+    # 超限 → 422
+    r = client.post("/dft/conformers", headers=HEADERS,
+                    json={"smiles": "O", "n_conformers": 5000})
+    assert r.status_code == 422

@@ -161,6 +161,28 @@ steepest→steep / nsteps 差 1000 倍 + NPT 缺参 / nstxout 写 .trr 不是 .x
     gmx energy → rmsd_avg/max_nm、potential_avg、temperature_avg + PNG 出图 (无
     matplotlib 静默跳过); 分析失败只降级 warning 不推翻已成功的 MD。实测产物齐全
 
+## 第四批收口记录 #32/#35–#39 (2026-09-04, 工作流与运营)
+
+32. **构象搜索工作流** — `POST /dft/conformers` (CLI `wait conformers`):
+    ETKDGv3 N 构象 → MMFF 预优化 → MACE BFGS 逐个弛豫 → top_k 排序
+    (rel_kj_mol + xyz 落盘 workdir/conformers/)。实测丁醇醛 10 构象 7.5s。
+    v2 候选: RMSD 去重、top-K 自动派发 DFT 精修
+35. **归档与备份** — cleanup `--archive` (删前整目录 zip 到 data/archives,
+    归档失败跳过删除) + `--backup` (SQLite 在线备份 data/backups/ 留 7 份);
+    每周计划任务 run-cleanup.bat 已挂两者; 顺带修 kept 双重扣减统计 bug
+36. **/dft/stats** — 各后端成功率/平均耗时/排队深度/近 24h 提交量, CLI `stats`
+37. **webhook 回调** — 全端点支持 `callback_url` (http/https only, 内存态),
+    任务终态/取消 fire-and-forget POST, 失败仅记日志
+38. **run-tests.bat** — 无 CI remote 的本地等价物: `run-tests.bat` mock 测试,
+    `run-tests.bat smoke` 追加五后端真算验收
+39. **MCP 补齐** — `dft_stats` / `dft_cleanup` (默认 dry-run) 两工具 (共 9 个);
+    dft_wait docstring 覆盖 #27–#31 新参数面。⚠ 需合并回主仓 + 新会话生效
+
+设计稿 (未实施, 见 docs/DESIGN-33-34.md): #33 反应能垒/TS 工作流、
+#34 气液界面分析包 — 需课题组确认范围后再动手。
+
+测试 45 → 64 PASS。
+
 ## 架构
 
 ```

@@ -79,6 +79,8 @@ _FLAG_MAP = {
     "task": "task",
     "quality": "quality",
     "max_opt_steps": "max_opt_steps",
+    "n_conformers": "n_conformers",
+    "top_k": "top_k",
     "solvation_energy": "solvation_energy",
     "timeout_s": "timeout_s",
 }
@@ -143,6 +145,12 @@ def human_summary(res: dict) -> str:
     if isinstance(thermo, dict):
         for k, v in thermo.items():
             lines.append(f"  {k} = {v}")
+    confs = res.get("conformers")
+    if isinstance(confs, list) and confs:  # 缺口 #32 构象搜索
+        lines.append(f"  conformers (top {len(confs)}):")
+        for c in confs:
+            lines.append(f"    #{c.get('rank')} rel={c.get('rel_kj_mol'):>7} kJ/mol "
+                         f"E={c.get('energy_ev')} eV  {c.get('xyz_path')}")
     for k in ("work_dir", "log_path", "trajectory_path", "optimized_xyz",
               "rmsd_png", "rmsd_xvg", "energy_xvg"):
         if res.get(k):
@@ -444,11 +452,75 @@ def _sweep_g16_scratch(cutoff: float, dry_run: bool) -> int:
     return n
 
 
+def _zip_dir(src: Path, zip_path: Path) -> None:
+    """缺口 #35: 删前归档 — 整个 job 目录压成 zip (科学产物留底)"""
+    import zipfile
+
+    with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zf:
+        for f in src.rglob("*"):
+            if f.is_file():
+                zf.write(f, str(f.relative_to(src.parent)))
+
+
+def backup_db(keep: int = 7, dry_run: bool = False) -> Path | None:
+    """缺口 #35: SQLite 在线备份 → data/backups/, 轮转只留最近 keep 份。
+
+    用 sqlite3 backup API (在线备份, 服务运行中也可安全调用)。
+    """
+    db = ROOT / "data" / "dft_service.db"
+    if not db.exists():
+        print("backup: no DB yet")
+        return None
+    bdir = ROOT / "data" / "backups"
+    name = bdir / f"dft_service-{time.strftime('%Y%m%d-%H%M')}.db"
+    if dry_run:
+        print(f"[dry-run] would backup {db} → {name} (keep {keep})")
+        return name
+    bdir.mkdir(parents=True, exist_ok=True)
+    src = sqlite3.connect(db)
+    dst = sqlite3.connect(name)
+    try:
+        with dst:
+            src.backup(dst)
+    finally:
+        src.close()
+        dst.close()
+    print(f"backup → {name} ({name.stat().st_size} bytes)")
+    backups = sorted(bdir.glob("dft_service-*.db"))
+    for old in backups[:-keep]:
+        old.unlink()
+        print(f"rotated out {old.name}")
+    return name
+
+
+def cmd_stats(args, client) -> int:
+    body = api_call(client, "GET", "/dft/stats")
+    if args.json:
+        print(json.dumps(body, ensure_ascii=False, indent=2))
+        return EXIT_OK
+    if body.get("status") != "success":
+        print(f"✗ {body.get('error_msg') or body}")
+        return EXIT_FAILED
+    print(f"queue_depth={body.get('queue_depth')} "
+          f"submissions_last_24h={body.get('submissions_last_24h')}")
+    print(f"  {'tool':9s} {'total':>5s} {'ok':>4s} {'fail':>4s} {'to':>3s} "
+          f"{'success':>7s} {'avg_min':>7s}")
+    for t in body.get("per_tool", []):
+        sr = t.get("success_rate")
+        am = t.get("avg_minutes")
+        print(f"  {t['tool']:9s} {t['n_total']:5d} {t['n_ok']:4d} "
+              f"{t['n_failed']:4d} {t['n_timeout']:3d} "
+              f"{(f'{sr*100:.1f}%' if sr is not None else '-'):>7s} "
+              f"{(f'{am:.1f}' if am is not None else '-'):>7s}")
+    return EXIT_OK
+
+
 def run_cleanup(days: int = 7, dry_run: bool = False,
-                purge_rows: bool = False) -> tuple[int, int]:
+                purge_rows: bool = False, archive: str | None = None) -> tuple[int, int]:
     """缺口 #10: 清理过期 job 目录 (直接读 SQLite + 扫目录, 无需服务在跑)。
 
     只动终态任务; 运行中/排队中的目录绝不碰。返回 (removed, kept)。
+    缺口 #35: archive=目录时删除前整目录 zip 留底。
     """
     db_path = ROOT / "data" / "dft_service.db"
     jobs_root = ROOT / "data" / "jobs"
@@ -459,23 +531,35 @@ def run_cleanup(days: int = 7, dry_run: bool = False,
     rows = dict(conn.execute("SELECT id, status FROM dft_jobs").fetchall())
     cutoff = time.time() - days * 86400
     victims: list[Path] = []
-    for d in sorted(jobs_root.glob("*")) if jobs_root.exists() else []:
-        if not d.is_dir():
-            continue
+    all_dirs = [d for d in sorted(jobs_root.glob("*")) if d.is_dir()] \
+        if jobs_root.exists() else []
+    for d in all_dirs:
         task_id = d.name.rsplit("_", 1)[-1]
         status = rows.get(task_id)
         if status not in _TERMINAL:
             continue
         if d.stat().st_mtime < cutoff:
             victims.append(d)
+    removed_n = 0
     for d in victims:
         if dry_run:
             print(f"[dry-run] would remove {d.name}")
-        else:
-            import shutil
+            removed_n += 1  # dry-run 按"若不删"的假设口径统计
+            continue
+        if archive:  # 缺口 #35: 删前 zip 留底, 归档失败则跳过删除 (宁留勿丢)
+            adir = Path(archive)
+            adir.mkdir(parents=True, exist_ok=True)
+            try:
+                _zip_dir(d, adir / f"{d.name}.zip")
+                print(f"archived {d.name} → {adir / (d.name + '.zip')}")
+            except Exception as e:  # noqa: BLE001
+                print(f"archive FAILED for {d.name}, keeping dir: {e!r}")
+                continue
+        import shutil
 
-            shutil.rmtree(d, ignore_errors=True)
-            print(f"removed {d.name}")
+        shutil.rmtree(d, ignore_errors=True)
+        removed_n += 1
+        print(f"removed {d.name}")
     if purge_rows and not dry_run:
         ids = [d.name.rsplit("_", 1)[-1] for d in victims]
         if ids:
@@ -483,18 +567,21 @@ def run_cleanup(days: int = 7, dry_run: bool = False,
             conn.execute(f"DELETE FROM dft_jobs WHERE id IN ({marks})", ids)
             conn.commit()
             print(f"purged {len(ids)} DB rows")
-    total = sum(1 for _ in jobs_root.glob("*")) if jobs_root.exists() else 0
-    kept = total - len(victims)
-    print(f"{len(victims)} job dir(s) older than {days}d (total {total}, kept {kept})")
+    # kept = 清理后剩余 job 目录 (旧实现在删除后才数 total 又减 victims, 双重扣减)
+    kept = len(all_dirs) - removed_n
+    print(f"{removed_n} job dir(s) older than {days}d (remaining {kept})")
     conn.close()
     n_scratch = _sweep_g16_scratch(cutoff, dry_run)  # 缺口 #18: g16 目录残留兜底
     if n_scratch:
         print(f"{n_scratch} g16 scratch file(s) older than {days}d")
-    return len(victims), kept
+    return removed_n, kept
 
 
 def cmd_cleanup(args, client) -> int:  # noqa: ARG001 — 本地操作, 不需要 client
-    removed, _ = run_cleanup(args.days, args.dry_run, args.purge_rows)
+    removed, _ = run_cleanup(args.days, args.dry_run, args.purge_rows,
+                             archive=args.archive)
+    if args.backup:
+        backup_db(keep=args.keep_backups, dry_run=args.dry_run)
     return EXIT_OK
 
 
@@ -532,6 +619,10 @@ def add_tool_args(p: argparse.ArgumentParser) -> None:
     p.add_argument("--task", help="auto: energy/optimize/freq/properties/md")
     p.add_argument("--quality", help="auto: fast/accurate/auto")
     p.add_argument("--max-opt-steps", dest="max_opt_steps", type=int)
+    p.add_argument("--n-conformers", dest="n_conformers", type=int,
+                   help="conformers: ETKDG 采样数 (默认 20)")
+    p.add_argument("--top-k", dest="top_k", type=int,
+                   help="conformers: 返回前 K 个构象 (默认 5)")
     p.add_argument("--solvation-energy", dest="solvation_energy",
                    action="store_true",
                    help="pyscf: 气相+C-PCM 双算, 出 delta_solvation_kj_mol")
@@ -559,7 +650,7 @@ def build_parser() -> argparse.ArgumentParser:
                         ("submit", "只提交, 返回 task_id (长任务用)")]:
         sp = sub.add_parser(name, help=help_, parents=[common])
         sp.add_argument("tool", choices=["gaussian", "gromacs", "mace",
-                                         "pyscf", "psi4", "auto"])
+                                         "pyscf", "psi4", "auto", "conformers"])
         if name == "wait":
             sp.add_argument("--timeout", type=float, default=540.0,
                             help="CLI 侧最长等待秒 (默认 540, 适配 Bash 上限); "
@@ -588,12 +679,20 @@ def build_parser() -> argparse.ArgumentParser:
     sp.add_argument("--limit", type=int, default=20)
     sp.add_argument("--offset", type=int, default=0)
     sp.set_defaults(func=cmd_list)
+    sp = sub.add_parser("stats", help="各后端成功率/耗时/排队深度", parents=[common])
+    sp.set_defaults(func=cmd_stats)
     sp = sub.add_parser("cleanup", help="清理过期 job 目录 (本地操作)",
                         parents=[common])
     sp.add_argument("--days", type=int, default=7)
     sp.add_argument("--dry-run", action="store_true")
     sp.add_argument("--purge-rows", action="store_true",
                     help="连 DB 行一起删 (默认只删目录)")
+    sp.add_argument("--archive", nargs="?", const="data/archives", default=None,
+                    help="删除前 zip 归档到目录 (默认 data/archives) — 缺口 #35")
+    sp.add_argument("--backup", action="store_true",
+                    help="顺带 SQLite 在线备份到 data/backups/ — 缺口 #35")
+    sp.add_argument("--keep-backups", dest="keep_backups", type=int, default=7,
+                    help="备份保留份数 (默认 7)")
     sp.set_defaults(func=cmd_cleanup)
     return ap
 
