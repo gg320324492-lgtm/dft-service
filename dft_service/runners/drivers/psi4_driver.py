@@ -9,7 +9,7 @@ import sys
 import time
 from pathlib import Path
 
-from _driver_common import load_params, run_driver
+from _driver_common import load_params, run_driver, write_progress
 
 sys.path.insert(0, "E:/sci-software/workflows")  # noqa: S104
 
@@ -37,10 +37,16 @@ def compute(params: dict, workdir: Path) -> dict:
     # (psi4_runner.run_* 内部 set_molecular_charge / set_multiplicity)
 
     if operation == "optimize":
+        write_progress(workdir, "optimize", method=method, basis=basis,
+                       elapsed_s=round(time.time() - t0))
         res = psi4_runner.run_optimize(geom, method, basis, charge, multiplicity)
     elif operation == "properties":
+        write_progress(workdir, "properties", method=method, basis=basis,
+                       elapsed_s=round(time.time() - t0))
         res = psi4_runner.run_properties(geom, method, basis, charge, multiplicity)
     else:
+        write_progress(workdir, "single_point", method=method, basis=basis,
+                       elapsed_s=round(time.time() - t0))
         res = psi4_runner.run_single_point(geom, method, basis, charge, multiplicity)
 
     out: dict = {

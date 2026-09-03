@@ -98,6 +98,7 @@ curl -H "X-API-Key: YOUR_KEY" http://127.0.0.1:8620/dft/result/<task_id>
 1. **Gaussian solvent 真生效** — SCRF=(SMD,Solvent=X) 写进路由关键字; 默认 `none` 气相
 2. **charge/multiplicity 自动推断** — SMILES 推断 (与 PySCF/Psi4 同逻辑), 显式传值优先, result 报实际值
 3. **freq 结果解析** — 频率列表/虚频计数/ZPE/焓/Gibbs 全提取, 虚频带 warning
+   (勘误: 当时组装链路实为死代码, freq 任务必崩 — 2026-09-04 #17 才真修复)
 4. **重启清扫** — 启动时残留 queued/running → interrupted
 5. **dft_cli.py CLI** — wait/submit 两段式适配 Bash 超时, 语义化退出码
 6. **DELETE 取消** — taskkill /T 树杀 + WSL pkill 按唯一名清残留
@@ -115,6 +116,32 @@ curl -H "X-API-Key: YOUR_KEY" http://127.0.0.1:8620/dft/result/<task_id>
 pybel bytes / _copy_to_wsl 拷到 Windows 假 /tmp / _copy_from_wsl 静默失败 /
 steepest→steep / nsteps 差 1000 倍 + NPT 缺参 / nstxout 写 .trr 不是 .xtc /
 .gro 原子数声明≠写入 / mdrun 小盒子域分解 (-ntmpi 1)。
+
+## 第二批收口记录 #17–#26 (2026-09-04)
+
+17. **Gaussian freq 崩溃修复** — freq 提取块误放在 result 赋值前 (UnboundLocalError,
+    #3 实为死代码); 移到赋值后, stub 测试 + 真跑 freq 均验证
+18. **Gaussian %chk 并发冲突** — chk 用唯一名 `dft_job_<workdir>`; 正常/异常/超时
+    路径清安装目录残留; cancel 树杀场景由 cleanup 按 mtime 兜底扫 `dft_job_*`
+19. **timeout 一等状态** — driver/executor 超时返回 status=timeout (原被归成 failed),
+    CLI 退出码 2 生效; pyscf geom 阶段超时同样传播
+20. **参数上限** — timeout_s≤7d, nproc≤64, mem 正则 `^\d{1,5}(MB|GB|TB)$` (防 gjf 注入),
+    gromacs/mace 尺度参数封顶; 超限 422
+21. **_TASKS 内存驱逐** — 提交时摊还清扫终态超 24h 条目 (硬上限 2000), DB 回退照旧
+22. **进度上报** — driver 写 workdir/progress.json (原子写), /dft/status 在
+    queued/running 时回读; gaussian 轮询带 opt_step/scf_cycles, pyscf mf.callback
+    累计 SCF 周期, gromacs/mace/psi4 stage 级; CLI wait 进度行显示 stage/步数
+23. **批量并发 + 断点续跑** — --smiles-file 全部 submit 后轮询 (吞吐不再被串行砍),
+    CSV 逐条增量落盘; `--resume` 复用 summary: 终态跳过, timeout/running 按原
+    task_id 重轮询
+24. **smoke_all.py** — 五后端真算一键验收 (默认 pyscf/mace/psi4, --with-gaussian
+    --with-gromacs 显式开启); 本次实测 5/5 PASS, gaussian freq 出真频率
+25. **driver 组装单测** — test_gaussian_driver.py stub rdkit/g16/parse_log 测
+    freq 合并/SCRF 路由/唯一 chk/422 边界; test_batch.py fake api 测批量并发+resume
+26. **健康探测预热** — lifespan 后台线程启动即填 TTL 缓存, /dft/tools 冷缓存
+    几分钟问题消除 (实测启动 6s 内 5/5 available)
+
+测试 28 → 45 PASS。
 
 ## 架构
 

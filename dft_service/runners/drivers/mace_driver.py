@@ -10,7 +10,7 @@ import sys
 import time
 from pathlib import Path
 
-from _driver_common import load_params, run_driver
+from _driver_common import load_params, run_driver, write_progress
 
 sys.path.insert(0, "E:/sci-software/workflows")  # noqa: S104
 
@@ -58,10 +58,15 @@ def compute(params: dict, workdir: Path) -> dict:
     mace_relaxation._get_calculator = _patched_get_calculator
 
     t0 = time.time()
+    write_progress(workdir, "geometry", smiles=params["smiles"])
     xyz_path = workdir / "input.xyz"
     n_atoms = _smiles_to_xyz(params["smiles"], xyz_path)
 
     traj_path = workdir / "trajectory.extxyz"
+    # 缺口 #22: relax_trajectory 是单次阻塞调用 (不改 workflows 拿不到 BFGS 每步),
+    # 报"进入 relax"这一粒度; MACE 通常秒级, 足够
+    write_progress(workdir, "relax", max_steps=int(params.get("max_steps", 200)),
+                   elapsed_s=round(time.time() - t0))
     res = relax_trajectory(
         xyz_path, traj_path,
         fmax=float(params.get("fmax_ev_A", 0.05)),

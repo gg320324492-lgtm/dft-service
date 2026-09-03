@@ -163,8 +163,10 @@ def wait_one(client: httpx.Client, tool: str, payload: dict,
     deadline = time.monotonic() + timeout_s
     n = 0
     while True:
-        rec = api_call(client, "GET", f"/dft/result/{task_id}")
-        if rec.get("status") not in ("queued", "running", None):
+        # #22: 中间态查 /status (带 progress.json 回读), 终态再取 /result
+        st = api_call(client, "GET", f"/dft/status/{task_id}")
+        if st.get("status") not in ("queued", "running", None):
+            rec = api_call(client, "GET", f"/dft/result/{task_id}")
             result = rec.get("result") or {}
             result.setdefault("task_id", task_id)
             result.setdefault("tool", rec.get("tool"))
@@ -177,8 +179,14 @@ def wait_one(client: httpx.Client, tool: str, payload: dict,
         n += 1
         if not quiet:
             # 进程度打 stderr — stdout 永远只有结果 (--json 可直接管道)
-            print(f"\r  poll#{n} status={rec.get('status')} "
-                  f"elapsed={int(n * POLL_INTERVAL_S)}s   ",
+            prog = st.get("progress") or {}
+            bits = " ".join(f"{k}={prog[k]}"
+                            for k in ("stage", "opt_step", "scf_cycles",
+                                      "time_ns", "elapsed_s")
+                            if prog.get(k) is not None)
+            print(f"\r  poll#{n} status={st.get('status')} "
+                  + (f"[{bits}] " if bits else "")
+                  + f"waited={int(n * POLL_INTERVAL_S)}s   ",
                   end="", file=sys.stderr, flush=True)
         time.sleep(POLL_INTERVAL_S)
 
@@ -201,33 +209,126 @@ def cmd_tools(args, client) -> int:
     return EXIT_OK
 
 
+_BATCH_CSV_FIELDS = ["smiles", "status", "energy_hartree", "elapsed_s",
+                     "task_id", "error_msg"]
+
+
+def _batch_row(smiles: str, res: dict) -> dict:
+    return {
+        "smiles": smiles, "status": res.get("status"),
+        "energy_hartree": res.get("energy_hartree"),
+        "elapsed_s": res.get("elapsed_s"),
+        "task_id": res.get("task_id"),
+        "error_msg": (res.get("error_msg") or "")[:120],
+    }
+
+
+def run_batch(client: httpx.Client, tool: str, payload: dict, mols: list[str],
+              timeout_s: float, summary: str | None = None,
+              resume: bool = False, quiet: bool = False) -> list[dict]:
+    """缺口 #23: 批量筛选并发化 — 全部 submit 后轮询 (服务端信号量自然限流),
+
+    旧版串行逐个等, 吞吐被客户端人为砍半。CSV 增量写出 (每条终态立即落盘),
+    --resume 时读取已有 summary: 已终态的 smiles 跳过不重跑, 未终态的只重轮询
+    不重提交 (task_id 已在 CSV 里)。返回全部行。timeout_s 为整批总时限。
+    """
+    rows: list[dict] = []
+    pending: list[tuple[str, str]] = []  # (smiles, task_id)
+    summary_path = Path(summary) if summary else None
+
+    # resume 分类: 服务端已给最终答案的 → 跳过不重跑; timeout/queued/running
+    # (CLI 放弃了但服务端可能还在算) → 按原 task_id 重轮询; unavailable/failed
+    # 提交类 (无 task_id) → 落回 todo 重提交
+    _RESUME_FINAL = {"success", "completed_with_warnings", "failed",
+                     "cancelled", "interrupted"}
+    if resume and summary_path and summary_path.exists():
+        with open(summary_path, newline="", encoding="utf-8") as f:
+            for r in csv.DictReader(f):
+                if r.get("smiles") in mols and r.get("status") in _RESUME_FINAL:
+                    rows.append(dict(r))
+                elif r.get("task_id"):
+                    pending.append((r["smiles"], r["task_id"]))
+        if not quiet:
+            print(f"resume: {len(rows)} 已完成, {len(pending)} 重轮询")
+
+    done_smiles = {r["smiles"] for r in rows}
+    pending_smiles = {s for s, _ in pending}
+    todo = [m for m in dict.fromkeys(mols)  # 去重保持顺序
+            if m not in done_smiles and m not in pending_smiles]
+    for m in todo:
+        resp = api_call(client, "POST", f"/dft/{tool}", {**payload, "smiles": m})
+        if resp.get("task_id"):
+            pending.append((m, resp["task_id"]))
+            if not quiet:
+                print(f"submitted {m} → {resp['task_id']}")
+        else:  # 提交即失败 (校验/不可用), 直接落行
+            row = _batch_row(m, {"status": resp.get("status", "failed"),
+                                 "error_msg": resp.get("error_msg") or str(resp)})
+            rows.append(row)
+            if summary_path:
+                _append_csv_row(summary_path, row)
+
+    if summary_path and not summary_path.exists():
+        with open(summary_path, "w", newline="", encoding="utf-8") as f:
+            csv.DictWriter(f, fieldnames=_BATCH_CSV_FIELDS).writeheader()
+
+    deadline = time.monotonic() + timeout_s
+    while pending:
+        for m, tid in list(pending):
+            st = api_call(client, "GET", f"/dft/status/{tid}")
+            status = st.get("status")
+            if status in ("queued", "running", None):
+                continue
+            pending.remove((m, tid))
+            rec = api_call(client, "GET", f"/dft/result/{tid}")
+            res = rec.get("result") or {}
+            res.setdefault("task_id", tid)
+            res.setdefault("status", status)
+            row = _batch_row(m, res)
+            rows.append(row)
+            if summary_path:
+                _append_csv_row(summary_path, row)
+            if not quiet:
+                print(f"[{len(rows)}/{len(mols)}] {m} → {status}")
+        if not pending:
+            break
+        if time.monotonic() > deadline:
+            for m, tid in pending:
+                row = _batch_row(m, {"status": "timeout", "task_id": tid,
+                                     "error_msg": "batch deadline exceeded "
+                                                  "(任务仍在服务端, 可 --resume 续等)"})
+                rows.append(row)
+                if summary_path:
+                    _append_csv_row(summary_path, row)
+            break
+        time.sleep(POLL_INTERVAL_S)
+    return rows
+
+
+def _append_csv_row(path: Path, row: dict) -> None:
+    """增量落一行 (崩溃安全: --resume 的数据源就是这份文件)"""
+    new = not path.exists()
+    with open(path, "a", newline="", encoding="utf-8") as f:
+        w = csv.DictWriter(f, fieldnames=_BATCH_CSV_FIELDS)
+        if new:
+            w.writeheader()
+        w.writerow({k: row.get(k, "") for k in _BATCH_CSV_FIELDS})
+
+
 def cmd_wait(args, client) -> int:
     payload = build_payload(args)
     timeout_s = args.timeout
 
-    if args.smiles_file:  # 缺口 #15: 批量
+    if args.smiles_file:  # 缺口 #15: 批量 → #23: 并发 + 断点续跑
         mols = [ln.strip() for ln in Path(args.smiles_file).read_text(
             encoding="utf-8").splitlines()
             if ln.strip() and not ln.strip().startswith("#")]
-        rows = []
-        for i, smi in enumerate(mols, 1):
-            print(f"[{i}/{len(mols)}] {smi}")
-            p = {**payload, "smiles": smi}
-            res = wait_one(client, args.tool, p, timeout_s)
-            rows.append({
-                "smiles": smi, "status": res.get("status"),
-                "energy_hartree": res.get("energy_hartree"),
-                "elapsed_s": res.get("elapsed_s"),
-                "task_id": res.get("task_id"),
-                "error_msg": (res.get("error_msg") or "")[:120],
-            })
-            print(human_summary(res))
-            print()
+        rows = run_batch(client, args.tool, payload, mols, timeout_s,
+                         summary=args.summary, resume=getattr(args, "resume", False),
+                         quiet=args.json)
+        if args.json:
+            print(json.dumps(rows, ensure_ascii=False, indent=2, default=str))
         if args.summary:
-            with open(args.summary, "w", newline="", encoding="utf-8") as f:
-                w = csv.DictWriter(f, fieldnames=list(rows[0].keys()))
-                w.writeheader()
-                w.writerows(rows)
             print(f"CSV → {args.summary}")
         bad = sum(1 for r in rows if r["status"] != "success")
         return EXIT_FAILED if bad else EXIT_OK
@@ -441,7 +542,11 @@ def build_parser() -> argparse.ArgumentParser:
                                          "pyscf", "psi4", "auto"])
         if name == "wait":
             sp.add_argument("--timeout", type=float, default=540.0,
-                            help="CLI 侧最长等待秒 (默认 540, 适配 Bash 上限)")
+                            help="CLI 侧最长等待秒 (默认 540, 适配 Bash 上限); "
+                                 "批量模式为整批总时限")
+            sp.add_argument("--resume", action="store_true",
+                            help="批量: 复用已有 --summary CSV, 跳过已终态分子, "
+                                 "未完成的只重轮询原 task_id")
         add_tool_args(sp)
         sp.set_defaults(func=cmd_wait if name == "wait" else cmd_submit)
 

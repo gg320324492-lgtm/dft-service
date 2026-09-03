@@ -10,6 +10,7 @@ from __future__ import annotations
 import json
 import os
 import sys
+import time
 import traceback
 from pathlib import Path
 
@@ -30,6 +31,22 @@ def write_result(workdir: Path, result: dict) -> None:
         encoding="utf-8",
     )
     print(out.read_text(encoding="utf-8"))
+
+
+def write_progress(workdir: Path, stage: str, **fields) -> None:
+    """缺口 #22: 长任务进度上报 — 原子写 <workdir>/progress.json。
+
+    /dft/status 在任务 running 时回读该文件 (读失败 = null, 不影响任务)。
+    永不抛异常: 进度是 best-effort 旁路, 炸了也不能带崩计算。
+    """
+    try:
+        payload = {"stage": stage, "updated_at": time.time(), **fields}
+        tmp = workdir / "progress.json.tmp"
+        tmp.write_text(json.dumps(payload, ensure_ascii=False, default=str),
+                       encoding="utf-8")
+        os.replace(tmp, workdir / "progress.json")
+    except Exception:  # noqa: BLE001
+        pass
 
 
 def run_driver(workdir: Path, compute) -> None:

@@ -302,13 +302,19 @@ async def task_status(task_id: str):
     rec = await taskstore.get_task(task_id, include_result=False)
     if rec is None:
         raise HTTPException(status_code=404, detail=f"task {task_id} not found")
-    return {
+    out = {
         "task_id": task_id,
         "status": rec.get("status"),
         "tool": rec.get("tool"),
         "submit_time": rec.get("submit_time"),
         "finish_time": rec.get("finish_time"),
     }
+    # 缺口 #22: 未终结任务回读 driver 进度 (progress.json, 无则 null)
+    if out["status"] in ("queued", "running"):
+        from dft_service.runners.executor import read_progress
+
+        out["progress"] = read_progress(out["tool"], task_id)
+    return out
 
 
 @router.get("/result/{task_id}", dependencies=[Depends(require_api_key)])

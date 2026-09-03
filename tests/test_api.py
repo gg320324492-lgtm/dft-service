@@ -592,3 +592,37 @@ def test_taskstore_mem_eviction():
         asyncio.run(_go())
     finally:
         taskstore._TASKS.clear()
+
+
+# ---------------------------------------------------------------
+# #22: 进度回读
+# ---------------------------------------------------------------
+def test_status_returns_progress_for_running(client):
+    """running 任务的 /status 带 progress.json 内容; 无进度文件 → progress=null"""
+    import asyncio
+    import json
+    from dft_service.runners.executor import make_workdir
+
+    async def _setup():
+        rec = taskstore.create_task("gaussian", "O", {}, None)
+        await taskstore.persist_new_task(rec)
+        rec["status"] = "running"  # 模拟后台执行中
+        wd = make_workdir("gaussian", rec["task_id"])
+        (wd / "progress.json").write_text(json.dumps(
+            {"stage": "running", "opt_step": 4, "scf_cycles": 12}), encoding="utf-8")
+        return rec["task_id"], wd
+
+    tid, wd = asyncio.run(_setup())
+    try:
+        st = client.get(f"/dft/status/{tid}", headers=HEADERS).json()
+        assert st["status"] == "running"
+        assert st["progress"]["opt_step"] == 4
+        assert st["progress"]["scf_cycles"] == 12
+
+        # 无进度文件 → null (不影响 status 本身)
+        (wd / "progress.json").unlink()
+        st2 = client.get(f"/dft/status/{tid}", headers=HEADERS).json()
+        assert st2["progress"] is None
+    finally:
+        import shutil
+        shutil.rmtree(wd, ignore_errors=True)

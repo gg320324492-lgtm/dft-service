@@ -48,11 +48,32 @@ async def lifespan(app: FastAPI):
             "DFT_SERVICE_API_KEY 未设置 — 鉴权关闭 (本地/内网模式); "
             "对外部署务必设置 API key"
         )
+    _start_health_prewarm()  # 缺口 #26
     logger.info(
         "dft-service v%s ready | output=%s | scichem=%s",
         __version__, settings.output_root, settings.scichem_python,
     )
     yield
+
+
+def _start_health_prewarm() -> None:
+    """缺口 #26: 后台线程预热探测缓存 (daemon, 不阻塞启动)。
+
+    /dft/tools 冷缓存要现场起子进程探测 (scichem import mace 最长 120s,
+    WSL 发行版逐个探), 首个探针可能几分钟。启动即预热填 TTL 缓存。
+    """
+    import threading
+
+    def _warm():
+        try:
+            from dft_service.runners.tool_definitions import list_available_tools
+            body = list_available_tools()
+            logger.info("health prewarm: %d/%d tools available",
+                        body["available_count"], body["count"])
+        except Exception:
+            logger.exception("health prewarm failed (non-fatal)")
+
+    threading.Thread(target=_warm, name="health-prewarm", daemon=True).start()
 
 
 def create_app() -> FastAPI:

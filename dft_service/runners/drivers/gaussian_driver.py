@@ -12,7 +12,7 @@ import sys
 import time
 from pathlib import Path
 
-from _driver_common import load_params, run_driver
+from _driver_common import load_params, run_driver, write_progress
 
 sys.path.insert(0, "E:/sci-software/workflows")  # noqa: S104 — submit_gjf/parse_log 复用
 
@@ -201,6 +201,7 @@ def compute(params: dict, workdir: Path) -> dict:
         }
 
     # stem 已在 _gen_gjf 前定义 (dft_job_<workdir.name>), %chk/提交/清理三处共用
+    write_progress(workdir, "submit", backend="g16")
     (g16_dir / f"{stem}.gjf").write_bytes(gjf_path.read_bytes())
 
     env = {
@@ -216,6 +217,7 @@ def compute(params: dict, workdir: Path) -> dict:
 
     out_path = g16_dir / f"{stem}.out"
     deadline = _time.time() + float(params.get("timeout_s", 7200))
+    n_tick = 0
     while _time.time() < deadline:
         if proc.poll() is not None and proc.returncode != 0:
             _cleanup_g16_dir(g16_dir, stem)  # 缺口 #18: 异常退出也清残留
@@ -232,6 +234,17 @@ def compute(params: dict, workdir: Path) -> dict:
             if "Normal termination" in tail or "Error termination" in tail:
                 _time.sleep(1.0)  # 让缓冲写完
                 break
+            # 缺口 #22: 每 ~15s 报一次进度 (opt 步数 / 累计 SCF 周期 / 末行)
+            n_tick += 1
+            if n_tick % 5 == 0:
+                write_progress(
+                    workdir, "running", backend="g16",
+                    elapsed_s=round(_time.time() - t0),
+                    opt_step=(lambda m: int(m.group(1)) if m else None)(
+                        re.search(r"Step number\s+(\d+)", tail)),
+                    scf_done=len(re.findall(r"SCF Done", tail)),
+                    last_line=(tail.strip().splitlines() or [""])[-1][:120],
+                )
         _time.sleep(3.0)
     else:
         proc.kill()

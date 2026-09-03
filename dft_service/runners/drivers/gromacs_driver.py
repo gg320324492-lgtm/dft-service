@@ -11,7 +11,7 @@ import sys
 import time
 from pathlib import Path
 
-from _driver_common import load_params, run_driver
+from _driver_common import load_params, run_driver, write_progress
 
 sys.path.insert(0, "E:/sci-software/workflows")  # noqa: S104
 
@@ -57,6 +57,8 @@ def compute(params: dict, workdir: Path) -> dict:
     }
 
     # 1) prep
+    write_progress(workdir, "prep", n_molecules=out["n_molecules"],
+                   box_nm=box_nm, elapsed_s=round(time.time() - t0))
     paths = prep_system(
         params["smiles"],
         n_mol=params.get("n_molecules", 100),
@@ -68,6 +70,9 @@ def compute(params: dict, workdir: Path) -> dict:
 
     # 2) energy minimize (小盒子自适应 mdp + 显式拓扑 + 唯一 WSL 工作目录)
     # wsl_work 用 workdir 名 (含唯一 task_id): 取消/超时可按名 pkill 不误伤
+    # 缺口 #22: 三阶段顺序阻塞, run_md 内是单次 gmx mdrun (不改 workflows
+    # 拿不到 mdrun 中间步), 故只报"当前处于哪个 stage"这一粒度
+    write_progress(workdir, "energy_minimize", elapsed_s=round(time.time() - t0))
     em = energy_minimize(
         paths["gro"], _make_mdp("em", workdir, box_nm),
         workdir / "em", wsl_distro=distro, top_path=paths["top"],
@@ -77,6 +82,8 @@ def compute(params: dict, workdir: Path) -> dict:
     out["em_log"] = str(em["log"])
 
     # 3) run_md (nsteps 由 run_md 内部按 1ns=500000 步换算)
+    write_progress(workdir, "md", time_ns=time_ns,
+                   elapsed_s=round(time.time() - t0))
     md = run_md(
         em["gro"], workdir / "md",
         time_ns=time_ns, temperature_k=temp,

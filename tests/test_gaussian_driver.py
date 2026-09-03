@@ -132,3 +132,56 @@ def test_g16_missing_is_unavailable(tmp_path, monkeypatch, g16_env):
     res = gd.compute(make_params(gaussian_bin=str(tmp_path / "nope" / "g16.exe")),
                      workdir)
     assert res["status"] == "unavailable"
+
+
+# ---------------------------------------------------------------
+# #25: gjf 路由组装 (纯字符串逻辑, 只 stub 坐标)
+# ---------------------------------------------------------------
+def _gjf_text(tmp_path, monkeypatch, params):
+    monkeypatch.setattr(gd, "_smiles_to_coords",
+                        lambda s: (["O"], [(0.0, 0.0, 0.0)]))
+    wd = tmp_path / "gaussian_gjf"
+    wd.mkdir()
+    p = {"xc": "B3LYP", "basis": "6-31G(d)", "job": "opt", "solvent": "none",
+         "charge": 0, "multiplicity": 1, "nproc": 8, "mem": "8GB", **params}
+    path = gd._gen_gjf(wd, p.get("smiles", "O"), p, chk_stem="dft_job_gaussian_xyz")
+    return path.read_text(encoding="utf-8")
+
+
+def test_gjf_solvent_writes_scrf(tmp_path, monkeypatch):
+    """缺口 #1: solvent 真写 SCRF=(SMD,...) 而非只进标题 (缺口 #18: %chk 唯一名)"""
+    txt = _gjf_text(tmp_path, monkeypatch, {"smiles": "O", "solvent": "water"})
+    assert "SCRF=(SMD,Solvent=Water)" in txt
+    assert "%chk=dft_job_gaussian_xyz.chk" in txt  # 并发安全唯一名, 非 input.chk
+    assert "input.chk" not in txt
+
+
+def test_gjf_gas_phase_no_scrf(tmp_path, monkeypatch):
+    txt = _gjf_text(tmp_path, monkeypatch, {"solvent": "none"})
+    assert "SCRF" not in txt
+
+
+def test_gjf_charge_mult_line(tmp_path, monkeypatch):
+    """缺口 #2: charge/multiplicity 透传到坐标块首行"""
+    txt = _gjf_text(tmp_path, monkeypatch, {"charge": 1, "multiplicity": 2})
+    assert "\n1 2\n" in txt
+
+
+def test_gjf_unknown_solvent_capitalized(tmp_path, monkeypatch):
+    """未在映射表的溶剂按首字母大写透传 (Gaussian SMD 名称约定)"""
+    txt = _gjf_text(tmp_path, monkeypatch, {"solvent": "pyridine"})
+    assert "Solvent=Pyridine" in txt
+
+
+# ---------------------------------------------------------------
+# #22: write_progress 原子写
+# ---------------------------------------------------------------
+def test_write_progress_atomic(tmp_path):
+    import _driver_common as dc
+    import json
+    dc.write_progress(tmp_path, "running", opt_step=3)
+    payload = json.loads((tmp_path / "progress.json").read_text(encoding="utf-8"))
+    assert payload["stage"] == "running"
+    assert payload["opt_step"] == 3
+    assert "updated_at" in payload
+    assert not (tmp_path / "progress.json.tmp").exists()  # rename 完成, 无残留 tmp

@@ -236,3 +236,17 @@ def make_workdir(tool: str, task_id: str) -> Path:
     d = settings.output_root / f"{tool}_{task_id}"
     d.mkdir(parents=True, exist_ok=True)
     return d
+
+
+def read_progress(tool: str | None, task_id: str) -> dict[str, Any] | None:
+    """缺口 #22: 回读 driver 写的 progress.json (running 任务进度)。
+
+    文件不存在 / 解析失败 → None (进度是 best-effort 旁路, 绝不影响 status)。
+    """
+    if not tool:
+        return None
+    pf = settings.output_root / f"{tool}_{task_id}" / "progress.json"
+    try:
+        return json.loads(pf.read_text(encoding="utf-8"))
+    except Exception:  # noqa: BLE001 — 无进度文件是常态
+        return None

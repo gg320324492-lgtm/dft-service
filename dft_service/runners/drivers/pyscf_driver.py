@@ -21,7 +21,7 @@ import sys
 import time
 from pathlib import Path
 
-from _driver_common import load_params, run_driver
+from _driver_common import load_params, run_driver, write_progress
 
 # 常见溶剂介电常数 (C-PCM 用)
 _SOLVENT_EPS = {
@@ -73,7 +73,8 @@ def _xyz_block_from_smiles(smiles: str) -> tuple[str, int, int, int]:
     return "\n".join(lines), mol.GetNumAtoms(), charge, multiplicity
 
 
-def _build_mf(mol, method: str, solvent: str, spin: int):
+def _build_mf(mol, method: str, solvent: str, spin: int,
+              workdir: Path | None = None, operation: str = "energy"):
     from pyscf import dft
 
     mf_cls = dft.UKS if spin != 0 else dft.RKS
@@ -89,6 +90,19 @@ def _build_mf(mol, method: str, solvent: str, spin: int):
         mf = mf.PCM()
         mf.with_solvent.method = "C-PCM"
         mf.with_solvent.eps = eps
+    # 缺口 #22: mf.callback 每个 SCF cycle 后触发; optimize 时跨几何步累计
+    if workdir is not None:
+        counter = {"cycles": 0, "t0": time.time()}
+
+        def _cb(_mf):
+            counter["cycles"] += 1
+            write_progress(
+                workdir, "optimize" if operation == "optimize" else "scf",
+                scf_cycles=counter["cycles"],
+                elapsed_s=round(time.time() - counter["t0"]),
+            )
+
+        mf.callback = _cb
     return mf
 
 
@@ -135,7 +149,7 @@ def compute(params: dict, workdir: Path) -> dict:
         atom=xyz_block, basis=basis, charge=charge,
         spin=spin, verbose=0,
     )
-    mf = _build_mf(mol, method, solvent, spin)
+    mf = _build_mf(mol, method, solvent, spin, workdir=workdir, operation=operation)
 
     result: dict = {
         "tool": "pyscf",
