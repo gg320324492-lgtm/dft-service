@@ -25,6 +25,28 @@ DRIVERS_DIR = Path(__file__).resolve().parent / "drivers"
 # task_id → (Popen, wsl_cleanup (tag, distro) | None); cancel / 超时清理用
 _POPEN: dict[str, tuple[subprocess.Popen, tuple[str, str] | None]] = {}
 
+# 缺口 #33: 父任务 → 子任务 task_id 列表 (reaction 工作流的 gaussian 子作业);
+# cancel 父任务时级联树杀全部子任务
+_CHILDREN: dict[str, list[str]] = {}
+
+
+def register_children(parent_id: str, child_ids: list[str]) -> None:
+    _CHILDREN[parent_id] = list(child_ids)
+
+
+def unregister_children(parent_id: str) -> None:
+    _CHILDREN.pop(parent_id, None)
+
+
+def kill_reaction_tree(parent_id: str) -> int:
+    """级联取消: 杀父任务登记的所有子任务进程, 返回杀掉的存活数"""
+    killed = 0
+    for cid in _CHILDREN.pop(parent_id, []):
+        if kill_task_process(cid):
+            killed += 1
+    kill_task_process(parent_id)
+    return killed
+
 
 def _wsl_pkill(tag: str, distro: str) -> None:
     """WSL 内按 tag 杀残留计算进程 — gmx / pyscf driver 的 cmdline 都含唯一

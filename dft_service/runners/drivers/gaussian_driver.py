@@ -144,12 +144,14 @@ def _build_route(p: dict) -> str:
 
 
 def _gen_gjf(workdir: Path, smiles: str | None, p: dict, chk_stem: str,
-             atoms_coords: tuple | None = None) -> Path:
+             atoms_coords: tuple | None = None,
+             atoms_coords_b: tuple | None = None) -> Path:
     """自建 gjf 生成 (支持 SCRF) — 不用 workflows.gen_gjf 因为它 route 写死
 
     chk_stem: %chk 用全局唯一名 (缺口 #18) — g16 的 cwd 是安装目录,
     写死 input.chk 会让并发任务互相覆盖。
     atoms_coords: 缺口 #29 内联几何 — 传入则用它, 否则从 smiles 生成。
+    atoms_coords_b: 缺口 #33 QST2 第二分子块 (B 卡片)。
     """
     atoms, coords = atoms_coords if atoms_coords is not None \
         else _smiles_to_coords(smiles)
@@ -173,6 +175,14 @@ def _gen_gjf(workdir: Path, smiles: str | None, p: dict, chk_stem: str,
         f"{a:2s}  {c[0]:14.8f}  {c[1]:14.8f}  {c[2]:14.8f}"
         for a, c in zip(atoms, coords)
     ]
+    if atoms_coords_b is not None:
+        # QST2 (缺口 #33): 空行 + 产物分子块 (同 charge/spin) — 反应物/产物两段几何
+        b_atoms, b_coords = atoms_coords_b
+        lines += ["", f"{p['charge']} {p['multiplicity']}"]
+        lines += [
+            f"{a:2s}  {c[0]:14.8f}  {c[1]:14.8f}  {c[2]:14.8f}"
+            for a, c in zip(b_atoms, b_coords)
+        ]
     gjf_path = workdir / f"{stem}.gjf"
     gjf_path.write_text("\n".join(lines) + "\n\n", encoding="utf-8")
     return gjf_path
@@ -203,8 +213,11 @@ def compute(params: dict, workdir: Path) -> dict:
     xyz_content = params.get("xyz_content")
     smiles = params.get("smiles")
     atoms_coords = None
+    atoms_coords_b = None
     if xyz_content:
         atoms_coords = parse_xyz_text(xyz_content)
+        if params.get("xyz_b_content"):  # 缺口 #33: QST2 第二分子块
+            atoms_coords_b = parse_xyz_text(params["xyz_b_content"])
         if params.get("charge") is None or params.get("multiplicity") is None:
             return {"status": "failed",
                     "error_msg": "xyz 输入必须显式提供 charge 和 multiplicity "
@@ -222,7 +235,7 @@ def compute(params: dict, workdir: Path) -> dict:
     # workdir 名含唯一 task_id; dft_job_ 前缀让 cleanup 能精确识别本服务的残留
     stem = f"dft_job_{workdir.name}"
     gjf_path = _gen_gjf(workdir, smiles, params, chk_stem=stem,
-                        atoms_coords=atoms_coords)
+                        atoms_coords=atoms_coords, atoms_coords_b=atoms_coords_b)
 
     # ------------------------------------------------------------------
     # 提交 (2026-08-30 重写) — workflows.submit_gjf 的两个 Windows 不兼容:

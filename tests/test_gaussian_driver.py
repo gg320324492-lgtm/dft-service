@@ -288,3 +288,36 @@ def test_opt_freq_waits_for_process_exit(g16_env, monkeypatch):
     res = gd.compute(make_params(job="opt freq"), workdir)
     assert res["status"] == "success"
     assert calls["poll"] >= 3  # 旧代码 poll=1 时就会被中间标记骗走
+
+
+def test_gjf_qst2_two_blocks(tmp_path, monkeypatch):
+    """#33: QST2 双分子块 gjf (反应物 + 空行 + charge/spin + 产物)"""
+    monkeypatch.setattr(gd, "_smiles_to_coords",
+                        lambda s: (_ for _ in ()).throw(AssertionError("不该走 smiles")))
+    wd = tmp_path / "gaussian_qst2"
+    wd.mkdir()
+    p = {"xc": "B3LYP", "basis": "6-31G(d)", "job": "qst2", "solvent": "none",
+         "charge": 0, "multiplicity": 1, "nproc": 8, "mem": "8GB"}
+    path = gd._gen_gjf(wd, None, p, chk_stem="dft_job_q",
+                       atoms_coords=([("O")], [(0.0, 0.0, 0.0)]),
+                       atoms_coords_b=([("N")], [(1.0, 0.0, 0.0)]))
+    txt = path.read_text(encoding="utf-8")
+    assert "# B3LYP/6-31G(d) qst2" in txt
+    assert txt.count("0 1") == 2          # 两段各一个 charge/spin 行
+    body = txt.split("0 1")[-1].strip().splitlines()
+    assert body[0].startswith("N")         # 第二段以 B 分子开始
+    assert "O" in txt.split("0 1")[1]      # 第一段是 A 分子
+
+
+def test_compute_qst2_parses_two_xyz(g16_env, monkeypatch):
+    """xyz_b_content 直通: 两段几何都解析, 电荷缺失时报错路径也生效"""
+    workdir, make_params, state, _ = g16_env
+    state["out_text"] = _PLAIN_OUT
+    res = gd.compute(make_params(
+        smiles=None, job="qst2",
+        xyz_content="1\n\nO 0 0 0\n",
+        xyz_b_content="1\n\nN 1 1 1\n",
+        charge=0, multiplicity=1), workdir)
+    assert res["status"] == "success"
+    gjf = (workdir / "input.gjf").read_text(encoding="utf-8")
+    assert gjf.count("0 1") == 2 and "N " in gjf

@@ -122,6 +122,12 @@ def build_payload(ns: argparse.Namespace) -> dict:
     xfp = getattr(ns, "xyz_file", None)
     if xfp:
         payload["xyz_content"] = Path(xfp).read_text(encoding="utf-8")
+    # 缺口 #34: --analyze-with "density,rdf" → 列表 + 隐含 analyze
+    # (注意: analyze 旗标默认 False 已进 payload, 必须强制覆盖而非 setdefault)
+    aw = getattr(ns, "analyze_with", None)
+    if aw:
+        payload["analyze_options"] = [s.strip() for s in aw.split(",") if s.strip()]
+        payload["analyze"] = True
     if ns.data:  # --data 整包逃生舱, 覆盖旗标
         payload.update(json.loads(ns.data))
     return payload
@@ -133,6 +139,7 @@ def human_summary(res: dict) -> str:
     lines = [f"{icon} [{res.get('status')}] tool={res.get('tool')} "
              f"task_id={res.get('task_id')} elapsed={res.get('elapsed_s')}s"]
     for k in ("energy_hartree", "energy_ev", "energy_eV", "delta_solvation_kj_mol",
+              "delta_electronic_kj_mol", "delta_gibbs_kj_mol",
               "energy_gas_hartree", "converged",
               "scf_converged", "n_steps", "n_atoms", "n_imaginary",
               "lowest_freq_cm_1", "dipole_debye", "homo_lumo_gap_eV",
@@ -151,6 +158,14 @@ def human_summary(res: dict) -> str:
         for c in confs:
             lines.append(f"    #{c.get('rank')} rel={c.get('rel_kj_mol'):>7} kJ/mol "
                          f"E={c.get('energy_ev')} eV  {c.get('xyz_path')}")
+    spcs = res.get("species")
+    if isinstance(spcs, list) and spcs:  # 缺口 #33 反应工作流
+        for s in spcs:
+            lines.append(f"  {s.get('side')[:-1]} {s.get('label')}: "
+                         f"x{s.get('count')} E={s.get('energy_hartree')} "
+                         f"G={s.get('gibbs_hartree')} [{s.get('status')}]")
+    for w in (res.get("warnings") or [])[:4]:
+        lines.append(f"  warning: {w}")
     for k in ("work_dir", "log_path", "trajectory_path", "optimized_xyz",
               "rmsd_png", "rmsd_xvg", "energy_xvg"):
         if res.get(k):
@@ -536,6 +551,12 @@ def run_cleanup(days: int = 7, dry_run: bool = False,
     for d in all_dirs:
         task_id = d.name.rsplit("_", 1)[-1]
         status = rows.get(task_id)
+        # 缺口 #33: DB 无行的孤儿目录 (reaction/嵌入几何的子 workdir,
+        # 或崩溃残留) — 超期即可删 (父任务级联取消已保证无存活进程)
+        if status is None:
+            if d.stat().st_mtime < cutoff:
+                victims.append(d)
+            continue
         if status not in _TERMINAL:
             continue
         if d.stat().st_mtime < cutoff:
@@ -612,6 +633,9 @@ def add_tool_args(p: argparse.ArgumentParser) -> None:
     p.add_argument("--temperature-k", dest="temperature_k", type=float)
     p.add_argument("--analyze", action="store_true",
                    help="gromacs: MD 后 gmx rms/energy 统计 + PNG")
+    p.add_argument("--analyze-with", dest="analyze_with",
+                   help="gromacs: 分析项逗号串 (rms,energy,density,rdf,hbond) — "
+                        "指定即隐含 --analyze")
     p.add_argument("--fmax", type=float, help="mace fmax (eV/A)")
     p.add_argument("--max-steps", dest="max_steps", type=int)
     p.add_argument("--model", help="mace: small/medium/large")
@@ -650,7 +674,8 @@ def build_parser() -> argparse.ArgumentParser:
                         ("submit", "只提交, 返回 task_id (长任务用)")]:
         sp = sub.add_parser(name, help=help_, parents=[common])
         sp.add_argument("tool", choices=["gaussian", "gromacs", "mace",
-                                         "pyscf", "psi4", "auto", "conformers"])
+                                         "pyscf", "psi4", "auto", "conformers",
+                                         "reaction"])
         if name == "wait":
             sp.add_argument("--timeout", type=float, default=540.0,
                             help="CLI 侧最长等待秒 (默认 540, 适配 Bash 上限); "

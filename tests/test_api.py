@@ -903,3 +903,125 @@ def test_conformers_submit_shape(client, monkeypatch):
     r = client.post("/dft/conformers", headers=HEADERS,
                     json={"smiles": "O", "n_conformers": 5000})
     assert r.status_code == 422
+
+
+# ---------------------------------------------------------------
+# #34: analyze_options 校验与透传
+# ---------------------------------------------------------------
+def test_analyze_options_validation(client, monkeypatch):
+    import dft_service.api as api_mod
+
+    captured = {}
+
+    async def fake(task_id, p, timeout_s):
+        captured["p"] = p
+        return {"status": "success", "tool": "gromacs"}
+
+    monkeypatch.setitem(api_mod.RUNNERS, "gromacs", fake)
+    # 非法项 → 422
+    r = client.post("/dft/gromacs", headers=HEADERS, json={
+        "smiles": "O", "analyze": True, "analyze_options": ["rms", "quantum_tunneling"]})
+    assert r.status_code == 422
+    # 合法项 → 透传到 runner params
+    r = client.post("/dft/gromacs", headers=HEADERS, json={
+        "smiles": "O", "analyze": True,
+        "analyze_options": ["rms", "density", "rdf", "hbond"]})
+    assert r.status_code == 200
+    _poll_result(client, r.json()["task_id"])
+    assert captured["p"]["analyze_options"] == ["rms", "density", "rdf", "hbond"]
+
+
+# ---------------------------------------------------------------
+# #33: reaction 工作流
+# ---------------------------------------------------------------
+def test_reaction_orchestration_math(client, monkeypatch):
+    """2 H2O -> dimer: ΔE/ΔG 按计量数聚合; 缺 Gibbs 时只报电子能差"""
+    import asyncio
+    import dft_service.api as api_mod
+    import dft_service.runners as runners_pkg
+    import dft_service.runners.tool_definitions as td
+
+    monkeypatch.setattr(td, "availability_map", lambda: {
+        "gaussian": True, "gromacs": False, "mace": False, "pyscf": False,
+        "psi4": False,
+    })
+
+    async def fake_gauss(task_id, p, timeout_s):
+        if "reactants" and p.get("smiles") == "O":
+            return {"status": "success", "energy_hartree": -76.4,
+                    "thermochemistry": {"sum_elec_thermal_gibbs_hartree": -76.32},
+                    "smiles": "O", "n_imaginary": 0}
+        return {"status": "success", "energy_hartree": -152.9,
+                "thermochemistry": {"sum_elec_thermal_gibbs_hartree": -152.75},
+                "smiles": "<inline-xyz:6 atoms>", "n_imaginary": 0}
+
+    monkeypatch.setattr(runners_pkg, "run_gaussian", fake_gauss)
+
+    captured = {}
+
+    async def fake_exec(task_id, p, timeout_s):
+        captured["result"] = await runners_pkg.run_reaction(task_id, p, timeout_s)
+        return captured["result"]
+
+    monkeypatch.setitem(api_mod.RUNNERS, "reaction", fake_exec)
+    r = client.post("/dft/reaction", headers=HEADERS, json={
+        "reactants": [{"smiles": "O", "count": 2}],
+        "products": [{"xyz_content": "6\n\nO 0 0 0\nH 0 0 1\nH 0 1 0\n"
+                                      "O 0 0 3\nH 0 0 4\nH 0 1 3",
+                       "charge": 0, "multiplicity": 1}],
+    })
+    assert r.status_code == 200
+    _poll_result(client, r.json()["task_id"])
+    res = captured["result"]
+    assert res["status"] == "success"
+    # ΔE = -152.9 - 2*(-76.4) = -0.1 Ha → -262.5 kJ/mol
+    assert res["delta_electronic_hartree"] == pytest.approx(-0.1, abs=1e-6)
+    assert res["delta_electronic_kj_mol"] == pytest.approx(-262.55, abs=0.1)
+    # ΔG = -152.75 - 2*(-76.32) = -0.11 Ha
+    assert res["delta_gibbs_hartree"] == pytest.approx(-0.11, abs=1e-6)
+    assert len(res["species"]) == 2
+
+
+def test_reaction_species_validation(client):
+    """xyz species 缺 charge → 422; smiles+xyz 都给 → 422"""
+    r = client.post("/dft/reaction", headers=HEADERS, json={
+        "reactants": [{"xyz_content": "1\n\nO 0 0 0"}],
+        "products": [{"smiles": "O"}]})
+    assert r.status_code == 422
+    r = client.post("/dft/reaction", headers=HEADERS, json={
+        "reactants": [{"smiles": "O", "xyz_content": "1\n\nO 0 0 0",
+                       "charge": 0, "multiplicity": 1}],
+        "products": [{"smiles": "O"}]})
+    assert r.status_code == 422
+
+
+def test_kill_reaction_tree_cascades(monkeypatch):
+    """父任务取消 → 级联杀登记的子任务进程"""
+    import subprocess as sp
+    from dft_service.runners import executor as ex
+
+    killed_pids = []
+
+    def fake_run(cmd, **kw):
+        if cmd[:2] == ["taskkill", "/PID"]:
+            killed_pids.append(cmd[2])
+
+        class R:
+            returncode = 0
+        return R()
+
+    monkeypatch.setattr(sp, "run", fake_run)
+    monkeypatch.setattr(ex.os, "name", "nt")
+
+    class P:
+        def __init__(self, pid):
+            self.pid = pid
+
+    ex._POPEN["parent01"] = (P(111), None)
+    ex._POPEN["child0001"] = (P(222), None)
+    ex._POPEN["child0002"] = (P(333), None)
+    ex.register_children("parent01", ["child0001", "child0002"])
+    n = ex.kill_reaction_tree("parent01")
+    assert n == 2  # 存活子进程数
+    assert set(killed_pids) == {"222", "333", "111"}
+    assert not ex._CHILDREN.get("parent01")

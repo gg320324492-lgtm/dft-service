@@ -29,6 +29,7 @@ from dft_service.runners import (
     run_mace,
     run_psi4,
     run_pyscf,
+    run_reaction,
 )
 from dft_service.runners.tool_definitions import list_available_tools, select_backend
 
@@ -43,6 +44,7 @@ RUNNERS = {
     "pyscf": run_pyscf,
     "psi4": run_psi4,
     "conformers": run_conformers,  # 缺口 #32 工作流 (非独立后端, 走 mace)
+    "reaction": run_reaction,      # 缺口 #33 工作流 (编排 gaussian opt freq 子任务)
 }
 
 # task → Gaussian 路由关键字 (SP 是文档化合法关键字; properties 无独立关键字, 用 sp)
@@ -128,7 +130,21 @@ class GromacsRequest(_CallbackMixin):
     temperature_K: float = Field(300.0, ge=0.0, le=2000.0)
     analyze: bool = Field(False, description="缺口 #31: MD 后 gmx rms/energy "
                                              "统计 + PNG 出图")
+    analyze_options: Optional[list[str]] = Field(
+        None, description="缺口 #34: 分析项子集 (默认 rms,energy) — "
+                          "可含 density / rdf / hbond (气液界面分析)")
     timeout_s: float = Field(14400.0, ge=10.0, le=_TIMEOUT_LE)
+
+    _VALID_ANALYZE = ("rms", "energy", "density", "rdf", "hbond")
+
+    @model_validator(mode="after")
+    def _check_analyze_options(self):
+        bad = set(self.analyze_options or ()) - set(self._VALID_ANALYZE)
+        if bad:
+            raise ValueError(
+                f"analyze_options 非法项: {sorted(bad)} "
+                f"(可用: {list(self._VALID_ANALYZE)})")
+        return self
 
 
 class MaceRequest(_CallbackMixin, _XyzCapableMixin):
@@ -163,6 +179,39 @@ class Psi4Request(_CallbackMixin):
     nproc: int = Field(8, ge=1, le=64)
     mem: str = Field("8GB", pattern=r"^\d{1,5}(?i:MB|GB|TB)$")
     timeout_s: float = Field(3600.0, ge=10.0, le=_TIMEOUT_LE)
+
+
+class SpeciesModel(BaseModel):
+    """缺口 #33: 反应物种 — smiles 或内联 xyz 二选一, 带计量数"""
+    smiles: Optional[str] = Field(None, min_length=1, max_length=2000)
+    xyz_content: Optional[str] = Field(None, max_length=_XYZ_MAX)
+    count: int = Field(1, ge=1, le=20)
+    charge: Optional[int] = Field(None, ge=-10, le=10)
+    multiplicity: Optional[int] = Field(None, ge=1, le=10)
+    label: Optional[str] = Field(None, max_length=40)
+
+    @model_validator(mode="after")
+    def _one_input(self):
+        if bool(self.smiles) == bool(self.xyz_content):
+            raise ValueError("species 的 smiles 与 xyz_content 二选一")
+        if not self.smiles and (self.charge is None or self.multiplicity is None):
+            raise ValueError("species 用 xyz 时 charge/multiplicity 必须显式")
+        return self
+
+
+class ReactionRequest(_CallbackMixin):
+    """缺口 #33: 反应能垒/热化学工作流 — 各物种 opt freq → ΔE/ΔG (含计量数)"""
+    reactants: list[SpeciesModel] = Field(..., min_length=1, max_length=6)
+    products: list[SpeciesModel] = Field(..., min_length=1, max_length=6)
+    xc: str = Field("B3LYP", pattern=_ROUTE_SAFE_RE)
+    basis: str = Field("6-31G(d)", pattern=_ROUTE_SAFE_RE)
+    solvent: str = Field("none", pattern=r"^[A-Za-z\-]{1,30}$")
+    try_ts: bool = Field(False, description="额外尝试 QST2 TS 搜索 (一键尝试, "
+                                            "成功率依体系; 失败如实报告)")
+    nproc: int = Field(8, ge=1, le=64)
+    mem: str = Field("8GB", pattern=r"^\d{1,5}(?i:MB|GB|TB)$")
+    species_timeout_s: Optional[float] = Field(None, ge=60.0, le=_TIMEOUT_LE)
+    timeout_s: float = Field(14400.0, ge=60.0, le=_TIMEOUT_LE)
 
 
 class ConformersRequest(_CallbackMixin):
@@ -213,6 +262,7 @@ _SEMAPHORES: dict[str, asyncio.Semaphore] = {
     "pyscf": asyncio.Semaphore(2),
     "psi4": asyncio.Semaphore(2),
     "conformers": asyncio.Semaphore(1),  # 与 mace 共用 GPU, 单并发
+    "reaction": asyncio.Semaphore(1),    # 内部再派发 gaussian 子任务 (其自带限流)
 }
 
 
@@ -407,6 +457,17 @@ async def submit_conformers(req: ConformersRequest, submitter: Optional[str] = N
                          req.timeout_s, submitter)
 
 
+@router.post("/reaction", response_model=TaskIdResponse,
+             dependencies=[Depends(require_api_key)])
+async def submit_reaction(req: ReactionRequest, submitter: Optional[str] = None):
+    """反应能垒/热化学 (缺口 #33): 各物种 opt freq → ΔE/ΔG 汇总 (可带 QST2 尝试)"""
+    def _side(species):
+        return " + ".join(f"{s.count}*{s.smiles or s.label or 'xyz'}" for s in species)
+    label = f"{_side(req.reactants)} -> {_side(req.products)}"
+    return await _submit("reaction", label, req.model_dump(),
+                         req.timeout_s, submitter)
+
+
 @router.get("/status/{task_id}", dependencies=[Depends(require_api_key)])
 async def task_status(task_id: str):
     rec = await taskstore.get_task(task_id, include_result=False)
@@ -469,7 +530,7 @@ async def cancel_job(task_id: str):
       WSL 侧按唯一 workdir 名 pkill 清残留 gmx/pyscf)
     - 终态: 幂等返回当前状态
     """
-    from dft_service.runners.executor import kill_task_process
+    from dft_service.runners.executor import kill_reaction_tree
 
     rec = await taskstore.get_task(task_id)
     if rec is None:
@@ -479,7 +540,8 @@ async def cancel_job(task_id: str):
                   "unavailable", "completed_with_warnings", "timeout"):
         return {"task_id": task_id, "status": status,
                 "process_killed": False, "message": "task already finished"}
-    killed = kill_task_process(task_id)
+    # 缺口 #33: reaction 等父任务 → 级联杀全部子任务进程
+    killed = kill_reaction_tree(task_id) > 0
     await taskstore.cancel_task(task_id)
     await _fire_callback(rec.get("callback_url"), rec.get("tool"), task_id)  # #37
     return {
