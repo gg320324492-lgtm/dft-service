@@ -71,6 +71,7 @@ _FLAG_MAP = {
     "box_nm": "box_nm",
     "time_ns": "time_ns",
     "temperature_k": "temperature_K",
+    "analyze": "analyze",
     "fmax": "fmax_ev_A",
     "max_steps": "max_steps",
     "model": "model",
@@ -78,6 +79,7 @@ _FLAG_MAP = {
     "task": "task",
     "quality": "quality",
     "max_opt_steps": "max_opt_steps",
+    "solvation_energy": "solvation_energy",
     "timeout_s": "timeout_s",
 }
 
@@ -114,6 +116,10 @@ def build_payload(ns: argparse.Namespace) -> dict:
         val = getattr(ns, flag, None)
         if val is not None:
             payload[field] = val
+    # 缺口 #29: --xyz-file 读文件内容进 xyz_content (与 --smiles 二选一)
+    xfp = getattr(ns, "xyz_file", None)
+    if xfp:
+        payload["xyz_content"] = Path(xfp).read_text(encoding="utf-8")
     if ns.data:  # --data 整包逃生舱, 覆盖旗标
         payload.update(json.loads(ns.data))
     return payload
@@ -124,9 +130,12 @@ def human_summary(res: dict) -> str:
         "!" if res.get("status") == "completed_with_warnings" else "✗")
     lines = [f"{icon} [{res.get('status')}] tool={res.get('tool')} "
              f"task_id={res.get('task_id')} elapsed={res.get('elapsed_s')}s"]
-    for k in ("energy_hartree", "energy_ev", "energy_eV", "converged",
+    for k in ("energy_hartree", "energy_ev", "energy_eV", "delta_solvation_kj_mol",
+              "energy_gas_hartree", "converged",
               "scf_converged", "n_steps", "n_atoms", "n_imaginary",
               "lowest_freq_cm_1", "dipole_debye", "homo_lumo_gap_eV",
+              "rmsd_avg_nm", "rmsd_max_nm", "potential_avg_kj_mol",
+              "temperature_avg_K",
               "charge", "multiplicity", "backend"):
         if res.get(k) is not None:
             lines.append(f"  {k} = {res[k]}")
@@ -134,7 +143,8 @@ def human_summary(res: dict) -> str:
     if isinstance(thermo, dict):
         for k, v in thermo.items():
             lines.append(f"  {k} = {v}")
-    for k in ("work_dir", "log_path", "trajectory_path", "optimized_xyz"):
+    for k in ("work_dir", "log_path", "trajectory_path", "optimized_xyz",
+              "rmsd_png", "rmsd_xvg", "energy_xvg"):
         if res.get(k):
             lines.append(f"  {k}: {res[k]}")
     for k in ("warning", "error_msg"):
@@ -493,6 +503,8 @@ def cmd_cleanup(args, client) -> int:  # noqa: ARG001 — 本地操作, 不需�
 # ------------------------------------------------------------------
 def add_tool_args(p: argparse.ArgumentParser) -> None:
     p.add_argument("--smiles")
+    p.add_argument("--xyz-file", dest="xyz_file",
+                   help="内联几何输入文件 (gaussian/pyscf/mace; 与 --smiles 二选一)")
     p.add_argument("--smiles-file", help="批量: 每行一个 SMILES (# 注释)")
     p.add_argument("--summary", help="批量 CSV 输出路径")
     p.add_argument("--xc", help="gaussian 泛函")
@@ -511,6 +523,8 @@ def add_tool_args(p: argparse.ArgumentParser) -> None:
     p.add_argument("--box-nm", dest="box_nm", type=float)
     p.add_argument("--time-ns", dest="time_ns", type=float)
     p.add_argument("--temperature-k", dest="temperature_k", type=float)
+    p.add_argument("--analyze", action="store_true",
+                   help="gromacs: MD 后 gmx rms/energy 统计 + PNG")
     p.add_argument("--fmax", type=float, help="mace fmax (eV/A)")
     p.add_argument("--max-steps", dest="max_steps", type=int)
     p.add_argument("--model", help="mace: small/medium/large")
@@ -518,6 +532,9 @@ def add_tool_args(p: argparse.ArgumentParser) -> None:
     p.add_argument("--task", help="auto: energy/optimize/freq/properties/md")
     p.add_argument("--quality", help="auto: fast/accurate/auto")
     p.add_argument("--max-opt-steps", dest="max_opt_steps", type=int)
+    p.add_argument("--solvation-energy", dest="solvation_energy",
+                   action="store_true",
+                   help="pyscf: 气相+C-PCM 双算, 出 delta_solvation_kj_mol")
     p.add_argument("--timeout-s", dest="timeout_s", type=float,
                    help="服务端任务超时 (秒)")
     p.add_argument("--data", help='整包 JSON 逃生舱, 如 \'{"smiles":"O","job":"sp"}\'')

@@ -335,6 +335,51 @@ def test_auto_opt_freq_guards_non_gaussian(client, monkeypatch):
 
 
 # ---------------------------------------------------------------
+# #29: 内联 xyz 输入 (smiles / xyz_content 二选一)
+# ---------------------------------------------------------------
+def test_xyz_content_validation(client, monkeypatch):
+    import dft_service.runners as runners_pkg
+
+    captured = {}
+
+    async def fake(tool, workdir, driver, params, timeout_s, **_):
+        captured["params"] = params
+        return {"status": "success", "tool": tool}
+
+    monkeypatch.setattr(runners_pkg, "execute_driver", fake)
+
+    # 都不给 / 都给 → 422
+    r = client.post("/dft/gaussian", headers=HEADERS, json={})
+    assert r.status_code == 422
+    r = client.post("/dft/gaussian", headers=HEADERS,
+                    json={"smiles": "O", "xyz_content": "1\n\nO 0 0 0"})
+    assert r.status_code == 422
+    # 只给 xyz 但缺 charge/mult → 422
+    r = client.post("/dft/gaussian", headers=HEADERS,
+                    json={"xyz_content": "1\n\nO 0 0 0"})
+    assert r.status_code == 422
+    # 合法 xyz 请求 → 202 语义 (queued) 且 smiles 列落占位标签
+    r = client.post("/dft/gaussian", headers=HEADERS, json={
+        "xyz_content": "2\nwater\nO 0 0 0\nH 0 0 0.96\n",
+        "charge": 0, "multiplicity": 1, "job": "sp"})
+    assert r.status_code == 200
+    assert r.json()["status"] == "queued"
+    body = _poll_result(client, r.json()["task_id"])
+    assert body["status"] == "success"
+    assert captured["params"]["xyz_content"].startswith("2\nwater")
+
+    # pyscf 同样支持 (smiles 可缺)
+    r = client.post("/dft/pyscf", headers=HEADERS, json={
+        "xyz_content": "2\n\nO 0 0 0\nH 0 0 0.96\n", "charge": 0,
+        "multiplicity": 1, "basis": "sto-3g"})
+    assert r.status_code == 200
+    # gromacs 不收 xyz (拓扑必须 SMILES)
+    r = client.post("/dft/gromacs", headers=HEADERS,
+                    json={"xyz_content": "1\n\nO 0 0 0"})
+    assert r.status_code == 422
+
+
+# ---------------------------------------------------------------
 # 缺口 #13: auto 丢参数告警
 # ---------------------------------------------------------------
 def test_auto_warns_when_solvent_dropped_for_mace(client, monkeypatch):

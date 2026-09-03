@@ -196,6 +196,21 @@ def compute(params: dict, workdir: Path) -> dict:
     result["status"] = "success" if mf.converged else "completed_with_warnings"
     if not mf.converged:
         result["warning"] = "SCF not converged"
+
+    # 缺口 #30: 溶剂化能一键双算 — 同一几何 气相 vs C-PCM 单点差。
+    # 注意语义: 电子静态溶剂化能, 不含空腔/熵项与构象加权, ≠ 实验 ΔGsolv。
+    if params.get("solvation_energy"):
+        if solvent.lower() in _SOLVENT_NONE:
+            raise ValueError("solvation_energy=true 需指定溶剂 (solvent=water...)")
+        mol_final = mol_eq if operation == "optimize" else mol
+        mf_gas = _build_mf(mol_final, method, "none", spin)
+        e_gas = mf_gas.kernel()
+        result["energy_gas_hartree"] = float(e_gas)
+        result["delta_solvation_kj_mol"] = round(
+            (float(energy) - float(e_gas)) * 2625.499639, 3)
+        result["solvation_note"] = (
+            "电子静态溶剂化能 (C-PCM − 气相, 同几何); 非完整实验 ΔGsolv")
+
     result["elapsed_s"] = round(time.time() - t0, 2)
     return result
 

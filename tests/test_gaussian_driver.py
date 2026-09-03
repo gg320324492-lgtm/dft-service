@@ -5,6 +5,7 @@ rdkit / g16.exe / gaussian_runner 全部 stub, 不真跑计算。
 """
 import subprocess
 import sys
+import time
 import types
 from pathlib import Path
 
@@ -202,6 +203,50 @@ def test_solvent_rejects_injection():
 
 
 # ---------------------------------------------------------------
+# #29: 内联 xyz 输入
+# ---------------------------------------------------------------
+def test_parse_xyz_text_std_and_bare():
+    from _driver_common import parse_xyz_text
+    std = parse_xyz_text("2\nwater\nO 0 0 0\nH 0 0 0.96\n")
+    assert std[0] == ["O", "H"] and std[1][1] == (0.0, 0.0, 0.96)
+    bare = parse_xyz_text("O 0.0 0.0 0.0\nh 0.0 0.0 0.96\ncL 1 1 1")
+    assert bare[0] == ["O", "H", "Cl"]
+    with pytest.raises(ValueError):
+        parse_xyz_text("1\nx\nO 0 0\n")       # 字段不足
+    with pytest.raises(ValueError):
+        parse_xyz_text("")                     # 空
+
+
+def test_gjf_from_xyz_content(tmp_path, monkeypatch):
+    """xyz 输入不走 rdkit (_smiles_to_coords 故意炸) 也能出正确 gjf 坐标块"""
+    monkeypatch.setattr(gd, "_smiles_to_coords",
+                        lambda s: (_ for _ in ()).throw(AssertionError("不该调 rdkit")))
+    wd = tmp_path / "gaussian_xyz"
+    wd.mkdir()
+    p = {"xc": "B3LYP", "basis": "6-31G(d)", "job": "sp", "solvent": "none",
+         "charge": -1, "multiplicity": 1, "nproc": 4, "mem": "4GB"}
+    path = gd._gen_gjf(wd, None, p, chk_stem="dft_job_x",
+                       atoms_coords=([("O"), ("H")],
+                                     [(0.0, 0.0, 0.0), (0.0, 0.0, 0.96)]))
+    txt = path.read_text(encoding="utf-8")
+    assert "-1 1" in txt
+    atom_lines = [ln for ln in txt.splitlines() if ln.strip().startswith(("O ", "O  "))
+                  or (ln.split()[:1] == ["O"] and "0.00000000" in ln)]
+    assert len(atom_lines) == 1 and atom_lines[0].split()[1:] == \
+        ["0.00000000", "0.00000000", "0.00000000"]
+    assert "inline-xyz" in txt  # 标题占位
+
+
+def test_compute_xyz_requires_charge(g16_env):
+    """缺 charge/mult → failed 带明确指引 (API 已拦, driver 纵深兜底)"""
+    workdir, make_params, _, _ = g16_env
+    res = gd.compute(make_params(smiles=None,
+                                 xyz_content="1\n\nO 0 0 0"), workdir)
+    assert res["status"] == "failed"
+    assert "charge" in res["error_msg"]
+
+
+# ---------------------------------------------------------------
 # #22: write_progress 原子写
 # ---------------------------------------------------------------
 def test_write_progress_atomic(tmp_path):
@@ -213,3 +258,33 @@ def test_write_progress_atomic(tmp_path):
     assert payload["opt_step"] == 3
     assert "updated_at" in payload
     assert not (tmp_path / "progress.json.tmp").exists()  # rename 完成, 无残留 tmp
+
+
+def test_opt_freq_waits_for_process_exit(g16_env, monkeypatch):
+    """#27 回归: 多步任务第 1 步末就写 "Normal termination"+
+    "Proceeding to internal job step 2" — 完成判定必须等进程真正退出,
+    否则拷回半成品日志 (频率段缺失, 2026-09-04 实测踩中)"""
+    workdir, make_params, state, g16_dir = g16_env
+    # 文件从第一次轮询起就带 "Normal termination", 但进程还没退出
+    calls = {"poll": 0}
+
+    class StillRunning:
+        returncode = 0
+
+        def poll(self):
+            calls["poll"] += 1
+            return None if calls["poll"] < 3 else 0
+
+        def kill(self):
+            pass
+
+    def fake_popen(cmd, **kw):
+        stem = Path(cmd[1]).stem
+        (g16_dir / f"{stem}.out").write_text(state["out_text"], encoding="utf-8")
+        return StillRunning()
+
+    monkeypatch.setattr(subprocess, "Popen", fake_popen)
+    monkeypatch.setattr(time, "sleep", lambda s: None)  # 免真实等待
+    res = gd.compute(make_params(job="opt freq"), workdir)
+    assert res["status"] == "success"
+    assert calls["poll"] >= 3  # 旧代码 poll=1 时就会被中间标记骗走

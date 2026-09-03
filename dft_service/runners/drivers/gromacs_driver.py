@@ -18,6 +18,76 @@ sys.path.insert(0, "E:/sci-software/workflows")  # noqa: S104
 _CUTOFF_KEYS = ("rlist", "rcoulomb", "rvdw")
 
 
+def _analyze_md(md_paths: dict, workdir: Path, distro: str) -> dict:
+    """缺口 #31 v1: MD 后处理 — gmx rms/energy → 统计量 (+ matplotlib 出图)。
+
+    自写而非复用 workflows.analyze_md: 后者 RMSD 写死 "Protein" 组,
+    气泡/纯溶剂体系没有该组会失败。这里统一用 "System" 组。
+    分析失败不拖垮已成功的 MD, 只回 rmsd_analysis_failed / energy_analysis_failed。
+    """
+    from gromacs_runner import _copy_from_wsl, _copy_to_wsl, _read_xvg, _wsl_run
+
+    out: dict = {}
+    adir = workdir / "analyze"
+    adir.mkdir(exist_ok=True)
+    wsl_work = f"/tmp/{workdir.name}_an"
+    _wsl_run(f"mkdir -p {wsl_work}", wsl_distro=distro)
+    tpr_wsl = _copy_to_wsl(md_paths["tpr"], wsl_work, wsl_distro=distro)
+    xtc_wsl = _copy_to_wsl(md_paths["xtc"], wsl_work, wsl_distro=distro)
+    edr_wsl = _copy_to_wsl(md_paths["edr"], wsl_work, wsl_distro=distro)
+
+    # RMSD (System 拟合 + System 计算, 对任意体系通用)
+    try:
+        rmsd_wsl = f"{wsl_work}/rmsd.xvg"
+        _wsl_run(f'echo "System System" | gmx rms -s {tpr_wsl} -f {xtc_wsl} '
+                 f"-o {rmsd_wsl} -xvg none", cwd=wsl_work, wsl_distro=distro,
+                 timeout=180)
+        host_rmsd = _copy_from_wsl(rmsd_wsl, adir, wsl_distro=distro)
+        df = _read_xvg(host_rmsd)
+        col = df.columns[-1]
+        vals = df[col].astype(float)
+        out["rmsd_xvg"] = str(host_rmsd)
+        out["rmsd_avg_nm"] = round(float(vals.mean()), 4)
+        out["rmsd_max_nm"] = round(float(vals.max()), 4)
+    except Exception as e:  # noqa: BLE001
+        out["rmsd_analysis_failed"] = str(e)[:200]
+
+    # 势能 / 温度 (gmx energy)
+    try:
+        en_wsl = f"{wsl_work}/energy.xvg"
+        _wsl_run(f'echo "Potential Temperature" | gmx energy -f {edr_wsl} '
+                 f"-o {en_wsl} -xvg none",
+                 cwd=wsl_work, wsl_distro=distro, timeout=120)
+        host_en = _copy_from_wsl(en_wsl, adir, wsl_distro=distro)
+        df = _read_xvg(host_en)
+        for c in df.columns:
+            if "Potential" in c or "col_1" in c:
+                out["potential_avg_kj_mol"] = round(float(df[c].mean()), 2)
+            if "Temperature" in c or "col_2" in c:
+                out["temperature_avg_K"] = round(float(df[c].mean()), 2)
+        out["energy_xvg"] = str(host_en)
+    except Exception as e:  # noqa: BLE001
+        out["energy_analysis_failed"] = str(e)[:200]
+
+    # 出图 (scichem matplotlib, 无则静默跳过)
+    try:
+        import matplotlib
+        matplotlib.use("Agg")
+        import matplotlib.pyplot as plt
+        if "rmsd_xvg" in out:
+            df = _read_xvg(out["rmsd_xvg"])
+            fig, ax = plt.subplots(figsize=(6, 3.5))
+            ax.plot(df[df.columns[0]], df[df.columns[-1]])
+            ax.set_xlabel("time (ps)"); ax.set_ylabel("RMSD (nm)")
+            ax.set_title("RMSD")
+            fig.savefig(adir / "rmsd.png", dpi=110, bbox_inches="tight")
+            plt.close(fig)
+            out["rmsd_png"] = str(adir / "rmsd.png")
+    except Exception:  # noqa: BLE001 — 无 matplotlib/无显示 全静默
+        pass
+    return out
+
+
 def _make_mdp(kind: str, workdir: Path, box_nm: float,
               nsteps: int | None = None, temp: float | None = None) -> Path:
     """生成 mdp — 盒子太小时缩截断 (cutoff < 盒子一半, 留 0.1nm 余量)"""
@@ -98,6 +168,15 @@ def compute(params: dict, workdir: Path) -> dict:
     out["trajectory_path"] = str(md["xtc"])
     out["md_log"] = str(md["log"])
     out["final_gro"] = str(md["gro"])
+
+    # 缺口 #31: 分析后处理 (可选) — 失败只降级 warning, 不推翻已成功的 MD
+    if params.get("analyze"):
+        write_progress(workdir, "analyze", elapsed_s=round(time.time() - t0))
+        try:
+            out.update(_analyze_md(md, workdir, distro))
+        except Exception as e:  # noqa: BLE001
+            out["analysis_failed"] = f"{type(e).__name__}: {e}"[:300]
+
     out["status"] = "success"
     out["elapsed_s"] = round(time.time() - t0, 2)
     return out

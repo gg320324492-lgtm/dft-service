@@ -47,10 +47,11 @@ _GAUSSIAN_FREQ_CASES = [
      "frequencies_cm_1"),
 ]
 _GROMACS_CASES = [
-    # demo 级拓扑 (GROMOS 水盒), 只验链路不验科学量
+    # demo 级拓扑 (GROMOS 水盒), 只验链路不验科学量; analyze 顺带验 #31
     ("gromacs 10x0.01ns", "gromacs",
-     {"smiles": "O", "n_molecules": 10, "box_nm": 2.6, "time_ns": 0.01}, 1800,
-     "trajectory_path"),
+     {"smiles": "O", "n_molecules": 10, "box_nm": 2.6, "time_ns": 0.01,
+      "analyze": True}, 1800,
+     "rmsd_avg_nm"),
 ]
 
 

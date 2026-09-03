@@ -12,7 +12,7 @@ import sys
 import time
 from pathlib import Path
 
-from _driver_common import load_params, run_driver, write_progress
+from _driver_common import load_params, parse_xyz_text, run_driver, write_progress
 
 sys.path.insert(0, "E:/sci-software/workflows")  # noqa: S104 — submit_gjf/parse_log 复用
 
@@ -143,19 +143,22 @@ def _build_route(p: dict) -> str:
     return "# " + " ".join(route_parts)
 
 
-def _gen_gjf(workdir: Path, smiles: str, p: dict, chk_stem: str) -> Path:
+def _gen_gjf(workdir: Path, smiles: str | None, p: dict, chk_stem: str,
+             atoms_coords: tuple | None = None) -> Path:
     """自建 gjf 生成 (支持 SCRF) — 不用 workflows.gen_gjf 因为它 route 写死
 
     chk_stem: %chk 用全局唯一名 (缺口 #18) — g16 的 cwd 是安装目录,
     写死 input.chk 会让并发任务互相覆盖。
+    atoms_coords: 缺口 #29 内联几何 — 传入则用它, 否则从 smiles 生成。
     """
-    atoms, coords = _smiles_to_coords(smiles)
+    atoms, coords = atoms_coords if atoms_coords is not None \
+        else _smiles_to_coords(smiles)
 
     route = _build_route(p)
     solvent = (p.get("solvent") or "none").strip()
 
     stem = "input"
-    title = " ".join(smiles.split())[:100]  # 压掉换行 (smiles 直通 gjf 标题注释行)
+    title = " ".join((smiles or "inline-xyz").split())[:100]  # 压掉换行 (直通注释行)
     lines = [
         f"%nproc={p.get('nproc', 8)}",
         f"%mem={p.get('mem', '8GB')}",
@@ -196,19 +199,30 @@ def compute(params: dict, workdir: Path) -> dict:
 
     t0 = time.time()
 
+    # 缺口 #29: 内联几何 vs SMILES — 二者互斥 (API 已校验, driver 再兜底)
+    xyz_content = params.get("xyz_content")
+    smiles = params.get("smiles")
+    atoms_coords = None
+    if xyz_content:
+        atoms_coords = parse_xyz_text(xyz_content)
+        if params.get("charge") is None or params.get("multiplicity") is None:
+            return {"status": "failed",
+                    "error_msg": "xyz 输入必须显式提供 charge 和 multiplicity "
+                                 "(无 SMILES 可推断)"}
     # 缺口 #2: charge/multiplicity 未提供时从 SMILES 推断 —
     # 旧行为默默按 0/1 跑, 阳离子/自由基返回看似成功的错误能量
     charge = params.get("charge")
     multiplicity = params.get("multiplicity")
     if charge is None or multiplicity is None:
-        inf_charge, inf_mult = _infer_charge_mult(params["smiles"])
+        inf_charge, inf_mult = _infer_charge_mult(smiles)
         charge = int(charge) if charge is not None else inf_charge
         multiplicity = int(multiplicity) if multiplicity is not None else inf_mult
     params = {**params, "charge": int(charge), "multiplicity": int(multiplicity)}
 
     # workdir 名含唯一 task_id; dft_job_ 前缀让 cleanup 能精确识别本服务的残留
     stem = f"dft_job_{workdir.name}"
-    gjf_path = _gen_gjf(workdir, params["smiles"], params, chk_stem=stem)
+    gjf_path = _gen_gjf(workdir, smiles, params, chk_stem=stem,
+                        atoms_coords=atoms_coords)
 
     # ------------------------------------------------------------------
     # 提交 (2026-08-30 重写) — workflows.submit_gjf 的两个 Windows 不兼容:
@@ -244,32 +258,49 @@ def compute(params: dict, workdir: Path) -> dict:
     out_path = g16_dir / f"{stem}.out"
     deadline = _time.time() + float(params.get("timeout_s", 7200))
     n_tick = 0
+
+    def _tail(text_chars: int = 4096) -> str:
+        try:
+            return out_path.read_text(encoding="utf-8", errors="ignore")[-text_chars:]
+        except OSError:
+            return ""
+
     while _time.time() < deadline:
-        if proc.poll() is not None and proc.returncode != 0:
+        rc = proc.poll()
+        tail = _tail() if out_path.exists() else ""
+        terminated = "Normal termination" in tail or "Error termination" in tail
+        if rc is not None and rc != 0 and not terminated:
             _cleanup_g16_dir(g16_dir, stem)  # 缺口 #18: 异常退出也清残留
             return {
                 "status": "failed",
-                "error_msg": f"Gaussian exited with code {proc.returncode}",
+                "error_msg": f"Gaussian exited with code {rc}",
                 "stage": "submit",
             }
-        if out_path.exists():
-            try:
-                tail = out_path.read_text(encoding="utf-8", errors="ignore")[-4096:]
-            except OSError:
-                tail = ""
-            if "Normal termination" in tail or "Error termination" in tail:
-                _time.sleep(1.0)  # 让缓冲写完
+        if rc is not None and not terminated:
+            # 进程已退但文件尾无终止标记 (崩溃截断): 排空一次照常解析
+            _time.sleep(2.0)
+            if "Normal termination" not in _tail() and "Error termination" not in _tail():
                 break
-            # 缺口 #22: 每 ~15s 报一次进度 (opt 步数 / 累计 SCF 周期 / 末行)
-            n_tick += 1
-            if n_tick % 5 == 0:
-                write_progress(
-                    workdir, "running", backend="g16",
-                    elapsed_s=round(_time.time() - t0),
-                    opt_step=(lambda m: int(m.group(1)) if m else None)(
-                        re.search(r"Step number\s+(\d+)", tail)),
-                    scf_done=len(re.findall(r"SCF Done", tail)),
-                    last_line=(tail.strip().splitlines() or [""])[-1][:120],
+        # 缺口 #27 修复: 完成判定必须同时要求进程已退出 (rc 非 None)。
+        # G16 多步任务 (opt freq) 会在第 1 步末就写出 "Normal termination"
+        # 接 "Proceeding to internal job step number 2", 只看字符串会提前
+        # 拷回半成品日志 (频率段还没跑完)。
+        if rc is not None and terminated:
+            _time.sleep(1.0)  # 让缓冲写完
+            break
+        if terminated and "Error termination" in tail:
+            _time.sleep(1.0)
+            break
+        # 缺口 #22: 每 ~15s 报一次进度 (opt 步数 / 累计 SCF 周期 / 末行)
+        n_tick += 1
+        if out_path.exists() and n_tick % 5 == 0:
+            write_progress(
+                workdir, "running", backend="g16",
+                elapsed_s=round(_time.time() - t0),
+                opt_step=(lambda m: int(m.group(1)) if m else None)(
+                    re.search(r"Step number\s+(\d+)", tail)),
+                scf_done=len(re.findall(r"SCF Done", tail)),
+                last_line=(tail.strip().splitlines() or [""])[-1][:120],
                 )
         _time.sleep(3.0)
     else:
@@ -308,7 +339,8 @@ def compute(params: dict, workdir: Path) -> dict:
         "log_path": str(local_out),
         "gjf_path": str(gjf_path),
         "work_dir": str(workdir),
-        "smiles": params["smiles"],
+        "smiles": smiles or (f"<inline-xyz:{len(atoms_coords[0])} atoms>"
+                             if atoms_coords else None),
         "xc": params["xc"],
         "basis": params["basis"],
         "job": params["job"],

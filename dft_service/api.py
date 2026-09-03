@@ -18,7 +18,7 @@ import logging
 from typing import Any, Optional
 
 from fastapi import APIRouter, Depends, HTTPException
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 from dft_service import taskstore
 from dft_service.auth import require_api_key
@@ -63,10 +63,34 @@ _ROUTE_SAFE_OR_EMPTY_RE = r"^[A-Za-z0-9=,()+.*\- \t]*$"
 # 缺口 #20: 所有参数带上下限 — 防 timeout_s=10⁹ 类输入无限占住信号量。
 # 上限按课题组机器 (16 核 / 单卡 GPU / WSL 4 线程) 的合理用量放宽。
 _TIMEOUT_LE = 604800.0  # 7 天 (gromacs 长 MD)
+_XYZ_MAX = 200_000      # 内联 xyz 尺寸上限 (~4000 原子)
 
 
-class GaussianRequest(BaseModel):
-    smiles: str = Field(..., min_length=1, max_length=2000)
+class _XyzCapableMixin(BaseModel):
+    """缺口 #29: smiles / xyz_content 二选一 (gaussian/pyscf/mace 支持内联几何)
+
+    xyz 无 SMILES 可推 charge/multiplicity → 必须显式给 (mace 无此概念不含该检查)。
+    """
+    smiles: Optional[str] = Field(None, min_length=1, max_length=2000)
+    xyz_content: Optional[str] = Field(None, max_length=_XYZ_MAX,
+                                       description="内联 xyz 几何 (与 smiles 二选一)")
+
+    @model_validator(mode="after")
+    def _require_one_input(self):
+        if bool(self.smiles) == bool(self.xyz_content):
+            raise ValueError("smiles 与 xyz_content 二选一 (且仅一个)")
+        return self
+
+
+class _XyzNeedsChargeMixin(_XyzCapableMixin):
+    @model_validator(mode="after")
+    def _xyz_requires_charge(self):
+        if not self.smiles and (self.charge is None or self.multiplicity is None):
+            raise ValueError("xyz 输入无 SMILES 可推断, 请显式提供 charge 和 multiplicity")
+        return self
+
+
+class GaussianRequest(_XyzNeedsChargeMixin):
     xc: str = Field("B3LYP", pattern=_ROUTE_SAFE_RE)
     basis: str = Field("6-31G(d)", pattern=_ROUTE_SAFE_RE)
     job: str = Field("opt", pattern=_ROUTE_SAFE_RE,
@@ -93,11 +117,12 @@ class GromacsRequest(BaseModel):
     box_nm: float = Field(3.0, gt=0.0, le=30.0)
     time_ns: float = Field(1.0, gt=0.0, le=1000.0)
     temperature_K: float = Field(300.0, ge=0.0, le=2000.0)
+    analyze: bool = Field(False, description="缺口 #31: MD 后 gmx rms/energy "
+                                             "统计 + PNG 出图")
     timeout_s: float = Field(14400.0, ge=10.0, le=_TIMEOUT_LE)
 
 
-class MaceRequest(BaseModel):
-    smiles: str = Field(..., min_length=1, max_length=2000)
+class MaceRequest(_XyzCapableMixin):
     fmax_ev_A: float = Field(0.05, gt=0.0, le=10.0)
     max_steps: int = Field(200, ge=1, le=10000)
     model: str = "medium"
@@ -105,8 +130,7 @@ class MaceRequest(BaseModel):
     timeout_s: float = Field(900.0, ge=10.0, le=_TIMEOUT_LE)
 
 
-class PyscfRequest(BaseModel):
-    smiles: str = Field(..., min_length=1, max_length=2000)
+class PyscfRequest(_XyzNeedsChargeMixin):
     method: str = "B3LYP"
     basis: str = "6-31G*"
     operation: str = Field("energy", description="energy / optimize")
@@ -114,6 +138,9 @@ class PyscfRequest(BaseModel):
     charge: Optional[int] = Field(None, ge=-10, le=10, description="缺省从 SMILES 推断")
     multiplicity: Optional[int] = Field(None, ge=1, le=10, description="缺省从 SMILES 推断")
     max_opt_steps: int = Field(50, ge=1, le=1000)
+    solvation_energy: bool = Field(
+        False, description="缺口 #30: true 时同几何双算 (气相+C-PCM), "
+                           "返回 delta_solvation_kj_mol; 需 solvent 非 none")
     timeout_s: float = Field(1800.0, ge=10.0, le=_TIMEOUT_LE)
 
 
@@ -146,6 +173,11 @@ class TaskIdResponse(BaseModel):
     status: str
     submit_time: str
     tool: str
+
+
+def _label(req) -> str:
+    """smiles 或内联几何的展示标签 (DB smiles 列 NOT NULL)"""
+    return getattr(req, "smiles", None) or "<inline-xyz>"
 
 
 # ------------------------------------------------------------------
@@ -213,7 +245,7 @@ async def tools() -> dict:
 @router.post("/gaussian", response_model=TaskIdResponse,
              dependencies=[Depends(require_api_key)])
 async def submit_gaussian(req: GaussianRequest, submitter: Optional[str] = None):
-    return await _submit("gaussian", req.smiles, req.model_dump(), req.timeout_s, submitter)
+    return await _submit("gaussian", _label(req), req.model_dump(), req.timeout_s, submitter)
 
 
 @router.post("/gromacs", response_model=TaskIdResponse,
@@ -225,13 +257,13 @@ async def submit_gromacs(req: GromacsRequest, submitter: Optional[str] = None):
 @router.post("/mace", response_model=TaskIdResponse,
              dependencies=[Depends(require_api_key)])
 async def submit_mace(req: MaceRequest, submitter: Optional[str] = None):
-    return await _submit("mace", req.smiles, req.model_dump(), req.timeout_s, submitter)
+    return await _submit("mace", _label(req), req.model_dump(), req.timeout_s, submitter)
 
 
 @router.post("/pyscf", response_model=TaskIdResponse,
              dependencies=[Depends(require_api_key)])
 async def submit_pyscf(req: PyscfRequest, submitter: Optional[str] = None):
-    return await _submit("pyscf", req.smiles, req.model_dump(), req.timeout_s, submitter)
+    return await _submit("pyscf", _label(req), req.model_dump(), req.timeout_s, submitter)
 
 
 @router.post("/psi4", response_model=TaskIdResponse,

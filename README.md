@@ -143,6 +143,24 @@ steepest→steep / nsteps 差 1000 倍 + NPT 缺参 / nstxout 写 .trr 不是 .x
 
 测试 28 → 45 PASS。
 
+## 第三批收口记录 #27–#31 (2026-09-04, Phase 2 科学能力)
+
+27. **opt freq 联跑** — `--job "opt freq"` / auto `task=opt+freq` 一次拿几何+频率+热化学;
+    **实测揪出并修复完成判定 bug**: G16 多步任务在第 1 步末就写 "Normal termination"
+    再接 "Proceeding to internal job step 2", 旧轮询只看字符串会拷回半成品日志
+    (频率段缺失) — 现要求进程真正退出才算完成。实测 H₂O: 3 频率/0 虚频/G=-75.319 Ha
+28. **extra_route 逃生舱** — 路由行追加任意关键字 (int/scf/geom 等), API+driver 双层
+    白名单 (挡换行/#/%/\\), result.route 回显最终路由; TDDFT/NBO/scan 等进阶用法解锁
+29. **内联 xyz 输入** — gaussian/pyscf/mace 收 `xyz_content` (与 smiles 二选一;
+    xyz 时 charge/mult 必须显式), CLI `--xyz-file` 读文件; MD/优化接力几何可直接精修。
+    实测 xyz 水单点 −75.3127 Ha (STO-3G)
+30. **ΔGsolv 一键双算** — pyscf `solvation_energy=true`: 同几何气相+C-PCM, 返回
+    `delta_solvation_kj_mol` + 两个分量 + 语义标注 (电子静态项, ≠实验全 ΔGsolv)。
+    实测水 −27.2 kJ/mol (B3LYP/6-31G*, WSL pyscf)
+31. **GROMACS 分析 v1** — `analyze=true`: MD 后 gmx rms (System 组, 不写死 Protein) +
+    gmx energy → rmsd_avg/max_nm、potential_avg、temperature_avg + PNG 出图 (无
+    matplotlib 静默跳过); 分析失败只降级 warning 不推翻已成功的 MD。实测产物齐全
+
 ## 架构
 
 ```

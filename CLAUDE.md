@@ -9,9 +9,10 @@ MACE (GPU) / PySCF (WSL 回退) / Psi4。用户主要在 Claude Code 里通过 `
 ```bash
 cd /e/dft-service
 ./.venv/Scripts/python.exe run.py                      # 启动 (或 start.bat, 幂等)
-./.venv/Scripts/python.exe -m pytest tests/ -q         # 测试 (当前 28 PASS)
+./.venv/Scripts/python.exe -m pytest tests/ -q         # 测试 (当前 56 PASS)
 ./.venv/Scripts/python.exe dft_cli.py tools            # 健康检查
 ./.venv/Scripts/python.exe dft_cli.py wait pyscf --smiles O --basis sto-3g   # 真算冒烟
+./.venv/Scripts/python.exe scripts/smoke_all.py        # 五后端真算一键验收 (改 driver 后必跑)
 ./.venv/Scripts/python.exe scripts/cleanup.py --days 7 --dry-run   # 清理预览
 stop.bat                                               # 停止
 ```
@@ -27,6 +28,7 @@ stop.bat                                               # 停止
    新计算能力 = 写新 driver + scichem 里装包。
 3. **driver 协议**: `python <driver> <workdir>` — 读 `<workdir>/params.json`,
    永远写 `<workdir>/result.json` (失败也写 status=failed), 打印到 stdout 双通道。
+   可选写 `<workdir>/progress.json` (#22 进度, /dft/status 回读)。
    公共骨架在 `_driver_common.py` (run_driver 兜异常)。
 4. **WSL 路径**: Windows 路径进 WSL 必须 win_to_wsl_path (`E:\x` → `/mnt/e/x`);
    params 里的路径值在 execute_driver_wsl 里自动转换 (只转真实存在的)。

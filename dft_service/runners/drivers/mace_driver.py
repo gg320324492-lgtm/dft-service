@@ -10,7 +10,7 @@ import sys
 import time
 from pathlib import Path
 
-from _driver_common import load_params, run_driver, write_progress
+from _driver_common import load_params, parse_xyz_text, run_driver, write_progress
 
 sys.path.insert(0, "E:/sci-software/workflows")  # noqa: S104
 
@@ -58,9 +58,20 @@ def compute(params: dict, workdir: Path) -> dict:
     mace_relaxation._get_calculator = _patched_get_calculator
 
     t0 = time.time()
-    write_progress(workdir, "geometry", smiles=params["smiles"])
+    smiles = params.get("smiles")
     xyz_path = workdir / "input.xyz"
-    n_atoms = _smiles_to_xyz(params["smiles"], xyz_path)
+    if params.get("xyz_content"):
+        # 缺口 #29: 内联几何 → 规范化重写 (ase.io.read 需要标准 2 行头)
+        write_progress(workdir, "geometry", source="xyz_content")
+        atoms, coords = parse_xyz_text(params["xyz_content"])
+        with open(xyz_path, "w", encoding="utf-8") as f:
+            f.write(f"{len(atoms)}\ninline-xyz\n")
+            for a, c in zip(atoms, coords):
+                f.write(f"{a} {c[0]:.8f} {c[1]:.8f} {c[2]:.8f}\n")
+        n_atoms = len(atoms)
+    else:
+        write_progress(workdir, "geometry", smiles=smiles)
+        n_atoms = _smiles_to_xyz(smiles, xyz_path)
 
     traj_path = workdir / "trajectory.extxyz"
     # 缺口 #22: relax_trajectory 是单次阻塞调用 (不改 workflows 拿不到 BFGS 每步),
@@ -78,7 +89,7 @@ def compute(params: dict, workdir: Path) -> dict:
 
     out: dict = {
         "tool": "mace",
-        "smiles": params["smiles"],
+        "smiles": smiles or f"<inline-xyz:{n_atoms} atoms>",
         "n_atoms": n_atoms,
         "fmax_ev_A": params.get("fmax_ev_A", 0.05),
         "max_steps": params.get("max_steps", 200),
