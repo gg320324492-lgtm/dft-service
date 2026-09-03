@@ -9,7 +9,7 @@ MACE (GPU) / PySCF (WSL 回退) / Psi4。用户主要在 Claude Code 里通过 `
 ```bash
 cd /e/dft-service
 ./.venv/Scripts/python.exe run.py                      # 启动 (或 start.bat, 幂等)
-./.venv/Scripts/python.exe -m pytest tests/ -q         # 测试 (当前 64 PASS)
+./.venv/Scripts/python.exe -m pytest tests/ -q         # 测试 (当前 70 PASS)
 ./.venv/Scripts/python.exe dft_cli.py tools            # 健康检查
 ./.venv/Scripts/python.exe dft_cli.py wait pyscf --smiles O --basis sto-3g   # 真算冒烟
 ./.venv/Scripts/python.exe scripts/smoke_all.py        # 五后端真算一键验收 (改 driver 后必跑)
@@ -66,6 +66,7 @@ stop.bat                                               # 停止
 ## MCP server (mcp_server.py)
 
 已注册到 Claude Code user 作用域 (`claude mcp list` 可见, 全会话可用):
-7 个原生工具 (dft_tools/dft_wait/dft_submit/dft_status/dft_result/dft_cancel/dft_list)。
+9 个原生工具 (dft_tools/dft_wait/dft_submit/dft_status/dft_result/dft_cancel/
+dft_list/dft_stats/dft_cleanup)。
 改 mcp_server.py 后需在新会话生效 (stdio 进程随会话启动); SDK 固定 mcp<2
 (2.x 把 FastMCP 改名为 MCPServer)。注册命令见文件头 docstring。

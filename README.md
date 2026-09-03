@@ -73,9 +73,12 @@ POST /dft/mace                  MACE 优化 (真实 converged/n_steps)
 POST /dft/pyscf                 PySCF (RDKit 3D + C-PCM + UKS, WSL 自动回退)
 POST /dft/psi4                  Psi4 (energy/optimize/properties)
 POST /dft/auto                  智能选路 (带 warnings: 参数被丢弃会明说)
+POST /dft/conformers            构象搜索 (ETKDG→MACE 排序, 缺口 #32)
+POST /dft/reaction              反应能垒/ΔG (各物种 opt freq 聚合, 缺口 #33)
 GET  /dft/status/{task_id}      查状态 (重启后仍可查 + 启动清扫 interrupted)
 GET  /dft/result/{task_id}      拿结果
 GET  /dft/jobs                  任务列表
+GET  /dft/stats                 各后端成功率/耗时/排队深度 (缺口 #36)
 DELETE /dft/jobs/{task_id}      取消 (树杀进程树 + WSL 残留清理)
 ```
 
@@ -178,10 +181,12 @@ steepest→steep / nsteps 差 1000 倍 + NPT 缺参 / nstxout 写 .trr 不是 .x
 39. **MCP 补齐** — `dft_stats` / `dft_cleanup` (默认 dry-run) 两工具 (共 9 个);
     dft_wait docstring 覆盖 #27–#31 新参数面。⚠ 需合并回主仓 + 新会话生效
 
-设计稿 (未实施, 见 docs/DESIGN-33-34.md): #33 反应能垒/TS 工作流、
-#34 气液界面分析包 — 需课题组确认范围后再动手。
+设计稿 #33/#34 已实施 (2026-09-04, 见 docs/DESIGN-33-34.md 的落地版):
+#33 /dft/reaction + #34 analyze_options。QST2 保持"一键尝试"定位 (成功率依
+体系, 失败如实报告 + 日志路径); hbond 需真 force field (demo 拓扑优雅降级)。
 
-测试 45 → 64 PASS。
+测试 45 → 70 PASS。**已合并 main 并在 8620 主实例终验** (六用例冒烟全过 +
+reaction/conformers 真算各 1)。
 
 ## 架构
 
