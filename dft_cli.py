@@ -294,6 +294,44 @@ def cmd_list(args, client) -> int:
     return EXIT_OK
 
 
+def _g16_scratch_dir() -> Path | None:
+    """Gaussian 安装目录 (g16.exe 的父目录) — 缺口 #18 残留清扫用。
+
+    driver 正常/超时路径自己清, 但 cancel/kill 树杀时 driver 子进程直接死亡,
+    dft_job_*.gjf/.out/.chk 会残留在安装目录。这里按 mtime 超期兜底清扫
+    (运行中任务的 mtime 一直刷新, 天然不会被 cutoff 命中)。
+    """
+    gb = os.environ.get("DFT_SERVICE_GAUSSIAN_BIN", r"E:\sci-software\g16w\g16.exe")
+    d = Path(gb).parent
+    return d if d.is_dir() else None
+
+
+def _sweep_g16_scratch(cutoff: float, dry_run: bool) -> int:
+    d = _g16_scratch_dir()
+    if d is None:
+        return 0
+    n = 0
+    for f in d.glob("dft_job_*"):
+        if not f.is_file():
+            continue
+        try:
+            stale = f.stat().st_mtime < cutoff
+        except OSError:
+            continue
+        if not stale:
+            continue
+        if dry_run:
+            print(f"[dry-run] would remove g16 scratch {f.name}")
+        else:
+            try:
+                f.unlink()
+                print(f"removed g16 scratch {f.name}")
+            except OSError:
+                pass
+        n += 1
+    return n
+
+
 def run_cleanup(days: int = 7, dry_run: bool = False,
                 purge_rows: bool = False) -> tuple[int, int]:
     """缺口 #10: 清理过期 job 目录 (直接读 SQLite + 扫目录, 无需服务在跑)。
@@ -337,6 +375,9 @@ def run_cleanup(days: int = 7, dry_run: bool = False,
     kept = total - len(victims)
     print(f"{len(victims)} job dir(s) older than {days}d (total {total}, kept {kept})")
     conn.close()
+    n_scratch = _sweep_g16_scratch(cutoff, dry_run)  # 缺口 #18: g16 目录残留兜底
+    if n_scratch:
+        print(f"{n_scratch} g16 scratch file(s) older than {days}d")
     return len(victims), kept
 
 

@@ -506,3 +506,89 @@ def test_auth_disabled_mode(client, monkeypatch):
         await require_api_key(x_api_key=None)
 
     asyncio.run(_call())  # 不抛 = 放行
+
+
+# ---------------------------------------------------------------
+# #19: timeout 一等状态
+# ---------------------------------------------------------------
+def test_timeout_status_survives_api(client, monkeypatch):
+    """executor 超时返回的 status=timeout 不被 _execute 白名单归一成 failed"""
+    import dft_service.runners as runners_pkg
+
+    async def fake_timeout(tool, workdir, driver, params, timeout_s, **_):
+        return {"status": "timeout",
+                "error_msg": f"driver timeout after {timeout_s:.0f}s",
+                "work_dir": str(workdir)}
+
+    monkeypatch.setattr(runners_pkg, "execute_driver", fake_timeout)
+    # 用 gaussian (单段直通); pyscf 是两段编排, geom 超时被包成 failed 属预期
+    r = client.post("/dft/gaussian", headers=HEADERS, json={"smiles": "O"})
+    task_id = r.json()["task_id"]
+
+    body = _poll_result(client, task_id)
+    assert body["status"] == "timeout"
+    assert "timeout" in (body.get("error_msg") or "").lower()
+    # timeout 是终态: cancel 幂等返回 already finished
+    r2 = client.delete(f"/dft/jobs/{task_id}", headers=HEADERS)
+    assert r2.json()["message"] == "task already finished"
+
+
+# ---------------------------------------------------------------
+# #20: 参数边界
+# ---------------------------------------------------------------
+def test_param_bounds_rejected(client, monkeypatch):
+    """超限/非法格式 → 422; 正常值不受影响 (mem 大小写兼容)"""
+    import dft_service.runners as runners_pkg
+
+    async def fake(tool, workdir, driver, params, timeout_s, **_):
+        return {"status": "success", "tool": tool}
+
+    monkeypatch.setattr(runners_pkg, "execute_driver", fake)
+
+    bad_calls = [
+        ("/dft/gaussian", {"smiles": "O", "timeout_s": 10**9}),      # 超 7 天
+        ("/dft/gaussian", {"smiles": "O", "mem": "8; rm -rf"}),      # gjf 注入面
+        ("/dft/gaussian", {"smiles": "O", "nproc": 9999}),           # 超核数上限
+        ("/dft/gromacs", {"smiles": "O", "box_nm": 100}),            # 超盒子上限
+        ("/dft/mace", {"smiles": "O", "max_steps": 10**6}),          # 超步数上限
+    ]
+    for path, payload in bad_calls:
+        r = client.post(path, headers=HEADERS, json=payload)
+        assert r.status_code == 422, f"{path} {payload} 应 422, 实得 {r.status_code}"
+
+    ok = client.post("/dft/gaussian", headers=HEADERS,
+                     json={"smiles": "O", "timeout_s": 7200, "mem": "16gb", "nproc": 8})
+    assert ok.status_code == 200
+    client.delete(f"/dft/jobs/{ok.json()['task_id']}", headers=HEADERS)
+
+
+# ---------------------------------------------------------------
+# #21: 终态内存驱逐
+# ---------------------------------------------------------------
+def test_taskstore_mem_eviction():
+    """终态任务内存副本过期即逐出 (DB 回退仍可查); 运行中任务永不动"""
+    import asyncio
+    from datetime import datetime, timedelta, timezone
+
+    async def _go():
+        rec = taskstore.create_task("pyscf", "O", {}, None)
+        await taskstore.persist_new_task(rec)
+        tid = rec["task_id"]
+        await taskstore.finish_task(tid, "success", {"energy_hartree": -1.0})
+        assert tid in taskstore._TASKS
+
+        # 手工把 finish_time 老化 25 小时 → 下次 create_task 触发逐出
+        old = (datetime.now(timezone.utc) - timedelta(hours=25)).isoformat()
+        taskstore._TASKS[tid]["finish_time"] = old
+
+        running = taskstore.create_task("pyscf", "C", {}, None)  # queued, 不被逐出
+        assert tid not in taskstore._TASKS
+        assert running["task_id"] in taskstore._TASKS
+
+        cur = await taskstore.get_task(tid)  # DB 回退
+        assert cur is not None and cur["status"] == "success"
+
+    try:
+        asyncio.run(_go())
+    finally:
+        taskstore._TASKS.clear()

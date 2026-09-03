@@ -51,8 +51,13 @@ _GAUSS_JOB = {"energy": "sp", "optimize": "opt", "opt": "opt", "freq": "freq",
 # ------------------------------------------------------------------
 # request / response models
 # ------------------------------------------------------------------
+# 缺口 #20: 所有参数带上下限 — 防 timeout_s=10⁹ 类输入无限占住信号量。
+# 上限按课题组机器 (16 核 / 单卡 GPU / WSL 4 线程) 的合理用量放宽。
+_TIMEOUT_LE = 604800.0  # 7 天 (gromacs 长 MD)
+
+
 class GaussianRequest(BaseModel):
-    smiles: str = Field(..., min_length=1)
+    smiles: str = Field(..., min_length=1, max_length=2000)
     xc: str = "B3LYP"
     basis: str = "6-31G(d)"
     job: str = Field("opt", description="opt / sp / freq")
@@ -61,63 +66,63 @@ class GaussianRequest(BaseModel):
                                   description="缺省从 SMILES 自动推断")
     multiplicity: Optional[int] = Field(None, ge=1, le=10,
                                         description="缺省从 SMILES 自动推断")
-    nproc: int = Field(8, ge=1)
-    mem: str = "8GB"
-    timeout_s: float = Field(7200.0, ge=10.0)
+    nproc: int = Field(8, ge=1, le=64)
+    mem: str = Field("8GB", pattern=r"^\d{1,5}(?i:MB|GB|TB)$")
+    timeout_s: float = Field(7200.0, ge=10.0, le=_TIMEOUT_LE)
 
 
 class GromacsRequest(BaseModel):
-    smiles: str = Field(..., min_length=1)
-    n_molecules: int = Field(100, ge=1)
-    box_nm: float = Field(3.0, gt=0.0)
-    time_ns: float = Field(1.0, gt=0.0)
-    temperature_K: float = Field(300.0, ge=0.0)
-    timeout_s: float = Field(14400.0, ge=10.0)
+    smiles: str = Field(..., min_length=1, max_length=2000)
+    n_molecules: int = Field(100, ge=1, le=20000)
+    box_nm: float = Field(3.0, gt=0.0, le=30.0)
+    time_ns: float = Field(1.0, gt=0.0, le=1000.0)
+    temperature_K: float = Field(300.0, ge=0.0, le=2000.0)
+    timeout_s: float = Field(14400.0, ge=10.0, le=_TIMEOUT_LE)
 
 
 class MaceRequest(BaseModel):
-    smiles: str = Field(..., min_length=1)
-    fmax_ev_A: float = Field(0.05, gt=0.0)
-    max_steps: int = Field(200, ge=1)
+    smiles: str = Field(..., min_length=1, max_length=2000)
+    fmax_ev_A: float = Field(0.05, gt=0.0, le=10.0)
+    max_steps: int = Field(200, ge=1, le=10000)
     model: str = "medium"
     device: str = Field("auto", description="cuda / cpu / auto")
-    timeout_s: float = Field(900.0, ge=10.0)
+    timeout_s: float = Field(900.0, ge=10.0, le=_TIMEOUT_LE)
 
 
 class PyscfRequest(BaseModel):
-    smiles: str = Field(..., min_length=1)
+    smiles: str = Field(..., min_length=1, max_length=2000)
     method: str = "B3LYP"
     basis: str = "6-31G*"
     operation: str = Field("energy", description="energy / optimize")
     solvent: str = Field("none", description="C-PCM 溶剂 (water/ethanol/...; none=气相)")
-    charge: Optional[int] = Field(None, description="缺省从 SMILES 推断")
-    multiplicity: Optional[int] = Field(None, description="缺省从 SMILES 推断")
-    max_opt_steps: int = Field(50, ge=1)
-    timeout_s: float = Field(1800.0, ge=10.0)
+    charge: Optional[int] = Field(None, ge=-10, le=10, description="缺省从 SMILES 推断")
+    multiplicity: Optional[int] = Field(None, ge=1, le=10, description="缺省从 SMILES 推断")
+    max_opt_steps: int = Field(50, ge=1, le=1000)
+    timeout_s: float = Field(1800.0, ge=10.0, le=_TIMEOUT_LE)
 
 
 class Psi4Request(BaseModel):
-    smiles: str = Field(..., min_length=1)
+    smiles: str = Field(..., min_length=1, max_length=2000)
     method: str = "B3LYP"
     basis: str = "6-31G*"
     operation: str = Field("energy", description="energy / optimize / properties")
-    charge: Optional[int] = None
-    multiplicity: Optional[int] = None
-    nproc: int = Field(8, ge=1)
-    mem: str = "8GB"
-    timeout_s: float = Field(3600.0, ge=10.0)
+    charge: Optional[int] = Field(None, ge=-10, le=10)
+    multiplicity: Optional[int] = Field(None, ge=1, le=10)
+    nproc: int = Field(8, ge=1, le=64)
+    mem: str = Field("8GB", pattern=r"^\d{1,5}(?i:MB|GB|TB)$")
+    timeout_s: float = Field(3600.0, ge=10.0, le=_TIMEOUT_LE)
 
 
 class AutoRequest(BaseModel):
-    smiles: str = Field(..., min_length=1)
+    smiles: str = Field(..., min_length=1, max_length=2000)
     task: str = Field("energy", description="energy / optimize / freq / properties / md")
     quality: str = Field("auto", description="fast (MACE) / accurate (量子化学) / auto")
     xc: str = "B3LYP"
     basis: str = "6-31G*"
     solvent: str = "none"
-    charge: Optional[int] = None
-    multiplicity: Optional[int] = None
-    timeout_s: Optional[float] = None
+    charge: Optional[int] = Field(None, ge=-10, le=10)
+    multiplicity: Optional[int] = Field(None, ge=1, le=10)
+    timeout_s: Optional[float] = Field(None, ge=10.0, le=_TIMEOUT_LE)
 
 
 class TaskIdResponse(BaseModel):
@@ -159,7 +164,9 @@ async def _execute(tool: str, task_id: str, p: dict[str, Any], timeout_s: float)
         logger.exception("task %s (%s) crashed", task_id, tool)
         result = {"status": "failed", "error_msg": repr(e)}
     status = result.get("status", "failed")
-    if status not in ("success", "failed", "unavailable", "completed_with_warnings"):
+    # #19: timeout 是一等状态 (executor/driver 超时分支产生), 不再被归一成 failed
+    if status not in ("success", "failed", "unavailable",
+                      "completed_with_warnings", "timeout"):
         status = "failed"
     await taskstore.finish_task(task_id, status, result, result.get("error_msg"))
 

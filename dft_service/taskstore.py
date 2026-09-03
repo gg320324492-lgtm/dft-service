@@ -23,11 +23,41 @@ _TASKS: dict[str, dict[str, Any]] = {}
 _TERMINAL = {"success", "failed", "unavailable", "completed_with_warnings",
              "cancelled", "interrupted", "timeout"}
 
+# 缺口 #21: 内存记录只进不出会让长期运行 + 批量场景无界增长。
+# 终态任务内存副本保留 24h (覆盖 CLI 轮询窗口), 超量按插入顺序逐出;
+# DB 仍是权威, 被逐出任务经 get_task 的 DB 回退照常可查。
+_MEM_KEEP_S = 86400.0
+_MEM_MAX = 2000
+
+
+def _evict_mem() -> int:
+    """清扫过期/超量的终态内存条目, 返回逐出数 (非终态任务永不动)"""
+    now = datetime.now(timezone.utc)
+    removed = 0
+    for tid in [
+        t for t, r in _TASKS.items()
+        if r["status"] in _TERMINAL
+        and (
+            (ft := r.get("finish_time")) is None
+            or (now - datetime.fromisoformat(ft)).total_seconds() > _MEM_KEEP_S
+        )
+    ]:
+        _TASKS.pop(tid, None)
+        removed += 1
+    for tid in list(_TASKS):  # dict 保持插入顺序 = 提交顺序
+        if len(_TASKS) <= _MEM_MAX:
+            break
+        if _TASKS[tid]["status"] in _TERMINAL:
+            _TASKS.pop(tid, None)
+            removed += 1
+    return removed
+
 
 def create_task(
     tool: str, smiles: str, params: dict, submitter: str | None = None,
 ) -> dict[str, Any]:
     """登记新任务 (内存 + DB), 返回内存记录"""
+    _evict_mem()  # 缺口 #21: 提交时摊还清扫过期终态内存条目 (DB 仍是权威)
     task_id = new_task_id()
     rec: dict[str, Any] = {
         "task_id": task_id,

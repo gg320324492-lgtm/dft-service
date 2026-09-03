@@ -145,7 +145,7 @@ async def execute_driver(
             elif wsl_cleanup:
                 _wsl_pkill(*wsl_cleanup)
             return {
-                "status": "failed",
+                "status": "timeout",  # #19: 一等状态 (CLI 退出码 2 依赖)
                 "error_msg": f"driver timeout after {timeout_s:.0f}s "
                              "(process tree killed)",
                 "work_dir": str(workdir),
@@ -217,7 +217,7 @@ async def execute_driver_wsl(
             if task_id:
                 kill_task_process(task_id)
             return {
-                "status": "failed",
+                "status": "timeout",  # #19
                 "error_msg": f"WSL driver timeout after {timeout_s:.0f}s "
                              "(process tree killed)",
                 "work_dir": str(workdir),

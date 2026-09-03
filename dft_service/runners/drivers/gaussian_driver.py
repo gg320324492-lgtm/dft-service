@@ -111,8 +111,12 @@ def _infer_charge_mult(smiles: str) -> tuple[int, int]:
     return charge, multiplicity
 
 
-def _gen_gjf(workdir: Path, smiles: str, p: dict) -> Path:
-    """自建 gjf 生成 (支持 SCRF) — 不用 workflows.gen_gjf 因为它 route 写死"""
+def _gen_gjf(workdir: Path, smiles: str, p: dict, chk_stem: str) -> Path:
+    """自建 gjf 生成 (支持 SCRF) — 不用 workflows.gen_gjf 因为它 route 写死
+
+    chk_stem: %chk 用全局唯一名 (缺口 #18) — g16 的 cwd 是安装目录,
+    写死 input.chk 会让并发任务互相覆盖。
+    """
     atoms, coords = _smiles_to_coords(smiles)
 
     # job 可能归一化为空串 (单点是 Gaussian 默认), 过滤防双空格
@@ -129,7 +133,7 @@ def _gen_gjf(workdir: Path, smiles: str, p: dict) -> Path:
     lines = [
         f"%nproc={p.get('nproc', 8)}",
         f"%mem={p.get('mem', '8GB')}",
-        f"%chk={stem}.chk",
+        f"%chk={chk_stem}.chk",
         route,
         "",
         f"{smiles} {p['xc']}/{p['basis']} {p['job']} solvent={solvent}",
@@ -143,6 +147,19 @@ def _gen_gjf(workdir: Path, smiles: str, p: dict) -> Path:
     gjf_path = workdir / f"{stem}.gjf"
     gjf_path.write_text("\n".join(lines) + "\n\n", encoding="utf-8")
     return gjf_path
+
+
+def _cleanup_g16_dir(g16_dir: Path, stem: str) -> None:
+    """删除 g16 安装目录里本任务的残留 (gjf/out/chk/其他 dft_job_<stem> 派生文件)
+
+    正常路径与超时路径都调; 取消 (树杀 driver) 时由 executor 的 win_cleanup 兜底,
+    scripts/cleanup.py 再对 mtime 超期孤儿做最终清扫。
+    """
+    for f in g16_dir.glob(f"{stem}.*"):
+        try:
+            f.unlink()
+        except OSError:
+            pass
 
 
 def compute(params: dict, workdir: Path) -> dict:
@@ -163,7 +180,9 @@ def compute(params: dict, workdir: Path) -> dict:
         multiplicity = int(multiplicity) if multiplicity is not None else inf_mult
     params = {**params, "charge": int(charge), "multiplicity": int(multiplicity)}
 
-    gjf_path = _gen_gjf(workdir, params["smiles"], params)
+    # workdir 名含唯一 task_id; dft_job_ 前缀让 cleanup 能精确识别本服务的残留
+    stem = f"dft_job_{workdir.name}"
+    gjf_path = _gen_gjf(workdir, params["smiles"], params, chk_stem=stem)
 
     # ------------------------------------------------------------------
     # 提交 (2026-08-30 重写) — workflows.submit_gjf 的两个 Windows 不兼容:
@@ -181,7 +200,7 @@ def compute(params: dict, workdir: Path) -> dict:
             "error_msg": f"g16.exe not found: {g16_exe}",
         }
 
-    stem = f"job_{workdir.name}"  # workdir 名含唯一 task_id
+    # stem 已在 _gen_gjf 前定义 (dft_job_<workdir.name>), %chk/提交/清理三处共用
     (g16_dir / f"{stem}.gjf").write_bytes(gjf_path.read_bytes())
 
     env = {
@@ -199,6 +218,7 @@ def compute(params: dict, workdir: Path) -> dict:
     deadline = _time.time() + float(params.get("timeout_s", 7200))
     while _time.time() < deadline:
         if proc.poll() is not None and proc.returncode != 0:
+            _cleanup_g16_dir(g16_dir, stem)  # 缺口 #18: 异常退出也清残留
             return {
                 "status": "failed",
                 "error_msg": f"Gaussian exited with code {proc.returncode}",
@@ -215,35 +235,27 @@ def compute(params: dict, workdir: Path) -> dict:
         _time.sleep(3.0)
     else:
         proc.kill()
+        _cleanup_g16_dir(g16_dir, stem)  # 缺口 #18: 超时残留
         return {
-            "status": "failed",
+            "status": "timeout",  # #19: 一等状态 (原为 failed, CLI 退出码恒 1)
             "error_msg": f"Gaussian timeout after {params.get('timeout_s')}s",
             "stage": "submit",
         }
 
-    # 产物拷回 + 安装目录残留清理
+    # 产物拷回 workdir (out + chk), 再清安装目录残留
     local_out = workdir / "input.out"
     local_out.write_bytes(out_path.read_bytes())
-    for f in (g16_dir / f"{stem}.gjf", out_path):
+    g16_chk = g16_dir / f"{stem}.chk"
+    if g16_chk.exists():
         try:
-            f.unlink()
+            (workdir / "input.chk").write_bytes(g16_chk.read_bytes())
         except OSError:
             pass
+    _cleanup_g16_dir(g16_dir, stem)
     log_for_parse = local_out
 
     parsed = parse_log(log_for_parse)
     elapsed = time.time() - t0
-
-    # 缺口 #3: freq 任务提取频率 + 热化学量 (旧行为只回 SCF 能量, 频率全留在 log 里)
-    if "freq" in (params.get("job") or "").lower():
-        freq_data = _parse_freq_thermo(
-            local_out.read_text(encoding="utf-8", errors="ignore"))
-        result.update(freq_data)
-        if freq_data.get("n_imaginary"):
-            result["warning"] = (
-                f"{freq_data['n_imaginary']} 个虚频 — 若优化目标是极小值"
-                f"(非过渡态), 该结构未收敛到极小值"
-            )
 
     result = {
         "status": "success" if parsed.converged else "completed_with_warnings",
@@ -265,6 +277,20 @@ def compute(params: dict, workdir: Path) -> dict:
         "elapsed_s": round(elapsed, 2),
         "extra": parsed.extra or {},
     }
+
+    # 缺口 #3/#17 (2026-09-04): freq 任务提取频率 + 热化学量。
+    # 必须放在 result 赋值之后 — 旧代码在之前 update 导致 UnboundLocalError,
+    # freq 任务全部崩在组装阶段。error_msg 检查放最后, 保证失败状态优先。
+    if "freq" in (params.get("job") or "").lower():
+        freq_data = _parse_freq_thermo(
+            local_out.read_text(encoding="utf-8", errors="ignore"))
+        result.update(freq_data)
+        if freq_data.get("n_imaginary"):
+            result["warning"] = (
+                f"{freq_data['n_imaginary']} 个虚频 — 若优化目标是极小值"
+                f"(非过渡态), 该结构未收敛到极小值"
+            )
+
     if parsed.error_msg:
         result["error_msg"] = parsed.error_msg
         result["status"] = "failed"

@@ -92,8 +92,9 @@ async def run_pyscf(task_id: str, p: dict[str, Any], timeout_s: float) -> dict:
         "geom_driver.py", geom_params, min(timeout_s, 300), task_id=task_id,
     )
     if geom.get("status") != "success":
+        # #19: 几何阶段超时按 timeout 传播, 其余按 failed
         return {
-            "status": "failed",
+            "status": "timeout" if geom.get("status") == "timeout" else "failed",
             "error_msg": f"geometry generation failed: {geom.get('error_msg')}",
             "stage": "geom",
             "detail": geom,
