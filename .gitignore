@@ -6,3 +6,7 @@ data/
 .env
 timer.dat
 tests/.tmp/
+
+# WSL 探针/临时输出兜底 (2026-09-04 误提交清理)
+*.log
+*.mdp
