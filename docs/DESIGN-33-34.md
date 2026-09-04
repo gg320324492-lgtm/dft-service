@@ -1,7 +1,6 @@
-# 设计稿 #33 / #34 (Phase 3 第二波, 待确认后实施)
+# 设计稿 #33 / #34 (Phase 3 第二波) — 已于 2026-09-04 实施
 
-状态: 设计待课题组确认, 未实施。两篇均依赖已交付的能力: #27 (opt freq)、
-#28 (extra_route)、#29 (内联 xyz)。
+状态: **均已实现并真算验证** (下方为原设计, 实施偏差见文末"落地记录")。
 
 ## #33 反应能垒 / TS 工作流
 
@@ -50,3 +49,28 @@ extra_route 手动逃生舱形态, 等实际课题用到再自动化。
 
 **需要确认**: 典型盒子尺寸 (影响 gmx 内存/线程参数)、是否固定 NPT、
 表面活性剂分子类型 (决定 ndx 模板)。
+
+## 落地记录 (2026-09-04)
+
+**#33 已实施且超出设计**: `POST /dft/reaction` (reactants/products + count +
+charge/mult, 各跑 gaussian opt freq → ΔE/ΔG 按计量数聚合)。真算:
+- HF + H2O → F- + H3O+ : ΔE=+1641.4 / ΔG=+1662.1 kJ/mol (气相离子对, 物理正确)
+- **QST2 真找到 TS** (超出"一键尝试"预期): H+H2 交换反应, G16W 报
+  "Search for a saddle point of order 1" + Normal termination,
+  barrier = 24.4 kJ/mol (STO-3G 极小基组低估, 实验 ~38.5, 量级正确)。
+  踩坑记录: 裸 `qst2` 路由非法 (正确 opt=qst2, 驱动已归一化); "B" 分隔行必须
+  在两段分子**之间** (末尾→"Wanted integer", 无→"End of file in ZSymb")。
+- try_ts 边界不变: 多物种/计量数≠1 → skipped; TS 确认 (恰 1 虚频) 仍需对
+  返回几何单独 freq (log_path/chk 已给)。
+
+**#34 已实施且解决遗留 ①②**: `analyze_options=[rms|energy|density|rdf|hbond]`
++ **`water_model=spce`** — GROMACS 内置金标准 SPC/E 水模型
+(gmx solvate + 自包含拓扑; include oplsaa.ff 在 GROMACS 2023.3 Ubuntu 包触发
+"Invalid order for directive atomtypes" → 改内联 atomtypes, 参数按官方
+spce.itp: q±0.4238/-0.8476, σ=0.3166, ε=0.650, settle 0.1/0.1633)。
+真算 (2nm 盒 221 分子):
+- O-O RDF 首峰 **0.274 nm** (文献 ~0.28) ✓
+- 氢键 **3.24/分子** (SPC/E 300K 文献 3.2-3.6) ✓ — hbond 修复: 本机
+  gmx hbond 无 -rtp/-type, 交互喂 "Water\nWater\n" (residuetypes SOL=Water)
+- 密度 kg/m³→g/cm³ 单位修正 ✓
+- demo GROMOS 路径保留 (链路级), spce 仅纯水 (API 校验 smiles=O)

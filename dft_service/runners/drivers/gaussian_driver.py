@@ -126,8 +126,13 @@ def _build_route(p: dict) -> str:
             raise ValueError(f"路由字段 {key} 含非法字符: {val!r}")
 
     route_parts = [f"{p['xc']}/{p['basis']}"]
-    if p.get("job"):
-        route_parts.append(p["job"])
+    job = p.get("job")
+    # 缺口 #33: QST2 是 Opt 的子关键字 (裸 "qst2" 路由语法错); CalcFC 给初始
+    # Hessian 助收敛 (2026-09-04 实测 l1.exe QPErr 根因)
+    if job and job.strip().lower() == "qst2":
+        job = "opt=(qst2,calcfc)"
+    if job:
+        route_parts.append(job)
     solvent = (p.get("solvent") or "none").strip()
     if solvent.lower() not in _SOLVENT_NONE:
         g16_name = _SOLVENT_MAP.get(solvent.lower(), solvent.capitalize())
@@ -176,9 +181,12 @@ def _gen_gjf(workdir: Path, smiles: str | None, p: dict, chk_stem: str,
         for a, c in zip(atoms, coords)
     ]
     if atoms_coords_b is not None:
-        # QST2 (缺口 #33): 空行 + 产物分子块 (同 charge/spin) — 反应物/产物两段几何
+        # QST2 (缺口 #33): 反应物 + 空行 + "B" 分隔 + 空行 + 产物 (同 charge/spin)。
+        # 2026-09-04 实测: B 放末尾 → l101 "Wanted integer"; 无 B → "End of
+        # file in ZSymb"; B 作两段分子间独立行 (前后空行) 才 Normal termination
+        # 且定位到 saddle point。
         b_atoms, b_coords = atoms_coords_b
-        lines += ["", f"{p['charge']} {p['multiplicity']}"]
+        lines += ["", "B", "", f"{p['charge']} {p['multiplicity']}"]
         lines += [
             f"{a:2s}  {c[0]:14.8f}  {c[1]:14.8f}  {c[2]:14.8f}"
             for a, c in zip(b_atoms, b_coords)

@@ -1,0 +1,30 @@
+            :-) GROMACS - gmx rdf, 2023.3-Ubuntu_2023.3_1ubuntu3 (-:
+
+Executable:   /usr/bin/gmx
+Data prefix:  /usr
+Working dir:  /mnt/e/dft-service/.claude/worktrees/blissful-heyrovsky-64a98d
+Command line:
+  gmx rdf -s md.tpr -f md.xtc -ref OW -sel OW -o rdf_oo.xvg -xvg none
+
+
+-------------------------------------------------------
+Program:     gmx rdf, version 2023.3-Ubuntu_2023.3_1ubuntu3
+Source file: src/gromacs/commandline/cmdlineparser.cpp (line 271)
+Function:    void gmx::CommandLineParser::parse(int*, char**)
+
+Error in user input:
+Invalid command-line options
+  In command-line option -s
+    File 'md.tpr' does not exist or is not accessible.
+    The file could not be opened.
+      Reason: No such file or directory
+      (call to fopen() returned error code 2)
+  In command-line option -f
+    File 'md.xtc' does not exist or is not accessible.
+    The file could not be opened.
+      Reason: No such file or directory
+      (call to fopen() returned error code 2)
+
+For more information and tips for troubleshooting, please check the GROMACS
+website at http://www.gromacs.org/Documentation/Errors
+-------------------------------------------------------

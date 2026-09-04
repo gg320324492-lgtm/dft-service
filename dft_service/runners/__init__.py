@@ -48,6 +48,7 @@ async def run_gromacs(task_id: str, p: dict[str, Any], timeout_s: float) -> dict
         "temperature_K": float(p.get("temperature_K", 300.0)),
         "analyze": bool(p.get("analyze")),  # 缺口 #31 后处理开关
         "analyze_options": p.get("analyze_options"),  # 缺口 #34 分析项
+        "water_model": p.get("water_model", "demo"),  # 遗留修复: spce 真水路径
         "wsl_distro": distro,
     }
     workdir = make_workdir("gromacs", task_id)

@@ -1,0 +1,12 @@
+integrator = steep
+emtol = 500
+nsteps = 50
+cutoff-scheme = Verlet
+ns-type = simple
+rcoulomb = 0.9
+rvdw = 0.9
+coulombtype = PME
+pme-order = 4
+fourier-spacing = 0.16
+tcoupl = no
+pcoupl = no

@@ -1025,3 +1025,32 @@ def test_kill_reaction_tree_cascades(monkeypatch):
     assert n == 2  # 存活子进程数
     assert set(killed_pids) == {"222", "333", "111"}
     assert not ex._CHILDREN.get("parent01")
+
+
+# ---------------------------------------------------------------
+# 遗留修复: SPC/E 真水模型路径
+# ---------------------------------------------------------------
+def test_water_model_spce_validation(client, monkeypatch):
+    import dft_service.api as api_mod
+
+    captured = {}
+
+    async def fake(task_id, p, timeout_s):
+        captured["p"] = p
+        return {"status": "success", "tool": "gromacs"}
+
+    monkeypatch.setitem(api_mod.RUNNERS, "gromacs", fake)
+    # 非纯水 + spce → 422
+    r = client.post("/dft/gromacs", headers=HEADERS, json={
+        "smiles": "CCO", "water_model": "spce"})
+    assert r.status_code == 422
+    # 纯水 + spce → 透传
+    r = client.post("/dft/gromacs", headers=HEADERS, json={
+        "smiles": "O", "water_model": "spce", "box_nm": 2.2})
+    assert r.status_code == 200
+    _poll_result(client, r.json()["task_id"])
+    assert captured["p"]["water_model"] == "spce"
+    # 非法值 → 422
+    r = client.post("/dft/gromacs", headers=HEADERS, json={
+        "smiles": "O", "water_model": "tip4p-fb"})
+    assert r.status_code == 422

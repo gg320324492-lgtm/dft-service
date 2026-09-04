@@ -47,11 +47,16 @@ _GAUSSIAN_FREQ_CASES = [
      "frequencies_cm_1"),
 ]
 _GROMACS_CASES = [
-    # demo 级拓扑 (GROMOS 水盒), 只验链路不验科学量; analyze 顺带验 #31
-    ("gromacs 10x0.01ns", "gromacs",
+    # demo 级拓扑 (GROMOS 水盒), 只验链路不验科学量
+    ("gromacs demo 10x0.01ns", "gromacs",
      {"smiles": "O", "n_molecules": 10, "box_nm": 2.6, "time_ns": 0.01,
       "analyze": True}, 1800,
      "rmsd_avg_nm"),
+    # SPC/E 真水模型 (遗留修复): 密度/RDF/氢键数值文献级, 验到 rdf 峰位
+    ("gromacs spce 2nm+分析", "gromacs",
+     {"smiles": "O", "box_nm": 2.0, "time_ns": 0.02, "water_model": "spce",
+      "analyze": True, "analyze_options": ["density", "rdf", "hbond"]}, 1800,
+     "rdf_peak1_r_nm"),
 ]
 
 

@@ -72,6 +72,7 @@ _FLAG_MAP = {
     "time_ns": "time_ns",
     "temperature_k": "temperature_K",
     "analyze": "analyze",
+    "water_model": "water_model",
     "fmax": "fmax_ev_A",
     "max_steps": "max_steps",
     "model": "model",
@@ -636,6 +637,9 @@ def add_tool_args(p: argparse.ArgumentParser) -> None:
     p.add_argument("--analyze-with", dest="analyze_with",
                    help="gromacs: 分析项逗号串 (rms,energy,density,rdf,hbond) — "
                         "指定即隐含 --analyze")
+    p.add_argument("--water-model", dest="water_model", choices=["demo", "spce"],
+                   help="gromacs: spce=真水模型 (数值科研可用, 纯水专用), "
+                        "默认 demo=GROMOS 简易模板")
     p.add_argument("--fmax", type=float, help="mace fmax (eV/A)")
     p.add_argument("--max-steps", dest="max_steps", type=int)
     p.add_argument("--model", help="mace: small/medium/large")

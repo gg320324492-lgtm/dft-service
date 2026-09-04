@@ -302,11 +302,15 @@ def test_gjf_qst2_two_blocks(tmp_path, monkeypatch):
                        atoms_coords=([("O")], [(0.0, 0.0, 0.0)]),
                        atoms_coords_b=([("N")], [(1.0, 0.0, 0.0)]))
     txt = path.read_text(encoding="utf-8")
-    assert "# B3LYP/6-31G(d) qst2" in txt
+    assert "# B3LYP/6-31G(d) opt=(qst2,calcfc)" in txt  # 归一化后的合法路由
     assert txt.count("0 1") == 2          # 两段各一个 charge/spin 行
-    body = txt.split("0 1")[-1].strip().splitlines()
-    assert body[0].startswith("N")         # 第二段以 B 分子开始
-    assert "O" in txt.split("0 1")[1]      # 第一段是 A 分子
+    lines = txt.splitlines()
+    b_i = next(i for i, ln in enumerate(lines) if ln.strip() == "B")
+    # B 独立行前后空行, 之后 charge/spin + 产物原子 (实测唯一有效布局)
+    assert lines[b_i - 1].strip() == "" and lines[b_i + 1].strip() == ""
+    assert lines[b_i + 2].strip() == "0 1"
+    assert lines[b_i + 3].split()[0] == "N"
+    assert any(ln.split()[:1] == ["O"] for ln in lines[:b_i])  # B 前是反应物
 
 
 def test_compute_qst2_parses_two_xyz(g16_env, monkeypatch):

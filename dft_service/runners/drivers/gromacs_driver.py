@@ -17,9 +17,90 @@ sys.path.insert(0, "E:/sci-software/workflows")  # noqa: S104
 
 _CUTOFF_KEYS = ("rlist", "rcoulomb", "rvdw")
 
+# 遗留修复 #1/#2: SPC/E 水 — 自包含拓扑 (零 include)。2026-09-04 WSL 实测:
+# 绝对/相对 include oplsaa.ff 触发 "Invalid order for directive atomtypes"
+# (GROMACS 2023.3 Ubuntu 打包的 ffnonbonded.itp 与裸 grompp include 链不兼容),
+# 故内联 [ atomtypes ]/[ defaults ], 只含 OW/HW。金标准 SPC/E 参数:
+# charge -0.8476/+0.4238, settle OH=0.1 nm / HH=0.16330 nm, LJ OW sigma=0.3166nm eps=0.650 kJ/mol
+_SPCE_TOP_TMPL = """;SPC/E water box (self-contained, no includes)
+[ defaults ]
+; nbfunc comb-genfunc fudgeLJ fudgeQQ  (水无键/对, fudge 不起作用; HW 无 LJ)
+1               2             no      0.5         0.5
+
+[ atomtypes ]
+; name   AT.NUM  mass      charge  ptype  sigma        epsilon
+OW       8       15.99940  0.000   A      3.16555e-01  6.50271e-01
+HW       1       1.00800   0.000   A      0.00000e+00  0.00000e+00
+
+[ moleculetype ]
+SOL      2
+[ atoms ]
+; nr  type resnr residue atom  cgnr  charge   mass
+1     OW   1     SOL     OW    1     -0.8476  15.99940
+2     HW   1     SOL     HW    1      0.4238   1.00800
+3     HW   1     SOL     HW    1      0.4238   1.00800
+[ settles ]
+1      1     0.1            0.16330
+
+[ system ]
+SPC/E water
+
+[ molecules ]
+SOL        0
+"""
+
+
+def _prep_spce(workdir: Path, box_nm: float, distro: str) -> dict:
+    """遗留修复 #1: 真水模型路径 — gmx solvate 填 SPC/E 盒 (n_molecules 由盒子决定)。
+
+    不走 prep_system 的 GROMOS demo 模板: SPC/E 是液体的金标准刚性水模型
+    (密度 ~1 g/cm³, O-O RDF 第一峰 ~0.28 nm), residuetypes.dat 认 SOL →
+    gmx hbond/density/rdf 直接可用 (2026-09-04 WSL 实测 2.2nm 盒 348 分子,
+    solvate/grompp/mdrun 全 rc=0)。copy 机制与 demo 路径同款 _copy_to/from_wsl。
+    """
+    from gromacs_runner import _copy_from_wsl, _copy_to_wsl, _wsl_run
+
+    top_local = workdir / "spce_system.top"
+    top_local.write_text(_SPCE_TOP_TMPL, encoding="utf-8")
+    wsl_work = f"/tmp/{workdir.name}"
+    _wsl_run(f"mkdir -p {wsl_work}", wsl_distro=distro)
+    top_wsl = _copy_to_wsl(top_local, wsl_work, wsl_distro=distro)
+    solv = _wsl_run(
+        "gmx solvate -cs /usr/share/gromacs/top/spc216.gro "
+        f"-box {box_nm} {box_nm} {box_nm} -o {wsl_work}/water.gro -p {top_wsl}",
+        cwd=wsl_work, wsl_distro=distro, timeout=120)
+    if solv.returncode != 0:
+        raise RuntimeError(f"gmx solvate (SPC/E) failed: "
+                           f"{(solv.stderr or solv.stdout or '')[-400:]}")
+    gro = _copy_from_wsl(f"{wsl_work}/water.gro", workdir, wsl_distro=distro)
+    top_host = _copy_from_wsl(top_wsl, workdir, wsl_distro=distro)  # solvate 更新了分子数
+    if not gro.exists():
+        raise RuntimeError("SPC/E water.gro 拷回宿主失败")
+    # solvate 追加 `SOL <n>` 但留下模板的 `SOL 0` 占位行 — 清掉零计数行,
+    # 同时读出实际分子数
+    lines = top_host.read_text(encoding="utf-8", errors="ignore").splitlines()
+    n_sol = 0
+    kept = []
+    for ln in lines:
+        parts = ln.split()
+        if len(parts) == 2 and parts[0] == "SOL":
+            try:
+                cnt = int(parts[1])
+            except ValueError:
+                kept.append(ln)
+                continue
+            if cnt > 0:
+                n_sol = max(n_sol, cnt)
+                kept.append(ln)
+            continue  # 丢弃 SOL 0 占位
+        kept.append(ln)
+    top_host.write_text("\n".join(kept) + "\n", encoding="utf-8")
+    return {"gro": gro, "top": top_host, "n_molecules": n_sol}
+
 
 def _analyze_md(md_paths: dict, workdir: Path, distro: str,
-                opts: list[str]) -> dict:
+                opts: list[str], water_model: str = "demo",
+                n_molecules: int = 0) -> dict:
     """缺口 #31/#34: MD 后处理 — gmx rms/energy + 界面分析 (density/rdf/hbond)。
 
     #34 (2026-09-04): analyze_options 参数化各分析项。
@@ -84,7 +165,8 @@ def _analyze_md(md_paths: dict, workdir: Path, distro: str,
             host_den = _copy_from_wsl(den_wsl, adir, wsl_distro=distro)
             df = _read_xvg(host_den)
             z = df[df.columns[0]].astype(float)
-            rho = df[df.columns[1]].astype(float)
+            # gmx density 输出 kg/m³ → 换算 g/cm³ (字段名承诺)
+            rho = df[df.columns[1]].astype(float) / 1000.0
             out["density_xvg"] = str(host_den)
             out["density_max_g_cm3"] = round(float(rho.max()), 3)
             out["density_min_g_cm3"] = round(float(rho.min()), 3)
@@ -104,11 +186,13 @@ def _analyze_md(md_paths: dict, workdir: Path, distro: str,
     if "rdf" in opts:
         try:
             rdf_wsl = f"{wsl_work}/rdf.xvg"
-            # -ref/-sel 走命令行; 剩余交互 (两组 exclusion) 用 printf 喂 0/0
-            # (2026-09-04 实测: 本机 GROMACS 的 -cut 只收单数字, "0 1" 报
-            # Invalid value → 去掉 -cut 改喂 exclusion 答案)
+            # SPC/E: selection 语言 'name OW' = 氧骨架 RDF (首峰 ~0.28 nm);
+            # 其余体系: System。剩余两个 exclusion 提示喂 0/0
+            # (2026-09-04 实测: -cut 只收单数字; "OW" 裸名不是合法 selection,
+            # 必须 name OW; 本机 GROMACS 2023.3)
+            sel = "'name OW'" if water_model == "spce" else '"System"'
             _wsl_run(f'printf "0\\n0\\n" | gmx rdf -s {tpr_wsl} -f {xtc_wsl} '
-                     f'-ref "System" -sel "System" '
+                     f"-ref {sel} -sel {sel} "
                      f"-o {rdf_wsl} -xvg none",
                      cwd=wsl_work, wsl_distro=distro, timeout=300)
             host_rdf = _copy_from_wsl(rdf_wsl, adir, wsl_distro=distro)
@@ -131,22 +215,28 @@ def _analyze_md(md_paths: dict, workdir: Path, distro: str,
             out["rdf_analysis_failed"] = str(e)[:200]
 
     if "hbond" in opts:
-        # 注意: 需要 residuetypes.dat/.rtp 或 DON/HTYP 原子命名;
-        # demo GROMOS 水拓扑大概率失败 → 优雅降级 + 指路
+        # GROMACS 2023.3 的 gmx hbond 无 -rtp/-type (2026-09-04 实测 help);
+        # 交互 "Specify 2 groups" 喂 Water\nWater\n (residuetypes.dat SOL=Water,
+        # OW/HW 命名被自动识别为 donor-heavy/donor-H/acceptor)。
+        # 短轨迹未充分平衡时均值低于 SPC/E 文献 ~3/分子, 属物理非 bug。
         try:
             hb_wsl = f"{wsl_work}/hbnum.xvg"
-            _wsl_run(f'echo "System" | gmx hbond -s {tpr_wsl} -f {xtc_wsl} '
-                     f"-num {hb_wsl} -type angle -xvg none",
+            _wsl_run(f'printf "Water\\nWater\\n" | gmx hbond '
+                     f"-s {tpr_wsl} -f {xtc_wsl} -num {hb_wsl}",
                      cwd=wsl_work, wsl_distro=distro, timeout=300)
             host_hb = _copy_from_wsl(hb_wsl, adir, wsl_distro=distro)
             df = _read_xvg(host_hb)
             vals = df[df.columns[-1]].astype(float)
             out["hbond_xvg"] = str(host_hb)
-            out["hbond_avg"] = round(float(vals.mean()), 2)
+            out["hbond_avg"] = round(float(vals.mean()), 2)  # 总数/帧
+            if n_molecules:
+                out["hbond_per_molecule"] = round(float(vals.mean()) / n_molecules, 2)
+            out["hbond_note"] = ("水-水氢键; SPC/E 文献 ~3/分子 (需长轨迹充分"
+                                 "平衡), 短跑偏低属物理")
             plots["hbond"] = ("time (ps)", "n H-bonds")
         except Exception as e:  # noqa: BLE001
             out["hbond_analysis_failed"] = (
-                f"{str(e)[:180]} — 若为拓扑缺 DON/HTYP 命名, 需真 force field")
+                f"{str(e)[:180]} — 混合体系需按供体/受体重命名或 index 分组")
 
     # 出图 (scichem matplotlib, 无则静默跳过)
     try:
@@ -170,7 +260,8 @@ def _analyze_md(md_paths: dict, workdir: Path, distro: str,
 
 
 def _make_mdp(kind: str, workdir: Path, box_nm: float,
-              nsteps: int | None = None, temp: float | None = None) -> Path:
+              nsteps: int | None = None, temp: float | None = None,
+              spce: bool = False) -> Path:
     """生成 mdp — 盒子太小时缩截断 (cutoff < 盒子一半, 留 0.1nm 余量)"""
     from gromacs_runner import _MD_MDP_TEMPLATE, _MINI_MDP
 
@@ -179,6 +270,12 @@ def _make_mdp(kind: str, workdir: Path, box_nm: float,
     else:
         nstout = min(5000, max(250, (nsteps or 500000) // 10))
         text = _MD_MDP_TEMPLATE.format(nsteps=nsteps, temp=temp, nstout=nstout)
+    if spce:
+        # 遗留修复 #1: SPC/E 拓扑用 [ settles] 描述水 — mdp 必须开约束,
+        # 否则 grompp "constraints=none vs topology constraints" 直接报错
+        text += ("\n; SPC/E water (settle 约束, 刚健精确)\n"
+                 "constraints          = h-bonds\n"
+                 "constraint-algorithm = LINCS\n")
     cutoff = round(min(1.0, box_nm / 2 - 0.1), 2)
     if cutoff < 1.0:
         for key in _CUTOFF_KEYS:
@@ -207,15 +304,21 @@ def compute(params: dict, workdir: Path) -> dict:
         "work_dir": str(workdir),
     }
 
-    # 1) prep
-    write_progress(workdir, "prep", n_molecules=out["n_molecules"],
-                   box_nm=box_nm, elapsed_s=round(time.time() - t0))
-    paths = prep_system(
-        params["smiles"],
-        n_mol=params.get("n_molecules", 100),
-        box_size=box_nm,
-        output_dir=workdir,
-    )
+    # 1) prep — 遗留修复 #1: SPC/E 真水模型路径 (仅纯水) vs demo GROMOS
+    if params.get("water_model") == "spce":
+        write_progress(workdir, "prep-spce", box_nm=box_nm)
+        paths = _prep_spce(workdir, box_nm, distro)
+        out["water_model"] = "spce"
+        out["n_molecules"] = paths["n_molecules"]  # 由盒子大小决定 (solvate 装满)
+    else:
+        write_progress(workdir, "prep", n_molecules=out["n_molecules"],
+                       box_nm=box_nm, elapsed_s=round(time.time() - t0))
+        paths = prep_system(
+            params["smiles"],
+            n_mol=params.get("n_molecules", 100),
+            box_size=box_nm,
+            output_dir=workdir,
+        )
     out["gro_path"] = str(paths["gro"])
     out["top_path"] = str(paths["top"])
 
@@ -224,8 +327,9 @@ def compute(params: dict, workdir: Path) -> dict:
     # 缺口 #22: 三阶段顺序阻塞, run_md 内是单次 gmx mdrun (不改 workflows
     # 拿不到 mdrun 中间步), 故只报"当前处于哪个 stage"这一粒度
     write_progress(workdir, "energy_minimize", elapsed_s=round(time.time() - t0))
+    spce = out.get("water_model") == "spce"
     em = energy_minimize(
-        paths["gro"], _make_mdp("em", workdir, box_nm),
+        paths["gro"], _make_mdp("em", workdir, box_nm, spce=spce),
         workdir / "em", wsl_distro=distro, top_path=paths["top"],
         wsl_work=f"/tmp/{workdir.name}",
     )
@@ -241,7 +345,7 @@ def compute(params: dict, workdir: Path) -> dict:
         wsl_distro=distro,
         mdp_path=_make_mdp(
             "md", workdir, box_nm,
-            nsteps=int(time_ns * 500000), temp=temp,
+            nsteps=int(time_ns * 500000), temp=temp, spce=spce,
         ),
         top_path=paths["top"],
         wsl_work=f"/tmp/{workdir.name}",
@@ -256,7 +360,9 @@ def compute(params: dict, workdir: Path) -> dict:
         write_progress(workdir, "analyze", options=opts,
                        elapsed_s=round(time.time() - t0))
         try:
-            out.update(_analyze_md(md, workdir, distro, opts))
+            out.update(_analyze_md(md, workdir, distro, opts,
+                                   water_model=out.get("water_model", "demo"),
+                                   n_molecules=int(out.get("n_molecules") or 0)))
         except Exception as e:  # noqa: BLE001
             out["analysis_failed"] = f"{type(e).__name__}: {e}"[:300]
 

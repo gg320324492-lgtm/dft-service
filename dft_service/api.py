@@ -133,6 +133,10 @@ class GromacsRequest(_CallbackMixin):
     analyze_options: Optional[list[str]] = Field(
         None, description="缺口 #34: 分析项子集 (默认 rms,energy) — "
                           "可含 density / rdf / hbond (气液界面分析)")
+    water_model: str = Field(
+        "demo", pattern="^(demo|spce)$",
+        description="spce = GROMACS 内置 SPC/E 金标准水模型 (遗留修复: 密度/RDF/"
+                    "氢键数值可信); 仅支持纯水 smiles=O; demo = GROMOS 简易模板")
     timeout_s: float = Field(14400.0, ge=10.0, le=_TIMEOUT_LE)
 
     _VALID_ANALYZE = ("rms", "energy", "density", "rdf", "hbond")
@@ -144,6 +148,8 @@ class GromacsRequest(_CallbackMixin):
             raise ValueError(
                 f"analyze_options 非法项: {sorted(bad)} "
                 f"(可用: {list(self._VALID_ANALYZE)})")
+        if self.water_model == "spce" and self.smiles.strip().lower() != "o":
+            raise ValueError("water_model=spce 是纯水专用路径, smiles 必须是 O")
         return self
 
 
