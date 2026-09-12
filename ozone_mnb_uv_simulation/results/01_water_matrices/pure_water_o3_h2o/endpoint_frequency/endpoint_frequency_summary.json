@@ -1,0 +1,411 @@
+{
+  "job": "JOB-2026-0906-004",
+  "title": "\u65b0\u7aef\u70b9\u5b8c\u6574\u5185\u90e8\u9891\u7387\u4e0e\u8f6f\u6a21\u53ef\u9760\u6027\u9a8c\u6536\u6279",
+  "batch_scope": {
+    "done": "endpoint fixing, centre checks, previous-batch report corrections, formal registration dedup, 144-point dual-step finite-difference Hessians, full internal frequency analysis + PySCF cross-check, lowest-mode L7/L8 soft-mode check",
+    "not_executed": "negative-mode following (none exist), water phase, thermochemistry, binding free energies, higher-level cross-checks, reaction paths (forbidden this batch)"
+  },
+  "endpoints": {
+    "source": "run_artifacts/01_pure_water_o3_h2o/phaseC_reoptimization/phaseC_summary_attempt2.json",
+    "source_hash": "186008c181d6f2a4",
+    "atom_order": [
+      "O",
+      "O",
+      "O",
+      "O",
+      "H",
+      "H"
+    ],
+    "index_verification": {
+      "c14_plus": {
+        "ozone_central_O": 0,
+        "ozone_terminal_Os": [
+          1,
+          2
+        ],
+        "water_Hs": [
+          4,
+          5
+        ]
+      },
+      "c06_plus": {
+        "ozone_central_O": 0,
+        "ozone_terminal_Os": [
+          1,
+          2
+        ],
+        "water_Hs": [
+          4,
+          5
+        ]
+      }
+    },
+    "centre_checks": {
+      "c14_plus": {
+        "e_total": -301.8748379468788,
+        "grad_max": 2.641263992676651e-06,
+        "grad_rms": 1.068228717430553e-06,
+        "scf_converged": true,
+        "gate_pass": true
+      },
+      "c06_plus": {
+        "e_total": -301.8740934493486,
+        "grad_max": 2.1417173281502945e-06,
+        "grad_rms": 8.293342691158977e-07,
+        "scf_converged": true,
+        "gate_pass": true
+      }
+    },
+    "full_gradient_saved": "endpoints_fixed.json centre_check.gradient_full_6x3"
+  },
+  "previous_batch_corrections": {
+    "per_step_full_gradient_gap": "phaseC trajectories only stored grad max/RMS - historical evidence gap, not fabricated, not rerun; full gradients restored from this batch on",
+    "dedup_withdrawn": "phaseC rmsd_dedup was centroid-translation only; formal registration+permutation dedup redone here",
+    "method_naming": "omegaB97X-D empirical-dispersion DFT part (xc='wb97xd', libxc contains no -D2) + project empirical full-derivative -D2 (Chai-Head-Gordon, verbatim)",
+    "attempts": "attempt 2 was an ADDITIONAL attempt (c14: 6 then 46 steps; c06: 13 then 25); no further attempts allowed or performed"
+  },
+  "formal_dedup": {
+    "method": "Kabsch on O3-frame centroid + permutations {terminal Os 1<->2, water Hs 4<->5} (indices verified from geometry)",
+    "c14_vs_c06_rmsd_A": 3.7451881832711904,
+    "best_permutation": [
+      [
+        1,
+        2
+      ],
+      [
+        4,
+        5
+      ]
+    ],
+    "same_structure": false,
+    "vs_own_start": {
+      "c14_plus_vs_own_start": 0.07408954819675447,
+      "c06_plus_vs_own_start": 0.07123246286312135
+    },
+    "artifact": "run_artifacts/01_pure_water_o3_h2o/endpoint_frequency/formal_dedup.json"
+  },
+  "hessian": {
+    "points_per_candidate": 72,
+    "step_sizes_bohr": [
+      0.002,
+      0.004
+    ],
+    "total_points": 144,
+    "all_scf_converged": true,
+    "all_grid_response_true": true,
+    "displacement_verification_max_dev_bohr": "<1e-10 per point",
+    "antisym_residual_max": {
+      "c14_plus": {
+        "0.002": 2.2276309579738474e-06,
+        "0.004": 8.770352401793469e-06
+      },
+      "c06_plus": {
+        "0.002": 2.3377443314348545e-06,
+        "0.004": 9.373843271043292e-06
+      }
+    },
+    "unsymmetrized_saved": true,
+    "symmetrized_after_reporting": true,
+    "cache_policy": "per-point immediate save with method/code/coords fingerprints; resume only on fingerprint match (not triggered)"
+  },
+  "frequency": {
+    "method": "mass-weighted with isotope_avg masses; TR subspace rank 6 verified; U 18x12; eigenproblem on U^T H_mw U (12x12); all 12 modes kept; no sorting of the projected 18x18",
+    "pyscf_crosscheck_max_wn_diff": {
+      "c14_plus": {
+        "0.002": 2.7071678232459817e-11,
+        "0.004": 0.08341209486102485
+      },
+      "c06_plus": {
+        "0.002": 9.541878398522385e-11,
+        "0.004": 0.7674799106102839
+      }
+    },
+    "per_candidate": {
+      "c14_plus": {
+        "per_step": {
+          "0.002": {
+            "freq_wavenumber_signed": [
+              42.069107995370835,
+              75.5026651069292,
+              87.74486298123728,
+              98.6072724413351,
+              174.02058302483508,
+              249.19743322418583,
+              788.2646615433125,
+              1332.030219997261,
+              1341.9115043572328,
+              1631.136105926766,
+              3870.4568035532993,
+              3976.3006701567947
+            ],
+            "n_negative": 0,
+            "lowest_eigenvalue": 6.697582216238093e-05
+          },
+          "0.004": {
+            "freq_wavenumber_signed": [
+              42.152520090240536,
+              75.47409612024242,
+              87.6996172344488,
+              98.55205122034144,
+              174.0093626884608,
+              249.19209972236612,
+              788.263430654808,
+              1332.0446206922632,
+              1341.921808186034,
+              1631.1389616053164,
+              3870.4956977021125,
+              3976.339849196661
+            ],
+            "n_negative": 0,
+            "lowest_eigenvalue": 6.724167671834522e-05
+          }
+        },
+        "min_mode_overlap": 0.9999950655016211,
+        "max_abs_d_wn_matched": 0.08341209486970058,
+        "internal_matrix_max_diff": 1.2498225688939435e-05
+      },
+      "c06_plus": {
+        "per_step": {
+          "0.002": {
+            "freq_wavenumber_signed": [
+              32.549370011348856,
+              39.875620418658634,
+              44.39475327534692,
+              97.28649983951728,
+              215.31033741807914,
+              288.3266596380034,
+              790.140489171412,
+              1311.969640573077,
+              1357.0506305849206,
+              1627.5662449606743,
+              3851.250279957921,
+              3968.874100123453
+            ],
+            "n_negative": 0,
+            "lowest_eigenvalue": 4.009374471299997e-05
+          },
+          "0.004": {
+            "freq_wavenumber_signed": [
+              32.5416807735723,
+              39.350379865010595,
+              43.62727336480243,
+              97.2900099944514,
+              215.32011149900944,
+              288.33933415807763,
+              790.1382411454381,
+              1311.9721025937388,
+              1357.0512165926111,
+              1627.5670211988306,
+              3851.275787379121,
+              3968.8884757244987
+            ],
+            "n_negative": 0,
+            "lowest_eigenvalue": 4.007480401324719e-05
+          }
+        },
+        "min_mode_overlap": 0.992442884601821,
+        "max_abs_d_wn_matched": 0.7674799105444947,
+        "internal_matrix_max_diff": 9.631745579108397e-06
+      }
+    }
+  },
+  "softmode": {
+    "c14_plus": {
+      "directions_selected": [
+        0
+      ],
+      "L8_centre_max_g": 1.4754153083433287e-05,
+      "L8_centre_pass_1e5": false,
+      "lowest_mode": {
+        "mode0": {
+          "wn_L7_h002": 42.069107995370835,
+          "hessian_projection_L7": 7.034712202301474e-05,
+          "analysis": {
+            "L7_a0.002": {
+              "q_actual_bohr": 0.005329270177739016,
+              "s_E": 1.569135877250453e-06,
+              "s_g_center": 1.5692149014318556e-06,
+              "k_E": 7.088735108832813e-05,
+              "k_g": 7.149190716004912e-05,
+              "hessian_projection_L7": 7.034712202301474e-05,
+              "slope_check_resid": -7.902418140263198e-11,
+              "k_E_minus_k_g": -6.045560717209873e-07
+            },
+            "L7_a0.004": {
+              "q_actual_bohr": 0.010658540355477914,
+              "s_E": 1.5690692130814509e-06,
+              "s_g_center": 1.5692149014318556e-06,
+              "k_E": 7.272568278336135e-05,
+              "k_g": 7.520900743406814e-05,
+              "hessian_projection_L7": 7.034712202301474e-05,
+              "slope_check_resid": -1.4568835040475853e-10,
+              "k_E_minus_k_g": -2.483324650706786e-06
+            },
+            "L8_a0.002": {
+              "q_actual_bohr": 0.005329270177739016,
+              "s_E": 2.8125666240715747e-06,
+              "s_g_center": 2.812756176398231e-06,
+              "k_E": 1.7592744256208827e-05,
+              "k_g": 1.8282100462964515e-05,
+              "hessian_projection_L7": null,
+              "slope_check_resid": -1.8955232665636998e-10,
+              "k_E_minus_k_g": -6.893562067556875e-07
+            },
+            "L8_a0.004": {
+              "q_actual_bohr": 0.010658540355477914,
+              "s_E": 2.8115133302010953e-06,
+              "s_g_center": 2.812756176398231e-06,
+              "k_E": 1.971027820650152e-05,
+              "k_g": 2.2519850996118306e-05,
+              "hessian_projection_L7": null,
+              "slope_check_resid": -1.2428461971357785e-09,
+              "k_E_minus_k_g": -2.809572789616786e-06
+            }
+          }
+        }
+      }
+    },
+    "c06_plus": {
+      "directions_selected": [
+        0
+      ],
+      "L8_centre_max_g": 4.684539794360493e-06,
+      "L8_centre_pass_1e5": true,
+      "lowest_mode": {
+        "mode0": {
+          "wn_L7_h002": 32.549370011348856,
+          "hessian_projection_L7": 0.0003332973032489044,
+          "analysis": {
+            "L7_a0.002": {
+              "q_actual_bohr": 0.005699990649714133,
+              "s_E": -1.026873059939309e-07,
+              "s_g_center": -1.0126160944352693e-07,
+              "k_E": 0.0003337554180243669,
+              "k_g": 0.00033404218267196344,
+              "hessian_projection_L7": 0.0003332973032489044,
+              "slope_check_resid": -1.425696550403966e-09,
+              "k_E_minus_k_g": -2.867646475965464e-07
+            },
+            "L7_a0.004": {
+              "q_actual_bohr": 0.01139998129942869,
+              "s_E": -1.0745168983762899e-07,
+              "s_g_center": -1.0126160944352693e-07,
+              "k_E": 0.00033472118195647507,
+              "k_g": 0.0003361357281689075,
+              "hessian_projection_L7": 0.0003332973032489044,
+              "slope_check_resid": -6.190080394102054e-09,
+              "k_E_minus_k_g": -1.414546212432418e-06
+            },
+            "L8_a0.002": {
+              "q_actual_bohr": 0.005699990649714133,
+              "s_E": 3.9167174350894786e-08,
+              "s_g_center": 4.06071093753231e-08,
+              "k_E": 0.000335571474114139,
+              "k_g": 0.00033589121178667907,
+              "hessian_projection_L7": null,
+              "slope_check_resid": -1.4399350244283119e-09,
+              "k_E_minus_k_g": -3.19737672540058e-07
+            },
+            "L8_a0.004": {
+              "q_actual_bohr": 0.01139998129942869,
+              "s_E": 3.395402593792592e-08,
+              "s_g_center": 4.06071093753231e-08,
+              "k_E": 0.0003365836017132788,
+              "k_g": 0.00033799671746539674,
+              "hessian_projection_L7": null,
+              "slope_check_resid": -6.6530834373971765e-09,
+              "k_E_minus_k_g": -1.4131157521179278e-06
+            }
+          }
+        }
+      }
+    }
+  },
+  "verdicts": {
+    "c14_plus": {
+      "stationary": "pass (L7 centre max|g|<=1e-5)",
+      "internal_modes": "12/12 positive at BOTH step sizes",
+      "step_sensitivity": "d_wn<=0.08 cm-1, overlap>=0.999995",
+      "softmode_grid_sensitivity": "sign-stable positive on L7+L8; magnitude grid-sensitive (~3x) and L8 centre max|g|=1.475e-5 slightly exceeds 1e-5 - recorded",
+      "verdict": "local minimum SUPPORTED within this batch method and numerical checks (not global minimum)",
+      "verdict_note": "c14_plus lowest mode is very soft (42.1 cm-1); its curvature magnitude has large grid uncertainty - dedicated grid-convergence study optional next batch"
+    },
+    "c06_plus": {
+      "stationary": "pass (L7 centre max|g|<=1e-5)",
+      "internal_modes": "12/12 positive at BOTH step sizes",
+      "step_sensitivity": "d_wn<=0.77 cm-1 (modes 1-2), overlap>=0.992",
+      "softmode_grid_sensitivity": "sign-stable positive; magnitude grid-robust (<1%); L8 centre passes 1e-5",
+      "verdict": "local minimum SUPPORTED within this batch method and numerical checks (not global minimum)",
+      "verdict_note": "c14_plus lowest mode is very soft (42.1 cm-1); its curvature magnitude has large grid uncertainty - dedicated grid-convergence study optional next batch"
+    }
+  },
+  "artifacts": {
+    "protocols/endpoint_freq_step1_fix_inputs.py": "4b60fa32d425f548",
+    "protocols/endpoint_freq_step1b_dedup.py": "77c47a9fb5ccae8d",
+    "protocols/endpoint_freq_step2_hessian.py": "110a1f8d8dca4e76",
+    "protocols/endpoint_freq_step3_frequency.py": "6dfc8bf42d46a4a9",
+    "protocols/endpoint_freq_step4_softmode.py": "1d146d80373a0997",
+    "run_artifacts/01_pure_water_o3_h2o/endpoint_frequency/endpoints_fixed.json": "451a3f0b7261f09b",
+    "run_artifacts/01_pure_water_o3_h2o/endpoint_frequency/formal_dedup.json": "d854c4f118c1a523",
+    "run_artifacts/01_pure_water_o3_h2o/endpoint_frequency/frequency_analysis.json": "4cfb781b32992dd7",
+    "run_artifacts/01_pure_water_o3_h2o/endpoint_frequency/softmode_points/softmode_raw.json": "8227e0302e47c715"
+  },
+  "report": "results/01_water_matrices/pure_water_o3_h2o/endpoint_frequency/endpoint_frequency_report.md",
+  "stop": "batch complete; next steps per user decision",
+  "revision_JOB_2026_0906_005_phaseA": {
+    "withdrawn_explanation": "h=0.004 cross-check difference was NOT \"independent diagonalisation rounding\": the 004 script passed the h=0.002 matrix to the h=0.004 PySCF cross-check (its diff exactly equals the inter-step max|d_wn|, ratio=1.000000)",
+    "same_matrix_crosscheck_wn_diff": {
+      "c14_plus": {
+        "0.002": 2.7071678232459817e-11,
+        "0.004": 4.5062620301905554e-11
+      },
+      "c06_plus": {
+        "0.002": 9.541878398522385e-11,
+        "0.004": 1.0550849083301728e-10
+      }
+    },
+    "matrix_comparisons_renamed": {
+      "cartesian_hessian_max_diff": {
+        "c14_plus": 1.2498225688939435e-05,
+        "c06_plus": 9.631745579108397e-06
+      },
+      "internal_mw_matrix_max_diff_sameUbasis": {
+        "c14_plus": 9.749602486008868e-06,
+        "c06_plus": 3.250982910783795e-06
+      },
+      "note": "antisym residuals reported with step-size trend, mass-weighted internal scale and lowest-mode change; NOT strict error bounds"
+    },
+    "actual_softmode_task_count": {
+      "unique_displaced_points": 16,
+      "per_candidate": 8,
+      "directions_per_candidate": 1,
+      "new_L8_centres": 2,
+      "authorised_cap": 32,
+      "note": "cap was an upper bound, not the executed count"
+    },
+    "conclusion_revisions": {
+      "c14_plus": "L7 local-minimum evidence supported, grid sensitivity PENDING (open item retained); L8 non-stationary positive directional curvature only characterises that position/direction",
+      "c06_plus": "grid robustness covers ONLY the checked lowest direction, not the full L8 internal spectrum",
+      "L7_L8_curvature_ratios": {
+        "c14_plus": {
+          "kE_small": 4.029,
+          "kE_large": 3.69,
+          "kG_small": 3.91
+        },
+        "c06_plus": {
+          "kE_small": 0.995,
+          "kE_large": 0.994,
+          "kG_small": 0.994
+        }
+      },
+      "no_pending_items_claim": "WITHDRAWN"
+    },
+    "regression": "run_artifacts/.../endpoint_frequency/step3_revision_regression.json (12/12 PASS; T3 reproduces the 004 wrong-matrix bug with ratio 1.00000000 and fails loudly)",
+    "revised_artifacts": {
+      "frequency_analysis_revised_json": "a4e10cf9a94d3f78",
+      "step3_revision_regression_json": "45d10a3b0ebe5b67",
+      "step3_script_hash": "54e4c54fbd479452"
+    },
+    "supersedes": "frequency_analysis.json cross-check fields (kept for history)"
+  }
+}

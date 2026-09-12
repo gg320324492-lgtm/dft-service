@@ -1,0 +1,66 @@
+{
+  "job": "JOB-2026-0906-027",
+  "title": "S13 C1-type NH3-O3 initial guess construction and single controlled optimization",
+  "budget": {
+    "opt_evals": "30/30 (cap reached)",
+    "recheck": "1/1",
+    "stability": "0 (not authorized: recheck failed)",
+    "total": "31/31"
+  },
+  "figure_verification": {
+    "file": "notes/literature/figure_checks/S13_C1_verification_record.md",
+    "images": "S13_pdfpage5.png (full), S13_C1_zoom.png (600 dpi crop)",
+    "source": "PDF page 5 = printed page 270, Figure 1 top-left grid cell",
+    "atoms": "O3: 5O/6O/7O; NH3: 1N/2H/3H/4H",
+    "values": "O-O 1.252/1.252, angle(6O)=117.7 deg, N-H 1.012, dashed contacts 5O..N=2.967, 7O..N=2.963",
+    "verdict": "C1 is a NON-COVALENT contact complex (dashed contacts); \"OOON ring\" is a loop description (2 real O-O bonds + 2 N..O contacts), NOT four bonds; info SUFFICIENT for the guess"
+  },
+  "guess": {
+    "file": "inputs/nh3o3_phase2/c1_guess_S13fig1.xyz",
+    "label": "guess combining S13 Figure 1 and JOB-026 project monomer geometries (rigid-body placement) - NOT author original coordinates",
+    "contacts": "O5..N=O7..N=2.965 A (average of 2.967/2.963, symmetrized)",
+    "monomers": "JOB-026 accepted monomer geometries (O-O 1.2379, N-H 1.0111)"
+  },
+  "optimization": {
+    "evals": "30/30 cap reached",
+    "converged_by_own_criteria": false,
+    "energy_trend": "monotonic decrease ~-281.9950 -> -281.9997070 as fragments separate",
+    "separation": "N..O5 2.965->4.3028 A; N..O7 2.965->4.0896; N..O6 2.128->3.4269",
+    "gradient_oscillation": "4e-4 to 1.2e-3 in the last steps"
+  },
+  "endpoint_recheck": {
+    "E": -281.9997070264258,
+    "grad_max": 0.0003951,
+    "deterministic": "matches optimizer E/grad to <3e-11",
+    "candidate": false,
+    "reason": "3.95e-4 >> 1e-5"
+  },
+  "stability": "NOT performed (recheck failed; not authorized per rule)",
+  "fragment_analysis": {
+    "NH3_bonds_vs_monomer": "<=2e-4 A (preserved)",
+    "O3_bonds_vs_monomer": "<=3e-4 A (preserved)",
+    "min_interfragment": 3.4269,
+    "interpretation": "fragments intact but SEPARATED; separation direction was downhill from the guess"
+  },
+  "energy": {
+    "final_E_hartree": -281.9997070264258,
+    "raw_difference_vs_monomer_sum_hartree": -0.0015852,
+    "raw_difference_vs_monomer_sum_kcalmol": -0.995,
+    "label": "final-geometry energy difference for a NON-candidate endpoint; no dE-candidate label per batch rule; approximate long-range (D2-included) attraction magnitude at 3.4-4.3 A separation"
+  },
+  "verdict": "NO C1-type stationary-point candidate preserving NH3/O3 fragment character was obtained: under the project method the 2.965 A contact configuration relaxes toward separation (registered as-is, not forced into C1); no claims about C1 non-existence, no barrierless-formation claim, no S13 comparison (CP not evaluated)",
+  "next_step_draft": {
+    "proposal": "fixed-monomer N-O3 distance scan batch (no optimization): 6 single points at contact distances 2.6/2.8/3.0/3.2/3.6/4.2 A along the bisector orientation, budget 6 evals",
+    "decision_value": "distinguishes \"minimum at shorter/longer distance\" from \"no minimum at this orientation at all\"; decides whether the adduct direction continues",
+    "boundary": "no optimization, monomers fixed, no other channels; requires commander approval"
+  },
+  "files": {
+    "guess": "inputs/nh3o3_phase2/c1_guess_S13fig1.xyz",
+    "guess_info": "inputs/nh3o3_phase2/c1_guess_info.json",
+    "trajectory": "run_artifacts/02_nh3o3_reference/c1_adduct/c1_steps.json",
+    "final_geom_analysis": "c1_final_geometry_analysis.json (post-hoc, from saved step-30 coords)",
+    "budget": "budget_c1.json (31 attempts, per-eval granularity)",
+    "figure": "notes/literature/figure_checks/S13_C1_verification_record.md",
+    "report": "results/phase2_preparation/c1_adduct_opt_report.md"
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "backend": "PySCF / WSL2",
+  "basis": "6-31G",
+  "natm": 6,
+  "steps": {
+    "d2_grad": 0.0001,
+    "d2_hess": 0.001,
+    "total_grad": 0.0001
+  },
+  "thresholds": {
+    "d2_energy_fidelity": 1e-14,
+    "d2_grad": 1e-06,
+    "d2_hess": 0.0001,
+    "d2_hess_sym": 1e-08,
+    "additivity": 1e-08,
+    "total_grad_fd": 1e-05
+  },
+  "e_d2_hartree": -0.00010354715496462164,
+  "d2_energy_vs_chg_d2": 0.0,
+  "max_d2_grad_vs_fd": 7.434157456298607e-14,
+  "max_d2_hess_vs_gradfd": 0.0,
+  "d2_hess_symmetry": 0.0,
+  "e_dft_hartree": -301.59641884190705,
+  "add_energy": 5.684341886080802e-14,
+  "add_grad": 2.14238985656023e-09,
+  "add_hess": 3.168282969312486e-09,
+  "wrapper_reference": {
+    "tag": "reference_geometry",
+    "e": 8.483324990832958e-14,
+    "g": 3.774758283725532e-15,
+    "h": 5.320288697655812e-13
+  },
+  "wrapper_disp_a0x": {
+    "tag": "displaced +0.05 Bohr (O3 atom0 x)",
+    "e": 5.752912252479647e-16,
+    "g": 1.775841631610083e-15,
+    "h": 1.9274125214587348e-13
+  },
+  "wrapper_disp_h2oz": {
+    "tag": "displaced -0.07 Bohr (H2O O z)",
+    "e": 1.5195500023199027e-14,
+    "g": 5.800915303666443e-15,
+    "h": 3.4585702357592396e-13
+  },
+  "max_wrapper_e": 8.483324990832958e-14,
+  "max_wrapper_g": 5.800915303666443e-15,
+  "max_wrapper_h": 5.320288697655812e-13,
+  "fd_diagnostic_note": "energy-FD end-to-end check is noise-limited by the DFT backend (~1e-5 Eh/Bohr at h=1e-4 Bohr) and is NOT a valid D2 pass criterion; checks 1-3 and 4 above are machine-precision.",
+  "pass": {
+    "d2_energy_fidelity": true,
+    "d2_grad": true,
+    "d2_hess": true,
+    "d2_hess_symmetry": true,
+    "additivity": true,
+    "wrapper_composition": true
+  },
+  "overall_pass": true
+}

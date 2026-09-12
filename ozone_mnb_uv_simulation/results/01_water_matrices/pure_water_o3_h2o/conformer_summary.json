@@ -1,0 +1,1548 @@
+{
+  "job": "JOB-2026-0905-009",
+  "title": "O3.H2O local hydration conformers (pure water) - Phase 2A Part 2",
+  "method": "wB97X-D / def2-TZVP, full-derivative -D2 via make_mf_d2; SMD(H2O) for the solvation comparison",
+  "conformer_pool": {
+    "n_conformers": 14,
+    "ids": [
+      "c01",
+      "c02",
+      "c03",
+      "c04",
+      "c05",
+      "c06",
+      "c07",
+      "c08",
+      "c09",
+      "c10",
+      "c11",
+      "c12",
+      "c13",
+      "c14"
+    ],
+    "charge": 0,
+    "multiplicity": 1,
+    "atom_order": "O3 central, O3 term(+x), O3 term(-x), water O, water H1, water H2"
+  },
+  "gas_phase": {
+    "global_minimum": "c14_plus",
+    "global_energy_hartree": -301.87483581,
+    "n_distinct_minima": 9,
+    "window_kcal": 3.0,
+    "dedup_kept": [
+      "c14_plus",
+      "c12_plus",
+      "c12_minus",
+      "c05",
+      "c11_minus",
+      "c11_plus",
+      "c09_plus",
+      "c09_minus",
+      "c06_plus"
+    ],
+    "dedup_eliminated": {
+      "c14": "saddle point: 1 imaginary mode(s) (nu_i = -52.13362954115357 cm-1), rel 0.000 kcal/mol -- not a minimum",
+      "c09": "saddle point: 1 imaginary mode(s) (nu_i = -109.06644971042479 cm-1), rel 0.000 kcal/mol -- not a minimum",
+      "c11": "saddle point: 1 imaginary mode(s) (nu_i = -118.11738214097015 cm-1), rel 0.001 kcal/mol -- not a minimum",
+      "c12": "saddle point: 1 imaginary mode(s) (nu_i = -92.33633094895566 cm-1), rel 0.002 kcal/mol -- not a minimum",
+      "c08": "saddle point: 1 imaginary mode(s) (nu_i = -44.786570289004025 cm-1), rel 0.338 kcal/mol -- not a minimum",
+      "c06": "saddle point: 1 imaginary mode(s) (nu_i = -100.55324896812675 cm-1), rel 0.466 kcal/mol -- not a minimum",
+      "c04": "saddle point: 1 imaginary mode(s) (nu_i = -73.46099637072064 cm-1), rel 0.561 kcal/mol -- not a minimum",
+      "c02": "saddle point: 2 imaginary mode(s) (nu_i = -66.72458373654675 cm-1), rel 1.095 kcal/mol -- not a minimum",
+      "c10": "saddle point: 5 imaginary mode(s) (nu_i = -104.55631008912333 cm-1), rel 1.282 kcal/mol -- not a minimum",
+      "c13": "saddle point: 5 imaginary mode(s) (nu_i = -135.58428765152934 cm-1), rel 2.103 kcal/mol -- not a minimum"
+    },
+    "conformers": [
+      {
+        "id": "c01",
+        "coverage": "\u672b\u7aef\u6c27\u4f9b\u6c22\u952e / \u9762\u5185\u5916\u90e8\u65b9\u5411 / \u8fd1\u63a5\u89e6",
+        "rule": "H1 \u6cbf\u672b\u7aef\u6c27(+x)\u5904\"\u5782\u76f4\u952e\u8f74\u4e14\u6307\u5411\u5206\u5b50\u5916\u90e8\"\u7684\u9762\u5185\u65b9\u5411\u63a5\u8fd1\uff0cH1\u00b7\u00b7\u00b7O = 2.00 \u00c5\uff1bO_w \u5728\u540c\u4e00\u8f74\u5916\u4fa7\uff1bH2 \u7ed5 O_w\u2013H1 \u8f74\u65cb\u8f6c 0\u00b0\uff08\u53c2\u8003\u5411\u91cf\u53d6 O3 \u5e73\u9762\u6cd5\u7ebf\uff09",
+        "status": "converged",
+        "e_total_hartree": -301.87409164,
+        "rel_kcal": 0.4674,
+        "n_imag": 1,
+        "lowest_freq": -110.00879331748357,
+        "topology": "H-bonds: none | O_w contacts: term(+x)",
+        "is_minimum": false,
+        "kept": false,
+        "eliminated_reason": "duplicate of c06 (RMSD=0.092 A, dE=0.001 kcal/mol, same topology)",
+        "optimised_xyz": [
+          [
+            -0.11100601,
+            0.10434708,
+            -0.22471772
+          ],
+          [
+            0.86997841,
+            0.62482316,
+            0.33357961
+          ],
+          [
+            -1.10108134,
+            0.81069854,
+            -0.42354633
+          ],
+          [
+            2.44415865,
+            -2.0344988,
+            0.28486356
+          ],
+          [
+            2.28477014,
+            -1.10316591,
+            0.45433422
+          ],
+          [
+            3.3706586,
+            -2.17825694,
+            0.47742771
+          ]
+        ]
+      },
+      {
+        "id": "c02",
+        "coverage": "\u672b\u7aef\u6c27\u4f9b\u6c22\u952e / \u9762\u5185\u5916\u90e8\u65b9\u5411 / \u5171\u9762\u53d6\u5411",
+        "rule": "\u540c c01 \u7684\u63a5\u8fd1\u8f74\u4e0e\u8ddd\u79bb\uff1bH2 \u7ed5 O_w\u2013H1 \u8f74\u65cb\u8f6c 90\u00b0\uff08\u4e24\u4e2a H \u5747\u843d\u5728 O3 \u5e73\u9762\u5185\uff09",
+        "status": "converged",
+        "e_total_hartree": -301.87309217,
+        "rel_kcal": 1.0946,
+        "n_imag": 2,
+        "lowest_freq": -66.72458373654675,
+        "topology": "H-bonds: none | O_w contacts: term(+x)",
+        "is_minimum": false,
+        "kept": false,
+        "eliminated_reason": "saddle point: 2 imaginary mode(s) (nu_i = -66.72458373654675 cm-1), rel 1.095 kcal/mol -- not a minimum",
+        "optimised_xyz": [
+          [
+            -0.4171445,
+            0.22375678,
+            0.0
+          ],
+          [
+            0.7961961,
+            0.49069375,
+            0.0
+          ],
+          [
+            -1.21587051,
+            1.16318413,
+            -0.0
+          ],
+          [
+            2.8919654,
+            -1.98748906,
+            -0.0
+          ],
+          [
+            2.27185636,
+            -1.25525296,
+            0.0
+          ],
+          [
+            2.35481143,
+            -2.77974636,
+            -0.0
+          ]
+        ]
+      },
+      {
+        "id": "c03",
+        "coverage": "\u672b\u7aef\u6c27\u4f9b\u6c22\u952e / \u9762\u5185\u5916\u90e8\u65b9\u5411 / \u8fdc\u63a5\u89e6",
+        "rule": "\u540c c01 \u7684\u63a5\u8fd1\u65b9\u5411\uff1bH1\u00b7\u00b7\u00b7O \u653e\u5bbd\u5230 2.90 \u00c5\uff08\u8fdc\u63a5\u89e6\uff0c\u68c0\u9a8c\u662f\u5426\u6536\u655b\u56de\u8fd1\u63a5\u89e6\u6781\u5c0f\uff09",
+        "status": "converged",
+        "e_total_hartree": -301.87409244,
+        "rel_kcal": 0.4669,
+        "n_imag": 1,
+        "lowest_freq": -38.93926165819095,
+        "topology": "H-bonds: none | O_w contacts: term(+x)",
+        "is_minimum": false,
+        "kept": false,
+        "eliminated_reason": "duplicate of c06 (RMSD=0.043 A, dE=0.001 kcal/mol, same topology)",
+        "optimised_xyz": [
+          [
+            0.10633644,
+            -0.1755797,
+            -0.16021051
+          ],
+          [
+            1.16278379,
+            0.27065097,
+            0.31918004
+          ],
+          [
+            -0.83777066,
+            0.60461174,
+            -0.29651813
+          ],
+          [
+            2.56163836,
+            -2.48643831,
+            0.1843191
+          ],
+          [
+            2.4560939,
+            -1.54736015,
+            0.3531779
+          ],
+          [
+            3.35957026,
+            -2.74441664,
+            0.64573042
+          ]
+        ]
+      },
+      {
+        "id": "c04",
+        "coverage": "\u672b\u7aef\u6c27\u4f9b\u6c22\u952e / \u6cbf O\u2013O \u952e\u8f74\u5ef6\u957f\u7ebf\uff08\u7ebf\u6027 O\u2013O\u00b7\u00b7\u00b7H\uff09",
+        "rule": "H1 \u6cbf\u4e2d\u5fc3\u6c27\u2192\u672b\u7aef\u6c27\u952e\u8f74\u7684\u5ef6\u957f\u7ebf\u63a5\u8fd1\uff08\u7ebf\u6027 O\u2013O\u00b7\u00b7\u00b7H\u2013O\uff09\uff0c2.00 \u00c5",
+        "status": "converged",
+        "e_total_hartree": -301.87394234,
+        "rel_kcal": 0.5611,
+        "n_imag": 1,
+        "lowest_freq": -73.46099637072064,
+        "topology": "H-bonds: none | O_w contacts: term(+x)",
+        "is_minimum": false,
+        "kept": false,
+        "eliminated_reason": "saddle point: 1 imaginary mode(s) (nu_i = -73.46099637072064 cm-1), rel 0.561 kcal/mol -- not a minimum",
+        "optimised_xyz": [
+          [
+            -0.07149014,
+            0.09368443,
+            0.00119247
+          ],
+          [
+            1.12425366,
+            -0.16091508,
+            0.21475623
+          ],
+          [
+            -0.40468092,
+            1.27831047,
+            -0.09241001
+          ],
+          [
+            3.32326858,
+            2.25429675,
+            -0.05694766
+          ],
+          [
+            2.57542124,
+            1.66568189,
+            0.06637644
+          ],
+          [
+            3.70913271,
+            2.35951119,
+            0.81275742
+          ]
+        ]
+      },
+      {
+        "id": "c05",
+        "coverage": "\u672b\u7aef\u6c27\u4f9b\u6c22\u952e / \u5782\u76f4\u4e8e O3 \u5e73\u9762\uff08\u975e\u5171\u9762\uff09",
+        "rule": "H1 \u6cbf O3 \u5e73\u9762\u6cd5\u7ebf +z \u4ece\u4e0a\u65b9\u63a5\u8fd1\u672b\u7aef\u6c27\uff0c2.00 \u00c5\uff1bH2 \u7ed5\u8f74 0\u00b0\uff08\u53c2\u8003\u5411\u91cf\u53d6 +y\uff09",
+        "status": "converged",
+        "e_total_hartree": -301.87483567,
+        "rel_kcal": 0.0005,
+        "n_imag": 0,
+        "lowest_freq": 63.20950129126652,
+        "topology": "H-bonds: none | O_w contacts: central, term(+x), term(-x)",
+        "is_minimum": true,
+        "kept": true,
+        "eliminated_reason": null,
+        "optimised_xyz": [
+          [
+            -0.16200847,
+            -0.00947477,
+            0.01162069
+          ],
+          [
+            1.00293333,
+            0.318955,
+            -0.24475738
+          ],
+          [
+            -0.91305637,
+            0.84617033,
+            0.4956957
+          ],
+          [
+            1.09696024,
+            0.69652786,
+            2.76163878
+          ],
+          [
+            1.87172684,
+            1.05376783,
+            2.32539352
+          ],
+          [
+            0.498293,
+            1.43827959,
+            2.85961093
+          ]
+        ]
+      },
+      {
+        "id": "c06",
+        "coverage": "\u672b\u7aef\u6c27\u4f9b\u6c22\u952e / \u9762\u5185\u5916\u90e8\u4e0e\u5782\u76f4\u4e4b\u95f4\u7684\u503e\u659c\u65b9\u5411",
+        "rule": "H1 \u6cbf (\u9762\u5185\u5916\u90e8\u65b9\u5411 + \u5e73\u9762\u6cd5\u7ebf) \u5f52\u4e00\u5316\u540e\u7684\u503e\u659c\u65b9\u5411\u63a5\u8fd1\uff0c2.10 \u00c5\uff1bH2 \u65cb\u8f6c 60\u00b0",
+        "status": "converged",
+        "e_total_hartree": -301.87409332,
+        "rel_kcal": 0.4664,
+        "n_imag": 1,
+        "lowest_freq": -100.55324896812675,
+        "topology": "H-bonds: none | O_w contacts: term(+x)",
+        "is_minimum": false,
+        "kept": false,
+        "eliminated_reason": "saddle point: 1 imaginary mode(s) (nu_i = -100.55324896812675 cm-1), rel 0.466 kcal/mol -- not a minimum",
+        "optimised_xyz": [
+          [
+            -0.03429194,
+            0.11754138,
+            -0.14387763
+          ],
+          [
+            0.44275705,
+            0.81292664,
+            0.76929084
+          ],
+          [
+            -0.79586978,
+            0.66341556,
+            -0.94427737
+          ],
+          [
+            2.01366758,
+            -1.57465959,
+            1.95041515
+          ],
+          [
+            1.69602108,
+            -0.67272904,
+            1.86595815
+          ],
+          [
+            2.4685252,
+            -1.61149704,
+            2.79177376
+          ]
+        ]
+      },
+      {
+        "id": "c07",
+        "coverage": "\u4e2d\u5fc3\u6c27\u4f5c\u53d7\u4f53 / \u9762\u5185\u5f00\u653e\u4fa7\u4f9b\u6c22\u952e",
+        "rule": "H1 \u6cbf\u4e2d\u5fc3\u6c27\u80cc\u5411\u4e24\u4e2a\u672b\u7aef\u6c27\u7684\u5f00\u653e\u4fa7\uff08\u9762\u5185 \u2212y\uff09\u63a5\u8fd1\uff0c2.10 \u00c5\uff1bH2 \u65cb\u8f6c 45\u00b0\uff08\u4e2d\u5fc3\u6c27\u4e3a\u5f31\u53d7\u4f53\uff0c\u7528\u4e8e\u68c0\u9a8c\u662f\u5426\u6536\u655b\u5230\u672b\u7aef\u6c27\u578b\u6781\u5c0f\uff09",
+        "status": "converged",
+        "e_total_hartree": -301.87483493,
+        "rel_kcal": 0.001,
+        "n_imag": 1,
+        "lowest_freq": -58.81336939396613,
+        "topology": "H-bonds: none | O_w contacts: central, term(+x), term(-x)",
+        "is_minimum": false,
+        "kept": false,
+        "eliminated_reason": "duplicate of c14 (RMSD=0.017 A, dE=0.001 kcal/mol, same topology)",
+        "optimised_xyz": [
+          [
+            0.36506019,
+            0.48079697,
+            0.12760063
+          ],
+          [
+            -0.75480146,
+            0.29486281,
+            0.61991929
+          ],
+          [
+            0.54439886,
+            0.14516147,
+            -1.0494964
+          ],
+          [
+            -0.0638696,
+            -2.60329258,
+            0.07283036
+          ],
+          [
+            0.01493294,
+            -2.62641294,
+            -0.88182194
+          ],
+          [
+            -0.98908088,
+            -2.42203236,
+            0.24481046
+          ]
+        ]
+      },
+      {
+        "id": "c08",
+        "coverage": "\u53e6\u4e00\u4fa7\u672b\u7aef\u6c27\u4f9b\u6c22\u952e\uff08\u5bf9\u79f0\u7b49\u6548\u8d77\u70b9\uff09",
+        "rule": "\u4e0e c01 \u955c\u50cf\uff1aH1 \u6cbf\u672b\u7aef\u6c27(\u2212x) \u9762\u5185\u5916\u90e8\u65b9\u5411\u63a5\u8fd1\uff0c2.05 \u00c5\uff1bH2 \u65cb\u8f6c 30\u00b0",
+        "status": "converged",
+        "e_total_hartree": -301.8742978,
+        "rel_kcal": 0.3381,
+        "n_imag": 1,
+        "lowest_freq": -44.786570289004025,
+        "topology": "H-bonds: none | O_w contacts: term(-x)",
+        "is_minimum": false,
+        "kept": false,
+        "eliminated_reason": "saddle point: 1 imaginary mode(s) (nu_i = -44.786570289004025 cm-1), rel 0.338 kcal/mol -- not a minimum",
+        "optimised_xyz": [
+          [
+            -0.05358521,
+            -0.2694264,
+            -0.04077802
+          ],
+          [
+            1.03975205,
+            0.11745072,
+            0.38656982
+          ],
+          [
+            -0.95920596,
+            0.56716503,
+            -0.16539686
+          ],
+          [
+            0.32725653,
+            3.57793464,
+            0.06738584
+          ],
+          [
+            -0.13725165,
+            2.74020246,
+            0.12215772
+          ],
+          [
+            1.18602442,
+            3.41072308,
+            0.45647065
+          ]
+        ]
+      },
+      {
+        "id": "c09",
+        "coverage": "\u6c34\u6c27\u63a5\u89e6\u4e2d\u5fc3\u6c27 / \u5b64\u5bf9\u671d\u5411 O3\uff08\u975e\u5171\u9762\uff09",
+        "rule": "O_w \u6cbf +z \u4f4d\u4e8e\u4e2d\u5fc3\u6c27\u4e0a\u65b9 2.80 \u00c5\uff1b\u6c34\u5206\u5b50\u5bf9\u79f0\u8f74\u6cbf +u\uff08H \u671d\u4e0a\u80cc\u79bb O3\uff0c\u5b64\u5bf9\u7535\u5b50\u7aef\u671d\u5411\u4e2d\u5fc3\u6c27\uff09",
+        "status": "converged",
+        "e_total_hartree": -301.8748361,
+        "rel_kcal": 0.0003,
+        "n_imag": 1,
+        "lowest_freq": -109.06644971042479,
+        "topology": "H-bonds: none | O_w contacts: central, term(+x), term(-x)",
+        "is_minimum": false,
+        "kept": false,
+        "eliminated_reason": "saddle point: 1 imaginary mode(s) (nu_i = -109.06644971042479 cm-1), rel 0.000 kcal/mol -- not a minimum",
+        "optimised_xyz": [
+          [
+            -2.139e-05,
+            0.10713088,
+            -0.13463765
+          ],
+          [
+            1.06034169,
+            0.59646327,
+            0.27388035
+          ],
+          [
+            -1.06032676,
+            0.59655897,
+            0.27391862
+          ],
+          [
+            1.716e-05,
+            -0.38053487,
+            2.93810936
+          ],
+          [
+            0.76143759,
+            0.1954034,
+            3.02065147
+          ],
+          [
+            -0.76145039,
+            0.19533883,
+            3.02066597
+          ]
+        ]
+      },
+      {
+        "id": "c10",
+        "coverage": "\u6c34\u6c27\u63a5\u89e6\u4e2d\u5fc3\u6c27 / \u9762\u5185\u65b9\u5411",
+        "rule": "O_w \u5728 O3 \u5e73\u9762\u5185\u3001\u80cc\u79bb\u4e24\u4e2a\u672b\u7aef\u6c27\u7684\u4e00\u4fa7\uff0c\u8ddd\u4e2d\u5fc3\u6c27 2.90 \u00c5\uff1b\u5bf9\u79f0\u8f74\u6cbf +u\uff08H \u671d\u5916\uff09",
+        "status": "converged",
+        "e_total_hartree": -301.87279324,
+        "rel_kcal": 1.2822,
+        "n_imag": 5,
+        "lowest_freq": -104.55631008912333,
+        "topology": "H-bonds: none | O_w contacts: none",
+        "is_minimum": false,
+        "kept": false,
+        "eliminated_reason": "saddle point: 5 imaginary mode(s) (nu_i = -104.55631008912333 cm-1), rel 1.282 kcal/mol -- not a minimum",
+        "optimised_xyz": [
+          [
+            1.9e-07,
+            0.24050581,
+            -0.0
+          ],
+          [
+            1.06040809,
+            0.87902258,
+            -0.0
+          ],
+          [
+            -1.06040803,
+            0.87902338,
+            0.0
+          ],
+          [
+            -1.9e-07,
+            -3.12539745,
+            -0.0
+          ],
+          [
+            -1e-08,
+            -3.7056185,
+            0.76178135
+          ],
+          [
+            -1e-08,
+            -3.7056185,
+            -0.76178135
+          ]
+        ]
+      },
+      {
+        "id": "c11",
+        "coverage": "\u6c34\u6c27\u63a5\u89e6\u4e2d\u5fc3\u6c27 / \u4e24\u4e2a H \u671d\u5411 O3\uff08\u5206\u53c9\u578b\uff09",
+        "rule": "O_w \u4f4d\u4e8e\u4e2d\u5fc3\u6c27\u4e0a\u65b9 2.90 \u00c5\uff1b\u5bf9\u79f0\u8f74\u6cbf \u2212u\uff08\u4e24\u4e2a H \u540c\u65f6\u671d\u5411\u4e2d\u5fc3\u6c27\uff0c\u5206\u53c9\u53cc\u6c22\u7ed9\u4f53\uff09",
+        "status": "converged",
+        "e_total_hartree": -301.87483503,
+        "rel_kcal": 0.001,
+        "n_imag": 1,
+        "lowest_freq": -118.11738214097015,
+        "topology": "H-bonds: none | O_w contacts: central, term(+x), term(-x)",
+        "is_minimum": false,
+        "kept": false,
+        "eliminated_reason": "saddle point: 1 imaginary mode(s) (nu_i = -118.11738214097015 cm-1), rel 0.001 kcal/mol -- not a minimum",
+        "optimised_xyz": [
+          [
+            -2.71e-06,
+            -0.1640112,
+            -0.40830216
+          ],
+          [
+            1.06033621,
+            0.38505971,
+            -0.08440827
+          ],
+          [
+            -1.06033792,
+            0.38506794,
+            -0.08441082
+          ],
+          [
+            8.1e-07,
+            -0.13516972,
+            2.70543384
+          ],
+          [
+            0.7614318,
+            0.44630828,
+            2.68562486
+          ],
+          [
+            -0.761427,
+            0.44631344,
+            2.68565486
+          ]
+        ]
+      },
+      {
+        "id": "c12",
+        "coverage": "\u5bf9\u79f0\u5206\u53c9\u53cc\u6c22\u952e\uff08\u4e24\u4e2a H \u5206\u522b\u6307\u5411\u4e24\u4e2a\u672b\u7aef\u6c27\uff09",
+        "rule": "O_w \u4f4d\u4e8e\u4e24\u4e2a\u672b\u7aef\u6c27\u8fde\u7ebf\u4e2d\u70b9\u4e0a\u65b9 2.60 \u00c5\uff1b\u5bf9\u79f0\u8f74 \u2212u\uff08H \u671d\u4e0b\uff09\uff0cH\u2013H \u8f74\u6cbf O\u2013O \u8fb9\u7f18\u65b9\u5411",
+        "status": "converged",
+        "e_total_hartree": -301.8748341,
+        "rel_kcal": 0.0015,
+        "n_imag": 1,
+        "lowest_freq": -92.33633094895566,
+        "topology": "H-bonds: none | O_w contacts: central, term(+x), term(-x)",
+        "is_minimum": false,
+        "kept": false,
+        "eliminated_reason": "saddle point: 1 imaginary mode(s) (nu_i = -92.33633094895566 cm-1), rel 0.002 kcal/mol -- not a minimum",
+        "optimised_xyz": [
+          [
+            1.56e-06,
+            -0.26545557,
+            -0.39416965
+          ],
+          [
+            1.06034019,
+            0.35228329,
+            -0.23698066
+          ],
+          [
+            -1.06034088,
+            0.35227712,
+            -0.23698101
+          ],
+          [
+            -7e-08,
+            0.59669304,
+            2.59255381
+          ],
+          [
+            0.7615162,
+            1.15583158,
+            2.43224558
+          ],
+          [
+            -0.76151705,
+            1.15583037,
+            2.43224456
+          ]
+        ]
+      },
+      {
+        "id": "c13",
+        "coverage": "\u4fa7\u5411\u63a5\u89e6\u672b\u7aef O\u2013O \u8fb9\u7f18\uff08\u9762\u5185\uff0c\u5b64\u5bf9\u671d\u5411\u8fb9\u7f18\uff09",
+        "rule": "O_w \u5728 O3 \u5e73\u9762\u5185\u81ea\u4e24\u672b\u7aef\u6c27\u4e2d\u70b9\u5411\u5916 3.00 \u00c5\uff1b\u5bf9\u79f0\u8f74\u6cbf +u\uff08H \u671d\u5916\uff0c\u5b64\u5bf9\u671d\u5411 O\u2013O \u8fb9\u7f18\uff09",
+        "status": "converged",
+        "e_total_hartree": -301.87148505,
+        "rel_kcal": 2.1031,
+        "n_imag": 5,
+        "lowest_freq": -135.58428765152934,
+        "topology": "H-bonds: none | O_w contacts: none",
+        "is_minimum": false,
+        "kept": false,
+        "eliminated_reason": "saddle point: 5 imaginary mode(s) (nu_i = -135.58428765152934 cm-1), rel 2.103 kcal/mol -- not a minimum",
+        "optimised_xyz": [
+          [
+            -0.00042403,
+            -3.1722226,
+            0.0
+          ],
+          [
+            1.0620979,
+            -2.53707228,
+            0.0
+          ],
+          [
+            -1.06162663,
+            -2.53486824,
+            0.0
+          ],
+          [
+            -3.417e-05,
+            6.57974442,
+            0.0
+          ],
+          [
+            -3.2e-07,
+            7.15984089,
+            0.76181808
+          ],
+          [
+            -3.2e-07,
+            7.15984089,
+            -0.76181808
+          ]
+        ]
+      },
+      {
+        "id": "c14",
+        "coverage": "\u5806\u53e0\u53d6\u5411\uff08\u6c34\u5206\u5b50\u5e73\u9762\u4e0e O3 \u5e73\u9762\u5e73\u884c\uff09",
+        "rule": "O_w \u4f4d\u4e8e O3 \u51e0\u4f55\u4e2d\u5fc3\u4e0a\u65b9 3.20 \u00c5\uff1b\u5bf9\u79f0\u8f74\u6cbf +x\u3001H\u2013H \u8f74\u6cbf +y\uff08\u4e09\u8005 z \u76f8\u540c\uff0c\u6c34\u5206\u5b50\u5e73\u9762\u4e0e O3 \u5e73\u9762\u5e73\u884c\uff0c\u5806\u53e0\uff09",
+        "status": "converged",
+        "e_total_hartree": -301.87483654,
+        "rel_kcal": 0.0,
+        "n_imag": 1,
+        "lowest_freq": -52.13362954115357,
+        "topology": "H-bonds: none | O_w contacts: central, term(+x), term(-x)",
+        "is_minimum": false,
+        "kept": false,
+        "eliminated_reason": "saddle point: 1 imaginary mode(s) (nu_i = -52.13362954115357 cm-1), rel 0.000 kcal/mol -- not a minimum",
+        "optimised_xyz": [
+          [
+            -0.19469488,
+            0.06904798,
+            0.04101094
+          ],
+          [
+            1.01936851,
+            -0.07319259,
+            0.23256514
+          ],
+          [
+            -0.71548862,
+            1.13672481,
+            0.38641889
+          ],
+          [
+            0.17269266,
+            0.20129702,
+            3.12853599
+          ],
+          [
+            -0.16381025,
+            1.09822058,
+            3.14946656
+          ],
+          [
+            1.11503185,
+            0.28930933,
+            2.97818665
+          ]
+        ]
+      }
+    ],
+    "monomers": {
+      "h2o": {
+        "e_total_hartree": -76.43766761,
+        "n_imag": 0,
+        "lowest_freq": 1619.6246814332176,
+        "zpe_kcal_mol": 13.552321505302443,
+        "topology": "monomer (no H-bond topology defined)"
+      },
+      "o3": {
+        "e_total_hartree": -225.43390283,
+        "n_imag": 0,
+        "lowest_freq": 784.5275618505681,
+        "zpe_kcal_mol": 4.937505764045795,
+        "topology": "monomer (no H-bond topology defined)"
+      }
+    }
+  },
+  "smd": {
+    "solvent_model": "SMD(water)",
+    "note": "local hydration-structure trend only; NOT an aqueous binding constant",
+    "smd_minima": [
+      "c05",
+      "c14_plus",
+      "c09_plus",
+      "c11_minus",
+      "c06_plus"
+    ],
+    "smd_eliminated": {
+      "c12_minus": "collapsed onto SMD structure of c05 (RMSD small, same topology)",
+      "c12_plus": "collapsed onto SMD structure of c09_plus (RMSD small, same topology)",
+      "c11_plus": "collapsed onto SMD structure of c09_plus (RMSD small, same topology)",
+      "c09_minus": "collapsed onto SMD structure of c05 (RMSD small, same topology)"
+    },
+    "gas_vs_smd_ordering": [
+      {
+        "id": "c05",
+        "gas_e": -301.87483567383464,
+        "smd_e": -301.8920041580108,
+        "delta_e_smd_minus_gas": -10.77338647585641,
+        "gas_topology": "H-bonds: none | O_w contacts: central, term(+x), term(-x)",
+        "smd_topology": "H-bonds: none | O_w contacts: term(+x)",
+        "smd_kept": true
+      },
+      {
+        "id": "c14_plus",
+        "gas_e": -301.87483581243293,
+        "smd_e": -301.8920002658,
+        "delta_e_smd_minus_gas": -10.770857104943637,
+        "gas_topology": "H-bonds: none | O_w contacts: central, term(+x), term(-x)",
+        "smd_topology": "H-bonds: none | O_w contacts: term(-x)",
+        "smd_kept": true
+      },
+      {
+        "id": "c09_plus",
+        "gas_e": -301.87483542603474,
+        "smd_e": -301.8919984587604,
+        "delta_e_smd_minus_gas": -10.769965638999157,
+        "gas_topology": "H-bonds: none | O_w contacts: central, term(+x), term(-x)",
+        "smd_topology": "H-bonds: none | O_w contacts: term(-x)",
+        "smd_kept": true
+      },
+      {
+        "id": "c12_minus",
+        "gas_e": -301.8748357394427,
+        "smd_e": -301.8919981933968,
+        "delta_e_smd_minus_gas": -10.769602454360538,
+        "gas_topology": "H-bonds: none | O_w contacts: central, term(+x), term(-x)",
+        "smd_topology": "H-bonds: none | O_w contacts: term(+x)",
+        "smd_kept": false
+      },
+      {
+        "id": "c12_plus",
+        "gas_e": -301.87483574127293,
+        "smd_e": -301.89199540336614,
+        "delta_e_smd_minus_gas": -10.767850535208467,
+        "gas_topology": "H-bonds: none | O_w contacts: central, term(+x), term(-x)",
+        "smd_topology": "H-bonds: none | O_w contacts: term(-x)",
+        "smd_kept": false
+      },
+      {
+        "id": "c11_plus",
+        "gas_e": -301.8748356135136,
+        "smd_e": -301.89199405807034,
+        "delta_e_smd_minus_gas": -10.767086519541952,
+        "gas_topology": "H-bonds: none | O_w contacts: central, term(+x), term(-x)",
+        "smd_topology": "H-bonds: none | O_w contacts: term(-x)",
+        "smd_kept": false
+      },
+      {
+        "id": "c11_minus",
+        "gas_e": -301.8748356704341,
+        "smd_e": -301.8919905417629,
+        "delta_e_smd_minus_gas": -10.7648442851459,
+        "gas_topology": "H-bonds: none | O_w contacts: central, term(+x), term(-x)",
+        "smd_topology": "H-bonds: none | O_w contacts: term(+x)",
+        "smd_kept": true
+      },
+      {
+        "id": "c09_minus",
+        "gas_e": -301.8748354231616,
+        "smd_e": -301.8919868671124,
+        "delta_e_smd_minus_gas": -10.762693572994705,
+        "gas_topology": "H-bonds: none | O_w contacts: central, term(+x), term(-x)",
+        "smd_topology": "H-bonds: none | O_w contacts: term(+x)",
+        "smd_kept": false
+      },
+      {
+        "id": "c06_plus",
+        "gas_e": -301.87409391447676,
+        "smd_e": -301.89160825826275,
+        "delta_e_smd_minus_gas": -10.990416657707003,
+        "gas_topology": "H-bonds: none | O_w contacts: term(+x)",
+        "smd_topology": "H-bonds: none | O_w contacts: term(+x)",
+        "smd_kept": true
+      }
+    ],
+    "smd_freqs": {
+      "c05": {
+        "id": "c05",
+        "solvent": "water",
+        "optimised_coords_angstrom": [
+          [
+            -0.13000787,
+            0.24581528,
+            -0.24628313
+          ],
+          [
+            1.03208694,
+            0.05077953,
+            0.13247017
+          ],
+          [
+            -0.90622473,
+            0.79968473,
+            0.53536921
+          ],
+          [
+            1.6446259,
+            1.11141184,
+            2.98994821
+          ],
+          [
+            1.36253807,
+            0.8113537,
+            2.11823272
+          ],
+          [
+            0.85047471,
+            1.48025648,
+            3.38459786
+          ]
+        ],
+        "e_total_hartree": -301.8920041580108,
+        "d2_hartree": -0.00019698984538855233,
+        "hessian_seconds": 1504.2,
+        "hessian_method": "numerical (central diff of analytic grad), SMD",
+        "hessian_asymmetry": 0.0,
+        "n_imaginary": 0,
+        "lowest_frequency_cm1": 58.69322509548686,
+        "frequencies_cm1": [
+          58.693,
+          64.61,
+          90.91,
+          120.556,
+          222.726,
+          324.75,
+          789.787,
+          1267.507,
+          1349.517,
+          1605.389,
+          3802.303,
+          3908.48
+        ],
+        "is_minimum": true,
+        "zpe_hartree": 0.030994993551928602,
+        "zpe_kcal_mol": 19.44965210235989,
+        "thermo_hartree": {
+          "ZPE": 0.030994993551928602,
+          "E_0K": -301.8610091644589,
+          "H_298": -301.85314027686564,
+          "G_298": -301.8925021018646
+        },
+        "topology": "H-bonds: none | O_w contacts: term(+x)",
+        "topology_signature": [
+          [],
+          [
+            1
+          ]
+        ],
+        "status": "converged",
+        "seconds": 5380.7
+      },
+      "c14_plus": {
+        "id": "c14_plus",
+        "solvent": "water",
+        "optimised_coords_angstrom": [
+          [
+            -0.05961475,
+            0.35476846,
+            -0.24951624
+          ],
+          [
+            1.05571227,
+            -0.06508561,
+            0.06646091
+          ],
+          [
+            -0.80254606,
+            0.76072085,
+            0.65335136
+          ],
+          [
+            0.45276252,
+            0.7122069,
+            3.50028053
+          ],
+          [
+            0.15701018,
+            0.66655611,
+            2.58383563
+          ],
+          [
+            1.1629563,
+            0.06804573,
+            3.55590131
+          ]
+        ],
+        "e_total_hartree": -301.8920002658,
+        "d2_hartree": -0.00019795905034568587,
+        "hessian_seconds": 1745.3,
+        "hessian_method": "numerical (central diff of analytic grad), SMD",
+        "hessian_asymmetry": 0.0,
+        "n_imaginary": 1,
+        "lowest_frequency_cm1": -32.47170904135484,
+        "frequencies_cm1": [
+          -32.472,
+          60.116,
+          77.675,
+          107.269,
+          186.175,
+          294.372,
+          789.302,
+          1267.692,
+          1350.457,
+          1601.133,
+          3800.011,
+          3908.64
+        ],
+        "is_minimum": false,
+        "zpe_hartree": 0.030699020053908954,
+        "zpe_kcal_mol": 19.26392592828097,
+        "thermo_hartree": {
+          "ZPE": 0.030699020053908954,
+          "E_0K": -301.8613012457461,
+          "H_298": -301.85322288250046,
+          "G_298": -301.8937018876533
+        },
+        "topology": "H-bonds: none | O_w contacts: term(-x)",
+        "topology_signature": [
+          [],
+          [
+            2
+          ]
+        ],
+        "status": "SADDLE",
+        "seconds": 4530.7
+      },
+      "c09_plus": {
+        "id": "c09_plus",
+        "solvent": "water",
+        "optimised_coords_angstrom": [
+          [
+            -0.03525633,
+            0.5503817,
+            -0.47193719
+          ],
+          [
+            1.10444438,
+            0.54882076,
+            -0.00149256
+          ],
+          [
+            -0.98575711,
+            0.43812961,
+            0.31287911
+          ],
+          [
+            -0.15869247,
+            0.18083352,
+            3.30389405
+          ],
+          [
+            0.7906527,
+            0.05908417,
+            3.38376784
+          ],
+          [
+            -0.31147427,
+            0.2649474,
+            2.35573958
+          ]
+        ],
+        "e_total_hartree": -301.8919984587604,
+        "d2_hartree": -0.000197370024706572,
+        "hessian_seconds": 1481.2,
+        "hessian_method": "numerical (central diff of analytic grad), SMD",
+        "hessian_asymmetry": 0.0,
+        "n_imaginary": 1,
+        "lowest_frequency_cm1": -41.39610394149667,
+        "frequencies_cm1": [
+          -41.396,
+          55.469,
+          75.303,
+          115.523,
+          206.228,
+          321.736,
+          789.882,
+          1267.254,
+          1349.317,
+          1605.233,
+          3802.941,
+          3908.585
+        ],
+        "is_minimum": false,
+        "zpe_hartree": 0.03084380832681285,
+        "zpe_kcal_mol": 19.354781941261397,
+        "thermo_hartree": {
+          "ZPE": 0.03084380832681285,
+          "E_0K": -301.86115465043355,
+          "H_298": -301.85316194187374,
+          "G_298": -301.8932858524231
+        },
+        "topology": "H-bonds: none | O_w contacts: term(-x)",
+        "topology_signature": [
+          [],
+          [
+            2
+          ]
+        ],
+        "status": "SADDLE",
+        "seconds": 5406.1
+      },
+      "c11_minus": {
+        "id": "c11_minus",
+        "solvent": "water",
+        "optimised_coords_angstrom": [
+          [
+            0.04989417,
+            0.17449387,
+            -0.69546165
+          ],
+          [
+            0.96698593,
+            0.00092953,
+            0.11735436
+          ],
+          [
+            -1.06312385,
+            0.46986513,
+            -0.25491413
+          ],
+          [
+            0.13846347,
+            0.30663514,
+            3.10614328
+          ],
+          [
+            0.27958799,
+            0.23445604,
+            2.15523073
+          ],
+          [
+            -0.81265688,
+            0.22860065,
+            3.21442125
+          ]
+        ],
+        "e_total_hartree": -301.8919905417629,
+        "d2_hartree": -0.0001982121141025148,
+        "hessian_seconds": 1766.0,
+        "hessian_method": "numerical (central diff of analytic grad), SMD",
+        "hessian_asymmetry": 0.0,
+        "n_imaginary": 1,
+        "lowest_frequency_cm1": -23.816770111723418,
+        "frequencies_cm1": [
+          -23.817,
+          61.084,
+          80.375,
+          110.547,
+          227.494,
+          302.501,
+          789.913,
+          1267.874,
+          1349.789,
+          1604.344,
+          3801.734,
+          3908.511
+        ],
+        "is_minimum": false,
+        "zpe_hartree": 0.030819012913188358,
+        "zpe_kcal_mol": 19.339222584298714,
+        "thermo_hartree": {
+          "ZPE": 0.030819012913188358,
+          "E_0K": -301.8611715288497,
+          "H_298": -301.8531621135957,
+          "G_298": -301.8936640976445
+        },
+        "topology": "H-bonds: none | O_w contacts: term(+x)",
+        "topology_signature": [
+          [],
+          [
+            1
+          ]
+        ],
+        "status": "SADDLE",
+        "seconds": 4757.1
+      },
+      "c06_plus": {
+        "id": "c06_plus",
+        "solvent": "water",
+        "optimised_coords_angstrom": [
+          [
+            -0.06356939,
+            0.07832936,
+            -1.017e-05
+          ],
+          [
+            0.72686001,
+            0.49817331,
+            0.85658915
+          ],
+          [
+            -0.72995892,
+            0.90882202,
+            -0.61999917
+          ],
+          [
+            2.12041249,
+            -1.9849307,
+            2.05044461
+          ],
+          [
+            1.69083159,
+            -1.20394765,
+            1.6832168
+          ],
+          [
+            2.66409836,
+            -1.64601326,
+            2.76592368
+          ]
+        ],
+        "e_total_hartree": -301.89160825826275,
+        "d2_hartree": -0.00016136292716458777,
+        "hessian_seconds": 697.5,
+        "hessian_method": "numerical (central diff of analytic grad), SMD",
+        "hessian_asymmetry": 0.0,
+        "n_imaginary": 0,
+        "lowest_frequency_cm1": 53.08219616734815,
+        "frequencies_cm1": [
+          53.082,
+          68.007,
+          76.346,
+          103.439,
+          231.487,
+          290.237,
+          790.6,
+          1266.8,
+          1352.658,
+          1608.509,
+          3792.751,
+          3908.294
+        ],
+        "is_minimum": true,
+        "zpe_hartree": 0.03085142349306735,
+        "zpe_kcal_mol": 19.35956053023266,
+        "thermo_hartree": {
+          "ZPE": 0.03085142349306735,
+          "E_0K": -301.8607568347697,
+          "H_298": -301.8527933699852,
+          "G_298": -301.8923007042347
+        },
+        "topology": "H-bonds: none | O_w contacts: term(+x)",
+        "topology_signature": [
+          [],
+          [
+            1
+          ]
+        ],
+        "status": "converged",
+        "seconds": 2304.8
+      }
+    }
+  },
+  "binding": {
+    "standard_state_note": "O3 + H2O -> O3.H2O; 1 atm -> 1 M correction = -1.894 kcal/mol (applied to the gas RRHO association free energy).",
+    "ghost_d2_audit": {
+      "d2_isolated_o3": -2.223120400028829e-06,
+      "d2_with_ghost_h2o": -2.223120400028829e-06,
+      "d2_difference": 0.0,
+      "ghost_charges": [
+        0,
+        0,
+        0
+      ],
+      "ghosts_excluded_ok": true
+    },
+    "rows": [
+      {
+        "id": "c14_plus",
+        "e_int_uncorrected_kcal_mol": -2.0491,
+        "e_int_cp_kcal_mol": -1.5309,
+        "bsse_kcal_mol": -0.5182,
+        "e_complex_hartree": -301.87483581243293,
+        "e_o3_hartree": -225.43390283321617,
+        "e_h2o_hartree": -76.43766760770669,
+        "e_o3_at_complex_geom_hartree": -225.43414687059925,
+        "e_h2o_at_complex_geom_hartree": -76.43824933116736,
+        "zpe": {
+          "value_kcal": 1.0704,
+          "complex": 0.03117128104740955,
+          "o3": 0.007868416283941712,
+          "h2o": 0.021596999034216448
+        },
+        "h298": {
+          "value_kcal": -0.7197,
+          "complex": -301.8355931152891,
+          "o3": -225.42215525300153,
+          "h2o": -76.4122908927556
+        },
+        "g298": {
+          "value_kcal": 4.6947,
+          "complex": -301.87531684248137,
+          "o3": -225.44909929818004,
+          "h2o": -76.43369906087263
+        },
+        "deltaG_assoc_1atm_kcal_mol": 4.6947,
+        "deltaG_assoc_1M_kcal_mol": 2.8007,
+        "standard_state_correction_kcal_mol": -1.894
+      },
+      {
+        "id": "c12_plus",
+        "e_int_uncorrected_kcal_mol": -2.049,
+        "e_int_cp_kcal_mol": -1.5288,
+        "bsse_kcal_mol": -0.5202,
+        "e_complex_hartree": -301.87483574127293,
+        "e_o3_hartree": -225.43390283321617,
+        "e_h2o_hartree": -76.43766760770669,
+        "e_o3_at_complex_geom_hartree": -225.4341473809427,
+        "e_h2o_at_complex_geom_hartree": -76.43825206538067,
+        "zpe": {
+          "value_kcal": 0.9563,
+          "complex": 0.03098940954702359,
+          "o3": 0.007868416283941712,
+          "h2o": 0.021596999034216448
+        },
+        "h298": {
+          "value_kcal": -0.7316,
+          "complex": -301.8356119478852,
+          "o3": -225.42215525300153,
+          "h2o": -76.4122908927556
+        },
+        "g298": {
+          "value_kcal": 2.9889,
+          "complex": -301.8780353003193,
+          "o3": -225.44909929818004,
+          "h2o": -76.43369906087263
+        },
+        "deltaG_assoc_1atm_kcal_mol": 2.9889,
+        "deltaG_assoc_1M_kcal_mol": 1.0949,
+        "standard_state_correction_kcal_mol": -1.894
+      },
+      {
+        "id": "c12_minus",
+        "e_int_uncorrected_kcal_mol": -2.049,
+        "e_int_cp_kcal_mol": -1.5288,
+        "bsse_kcal_mol": -0.5202,
+        "e_complex_hartree": -301.8748357394427,
+        "e_o3_hartree": -225.43390283321617,
+        "e_h2o_hartree": -76.43766760770669,
+        "e_o3_at_complex_geom_hartree": -225.43414738762675,
+        "e_h2o_at_complex_geom_hartree": -76.43825210119452,
+        "zpe": {
+          "value_kcal": 0.9563,
+          "complex": 0.030989366747817895,
+          "o3": 0.007868416283941712,
+          "h2o": 0.021596999034216448
+        },
+        "h298": {
+          "value_kcal": -0.7316,
+          "complex": -301.8356119501259,
+          "o3": -225.42215525300153,
+          "h2o": -76.4122908927556
+        },
+        "g298": {
+          "value_kcal": 2.9899,
+          "complex": -301.8780336829462,
+          "o3": -225.44909929818004,
+          "h2o": -76.43369906087263
+        },
+        "deltaG_assoc_1atm_kcal_mol": 2.9899,
+        "deltaG_assoc_1M_kcal_mol": 1.0959,
+        "standard_state_correction_kcal_mol": -1.894
+      },
+      {
+        "id": "c05",
+        "e_int_uncorrected_kcal_mol": -2.049,
+        "e_int_cp_kcal_mol": -1.5478,
+        "bsse_kcal_mol": -0.5011,
+        "e_complex_hartree": -301.87483567383464,
+        "e_o3_hartree": -225.43390283321617,
+        "e_h2o_hartree": -76.43766760770669,
+        "e_o3_at_complex_geom_hartree": -225.43414164092664,
+        "e_h2o_at_complex_geom_hartree": -76.43822743156302,
+        "zpe": {
+          "value_kcal": 1.0965,
+          "complex": 0.031212788547283286,
+          "o3": 0.007868416283941712,
+          "h2o": 0.021596999034216448
+        },
+        "h298": {
+          "value_kcal": -0.7128,
+          "complex": -301.83558212000673,
+          "o3": -225.42215525300153,
+          "h2o": -76.4122908927556
+        },
+        "g298": {
+          "value_kcal": 4.7879,
+          "complex": -301.8751682978217,
+          "o3": -225.44909929818004,
+          "h2o": -76.43369906087263
+        },
+        "deltaG_assoc_1atm_kcal_mol": 4.7879,
+        "deltaG_assoc_1M_kcal_mol": 2.8939,
+        "standard_state_correction_kcal_mol": -1.894
+      },
+      {
+        "id": "c11_minus",
+        "e_int_uncorrected_kcal_mol": -2.049,
+        "e_int_cp_kcal_mol": -1.5369,
+        "bsse_kcal_mol": -0.5121,
+        "e_complex_hartree": -301.8748356704341,
+        "e_o3_hartree": -225.43390283321617,
+        "e_h2o_hartree": -76.43766760770669,
+        "e_o3_at_complex_geom_hartree": -225.4341455122169,
+        "e_h2o_at_complex_geom_hartree": -76.43824099417245,
+        "zpe": {
+          "value_kcal": 1.1247,
+          "complex": 0.03125779375026753,
+          "o3": 0.007868416283941712,
+          "h2o": 0.021596999034216448
+        },
+        "h298": {
+          "value_kcal": -0.7062,
+          "complex": -301.83557147749747,
+          "o3": -225.42215525300153,
+          "h2o": -76.4122908927556
+        },
+        "g298": {
+          "value_kcal": 4.8927,
+          "complex": -301.8750013417923,
+          "o3": -225.44909929818004,
+          "h2o": -76.43369906087263
+        },
+        "deltaG_assoc_1atm_kcal_mol": 4.8927,
+        "deltaG_assoc_1M_kcal_mol": 2.9987,
+        "standard_state_correction_kcal_mol": -1.894
+      },
+      {
+        "id": "c11_plus",
+        "e_int_uncorrected_kcal_mol": -2.0489,
+        "e_int_cp_kcal_mol": -1.5358,
+        "bsse_kcal_mol": -0.5132,
+        "e_complex_hartree": -301.8748356135136,
+        "e_o3_hartree": -225.43390283321617,
+        "e_h2o_hartree": -76.43766760770669,
+        "e_o3_at_complex_geom_hartree": -225.4341458526192,
+        "e_h2o_at_complex_geom_hartree": -76.43824235365754,
+        "zpe": {
+          "value_kcal": 1.1288,
+          "complex": 0.03126424233084707,
+          "o3": 0.007868416283941712,
+          "h2o": 0.021596999034216448
+        },
+        "h298": {
+          "value_kcal": -0.7053,
+          "complex": -301.8355701625972,
+          "o3": -225.42215525300153,
+          "h2o": -76.4122908927556
+        },
+        "g298": {
+          "value_kcal": 4.9101,
+          "complex": -301.8749736792551,
+          "o3": -225.44909929818004,
+          "h2o": -76.43369906087263
+        },
+        "deltaG_assoc_1atm_kcal_mol": 4.9101,
+        "deltaG_assoc_1M_kcal_mol": 3.0161,
+        "standard_state_correction_kcal_mol": -1.894
+      },
+      {
+        "id": "c09_plus",
+        "e_int_uncorrected_kcal_mol": -2.0488,
+        "e_int_cp_kcal_mol": -1.5429,
+        "bsse_kcal_mol": -0.5059,
+        "e_complex_hartree": -301.87483542603474,
+        "e_o3_hartree": -225.43390283321617,
+        "e_h2o_hartree": -76.43766760770669,
+        "e_o3_at_complex_geom_hartree": -225.43414392117515,
+        "e_h2o_at_complex_geom_hartree": -76.43823276950889,
+        "zpe": {
+          "value_kcal": 1.1187,
+          "complex": 0.031248159895802714,
+          "o3": 0.007868416283941712,
+          "h2o": 0.021596999034216448
+        },
+        "h298": {
+          "value_kcal": -0.7041,
+          "complex": -301.83556825334307,
+          "o3": -225.42215525300153,
+          "h2o": -76.4122908927556
+        },
+        "g298": {
+          "value_kcal": 4.7829,
+          "complex": -301.87517625495735,
+          "o3": -225.44909929818004,
+          "h2o": -76.43369906087263
+        },
+        "deltaG_assoc_1atm_kcal_mol": 4.7829,
+        "deltaG_assoc_1M_kcal_mol": 2.8889,
+        "standard_state_correction_kcal_mol": -1.894
+      },
+      {
+        "id": "c09_minus",
+        "e_int_uncorrected_kcal_mol": -2.0488,
+        "e_int_cp_kcal_mol": -1.5429,
+        "bsse_kcal_mol": -0.5059,
+        "e_complex_hartree": -301.8748354231616,
+        "e_o3_hartree": -225.43390283321617,
+        "e_h2o_hartree": -76.43766760770669,
+        "e_o3_at_complex_geom_hartree": -225.4341439196488,
+        "e_h2o_at_complex_geom_hartree": -76.438232762198,
+        "zpe": {
+          "value_kcal": 1.1185,
+          "complex": 0.03124780898020148,
+          "o3": 0.007868416283941712,
+          "h2o": 0.021596999034216448
+        },
+        "h298": {
+          "value_kcal": -0.7042,
+          "complex": -301.83556830336335,
+          "o3": -225.42215525300153,
+          "h2o": -76.4122908927556
+        },
+        "g298": {
+          "value_kcal": 4.7817,
+          "complex": -301.8751781973966,
+          "o3": -225.44909929818004,
+          "h2o": -76.43369906087263
+        },
+        "deltaG_assoc_1atm_kcal_mol": 4.7817,
+        "deltaG_assoc_1M_kcal_mol": 2.8877,
+        "standard_state_correction_kcal_mol": -1.894
+      },
+      {
+        "id": "c06_plus",
+        "e_int_uncorrected_kcal_mol": -1.5835,
+        "e_int_cp_kcal_mol": -1.3761,
+        "bsse_kcal_mol": -0.2074,
+        "e_complex_hartree": -301.87409391447676,
+        "e_o3_hartree": -225.43390283321617,
+        "e_h2o_hartree": -76.43766760770669,
+        "e_o3_at_complex_geom_hartree": -225.43405310875542,
+        "e_h2o_at_complex_geom_hartree": -76.43784787702536,
+        "zpe": {
+          "value_kcal": 1.186,
+          "complex": 0.0313554113560579,
+          "o3": 0.007868416283941712,
+          "h2o": 0.021596999034216448
+        },
+        "h298": {
+          "value_kcal": -0.2365,
+          "complex": -301.8348230826531,
+          "o3": -225.42215525300153,
+          "h2o": -76.4122908927556
+        },
+        "g298": {
+          "value_kcal": 5.0515,
+          "complex": -301.87474829458927,
+          "o3": -225.44909929818004,
+          "h2o": -76.43369906087263
+        },
+        "deltaG_assoc_1atm_kcal_mol": 5.0515,
+        "deltaG_assoc_1M_kcal_mol": 3.1575,
+        "standard_state_correction_kcal_mol": -1.894
+      }
+    ]
+  },
+  "ccsdt": {
+    "basis": "aug-cc-pVTZ",
+    "monomer_energies": {
+      "o3": -225.19466553512223,
+      "h2o": -76.35750285266087
+    },
+    "interaction": [
+      {
+        "id": "c14_plus",
+        "e_ccsdt_complex": -301.55664660778683,
+        "e_ccsdt_o3": -225.19466553512223,
+        "e_ccsdt_h2o": -76.35750285266087,
+        "e_int_ccsdt_kcal_mol": -2.8101,
+        "t1_diagnostic": 0.06428517062321154,
+        "single_reference_ok": false
+      },
+      {
+        "id": "c12_plus",
+        "e_ccsdt_complex": -301.5566458634417,
+        "e_ccsdt_o3": -225.19466553512223,
+        "e_ccsdt_h2o": -76.35750285266087,
+        "e_int_ccsdt_kcal_mol": -2.8097,
+        "t1_diagnostic": 0.06429166897524038,
+        "single_reference_ok": false
+      }
+    ]
+  },
+  "method_limitations": [
+    "Single-reference DFT (RKS); <S^2>=0 by construction, no spin contamination.",
+    "Interaction energies are gas-phase; the SMD comparison is a LOCAL hydration-structure trend only and must NOT be read as an aqueous binding constant (no free-energy-of-solvation cycle was performed).",
+    "geomeTRIC (delocalised internal coordinates) replaces berny because berny cannot build internal coordinates for the near-linear O_w-H...O hydrogen-bond chain; convergence assert_convergence=False, final geometry re-checked with a fresh make_mf_d2 (max|grad|<5e-5 Ha/Bohr).",
+    "Boys-Bernardi CP correction uses PySCF ghost atoms (X-O / X-H); the project -D2 term excludes ghosts (verified) so no spurious dispersion pairs are introduced by the ghost basis.",
+    "Standard states: gas RRHO 1 atm association free energy, and 1 M via the job-specified -1.894 kcal/mol correction for O3 + H2O -> O3.H2O."
+  ],
+  "usable_as_next_stage_initial": {
+    "recommended": "c14_plus",
+    "reason": "global gas-phase minimum (within the 3 kcal/mol distinct-minima set)",
+    "all_distinct_minima": [
+      "c14_plus",
+      "c12_plus",
+      "c12_minus",
+      "c05",
+      "c11_minus",
+      "c11_plus",
+      "c09_plus",
+      "c09_minus",
+      "c06_plus"
+    ]
+  }
+}

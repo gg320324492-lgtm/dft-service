@@ -1,0 +1,65 @@
+{
+  "job": "JOB-2026-0906-012",
+  "title": "aqueous acceptance evidence consolidation & protocol draft batch (offline only)",
+  "compute": "ZERO new SCF/optimisation/Hessian/rotation-scan evaluations",
+  "statuses": {
+    "fingerprint_fix": "done (reads live with_solvent attachment; regression 5/5 no-SCF)",
+    "cache_reuse_impact": "none (fingerprint never used as cache/dedup key); affected files listed in endpoint_index.json fingerprint_correction; historical records kept verbatim",
+    "endpoint_index": "done (3 formal endpoints, source-verified, not filename-judged)",
+    "registration": "done (Kabsch + equivalent-permutation; supersedes 011 unregistered c14 comparison)",
+    "evidence_table": "done (4 rows; missing marked; anti-single-factor rules stated)",
+    "wording_revisions": "done (011 report x4 + JSON revision block + jobs record x3 + memory; supersession kept)",
+    "protocol_draft": "DRAFT pending user approval (notes/acceptance_diagnostic_protocol_draft_2026-09-07.md); nothing enabled",
+    "acceptance_status": "UNCHANGED: all aqueous structures NOT passed (unprojected max|g|<=1e-5)"
+  },
+  "key_numbers": {
+    "endpoints": {
+      "c14_cont120": {
+        "max_g": 1.2504e-05,
+        "rot": 2.4218e-05,
+        "internal": 3.2304e-07,
+        "T_g": 0.0001865
+      },
+      "c06_order41_step40": {
+        "max_g": 2.5803e-05,
+        "rot": 5.0085e-05,
+        "internal": 1.1485e-06,
+        "T_g": 0.0001602
+      },
+      "c06_order47_reopt": {
+        "max_g": 2.5034e-05,
+        "rot": 5.0179e-05,
+        "internal": 1.3133e-07,
+        "T_g": 0.0003791
+      }
+    },
+    "registration_RMSD_A": {
+      "c06_47_vs_c06_41": 0.0319,
+      "c06_47_vs_c14": 0.6625,
+      "c06_41_vs_c14": 0.677
+    },
+    "old_fingerprints_41_47_identical": true
+  },
+  "next_batch_recommendation": {
+    "question": "is the c06 order47 endpoint an INTERNAL minimum (all-internal-modes positive)?",
+    "compute": "one diagnostic internal-frequency batch at that endpoint only",
+    "reuse": "011 endpoint coords/gradient/decomposition; 012 index/registration/evidence; same-geometry 41/47 sensitivity already exists (R1 vs R2), not recomputed, sensitivity check only",
+    "branches": {
+      "all_positive": "register internal-minimum candidate (status B)",
+      "soft_negative": "mode-following per gas-phase workflow (still status B)"
+    },
+    "stop": "no optimisation, no gear switch, no thermochemistry, no acceptance claims",
+    "precondition": "user approval of protocol draft B/C required"
+  },
+  "artifacts": {
+    "protocols/grad_factory.py": "cc70299dda6d9342",
+    "protocols/test_method_fingerprint.py": "027ea858859c4a48",
+    "protocols/smd_acceptance_evidence.py": "f8a3a1e748acfa3b",
+    "run_artifacts/01_pure_water_o3_h2o/smd_acceptance_evidence/endpoint_index.json": "86aa7adfe782dd3c",
+    "run_artifacts/01_pure_water_o3_h2o/smd_acceptance_evidence/registration.json": "ad939eb5b9ca16af",
+    "run_artifacts/01_pure_water_o3_h2o/smd_acceptance_evidence/evidence_table.json": "221e0c1f90cb5b8c",
+    "notes/acceptance_diagnostic_protocol_draft_2026-09-07.md": "31847ffc6be3fa05"
+  },
+  "report": "results/01_water_matrices/pure_water_o3_h2o/smd_acceptance_evidence/smd_acceptance_evidence_report.md",
+  "stop": "batch complete; awaiting user review; no new quantitative computation; unpassed acceptance status unchanged"
+}

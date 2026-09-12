@@ -1,0 +1,95 @@
+{
+  "job": "JOB-2026-0905-009",
+  "document": "validation_summary (final minima validation)",
+  "unified_settings": {
+    "grid_level": 6,
+    "scf_tol": 1e-12,
+    "scf_tol_grad": 1e-09,
+    "gmax_target": 1e-05,
+    "opt_maxsteps": 400
+  },
+  "verdicts": {
+    "c14_plus": {
+      "verdict": "待定",
+      "reason": "新鲜复核 max|grad|=1.38e-05 > 1e-5 目标（400 步上限，平势面爬行至 SCF 噪声底；不放宽标准）；符号冲突：解析+差分 Hessian 给负模（-87.4~-15.0 cm⁻¹），而能量扫描沿 ±模能量上升且曲率为正（+68~+250 cm⁻¹，强非谐）——软模谐振符号低于当前平台可分辨极限",
+      "fresh_max_gradient": 1.38423927787457e-05,
+      "gradient_target_met": false,
+      "analytic_nu": -87.37271229926803,
+      "fd_nu": {
+        "step_0.02": -15.676025804409878,
+        "step_0.03": -15.008308982299466,
+        "step_0.05": -17.38090124212351
+      },
+      "scan_implied_nu": {
+        "amp_0.05A": 68.4303303476331,
+        "amp_0.1A": 129.85442316092437,
+        "amp_0.2A": 249.79899343369894
+      },
+      "signs": {
+        "analytic": -1,
+        "fd_step_0.02": -1,
+        "fd_step_0.03": -1,
+        "fd_step_0.05": -1,
+        "scan_amp_0.05A": 1,
+        "scan_amp_0.1A": 1,
+        "scan_amp_0.2A": 1
+      }
+    },
+    "c06_plus": {
+      "verdict": "待定",
+      "reason": "新鲜复核 max|grad|=1.47e-05 > 1e-5 目标（400 步上限，平势面爬行至 SCF 噪声底；不放宽标准）；符号冲突：解析+差分 Hessian 给负模（-136.2~-28.8 cm⁻¹），而能量扫描沿 ±模能量上升且曲率为正（+19~+65 cm⁻¹，强非谐）——软模谐振符号低于当前平台可分辨极限",
+      "fresh_max_gradient": 1.4667612212378037e-05,
+      "gradient_target_met": false,
+      "analytic_nu": -28.816805063257103,
+      "fd_nu": {
+        "step_0.02": -35.49467334026011,
+        "step_0.03": -72.91137023399479,
+        "step_0.05": -136.17884659514064
+      },
+      "scan_implied_nu": {
+        "amp_0.05A": 18.971339872568805,
+        "amp_0.1A": 34.11694551838369,
+        "amp_0.2A": 65.32532423428044
+      },
+      "signs": {
+        "analytic": -1,
+        "fd_step_0.02": -1,
+        "fd_step_0.03": -1,
+        "fd_step_0.05": -1,
+        "scan_amp_0.05A": 1,
+        "scan_amp_0.1A": 1,
+        "scan_amp_0.2A": 1
+      }
+    }
+  },
+  "identity": {
+    "rmsd_between_candidates": 3.7367026865595805,
+    "dE_kcal": -0.4663193880375528,
+    "same_structure": false,
+    "topologies": {
+      "c14_plus": "H-bonds: none | O_w contacts: central, term(+x), term(-x)",
+      "c06_plus": "H-bonds: H1->O[term(+x)] | O_w contacts: term(+x)"
+    },
+    "conclusion": "两个独立候选，不合并"
+  },
+  "lowest_among_searched": "c14_plus",
+  "terminology": "已搜索结构中的最低能极小值候选（不称全局最低）",
+  "platform_issue": {
+    "note": "notes/platform_issue_wb97xd_hessian.md",
+    "repro": "protocols/validation_stepB2_platform_repro.py",
+    "wb97xd_max_dH_h2o": [
+      0.001918,
+      0.001821
+    ],
+    "pruning_attribution": "excluded by paired control"
+  },
+  "rrho_free_energies": "historical values, NOT final thermodynamic conclusions",
+  "models": [
+    "models/01_water_matrices/pure_water_o3_h2o/validated/c14_plus_validated_pending.xyz",
+    "models/01_water_matrices/pure_water_o3_h2o/validated/c06_plus_validated_pending.xyz"
+  ],
+  "artifacts": {
+    "raw": "/mnt/e/dft-service/ozone_mnb_uv_simulation/run_artifacts/01_pure_water_o3_h2o/final_minima_validation",
+    "processed": "/mnt/e/dft-service/ozone_mnb_uv_simulation/results/01_water_matrices/pure_water_o3_h2o/final_minima_validation"
+  }
+}

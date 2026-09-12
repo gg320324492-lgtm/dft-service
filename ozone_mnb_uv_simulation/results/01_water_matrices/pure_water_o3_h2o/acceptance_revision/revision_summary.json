@@ -1,0 +1,144 @@
+{
+  "job": "JOB-2026-0905-009",
+  "document": "revision_summary (supersedes ../conformer_summary.json)",
+  "terminology": {
+    "candidates": "待核验候选集",
+    "lowest": "已搜索候选中的最低能结构"
+  },
+  "errors_and_fixes": [],
+  "counts": {
+    "mode_follow_runs": 14,
+    "endpoints_zero_imag": 8,
+    "endpoints_remaining_saddle": 6,
+    "gas_structures": 28,
+    "gas_minima": 9,
+    "gas_saddles": 19
+  },
+  "gas_candidates_pending_verification": [
+    "c14_plus",
+    "c06_plus"
+  ],
+  "gas_lowest_among_searched": "c14_plus",
+  "smd_candidates_pending_verification": [
+    "c05",
+    "c06_plus"
+  ],
+  "frequency_verdict": {
+    "c14_plus": {
+      "variants": [
+        "analytic_grid6_scf1e-12",
+        "fd_step0.05"
+      ],
+      "n_imag_values": [
+        0,
+        0
+      ],
+      "stable": true
+    },
+    "c12_plus": {
+      "variants": [
+        "analytic_grid6_scf1e-12",
+        "fd_step0.05"
+      ],
+      "n_imag_values": [
+        1,
+        1
+      ],
+      "stable": true
+    },
+    "c14": {
+      "variants": [
+        "analytic_grid6_scf1e-12",
+        "fd_step0.05"
+      ],
+      "n_imag_values": [
+        1,
+        0
+      ],
+      "stable": false
+    }
+  },
+  "unified_energies": {
+    "c14_plus": {
+      "id": "c14_plus",
+      "e_complex_hartree": -301.87483581243293,
+      "e_int_nocp_kcal": -2.0513,
+      "e_int_cp_kcal": -1.5309,
+      "bsse_signed_kcal": -0.5205,
+      "bsse_magnitude_kcal": 0.5205,
+      "e_def_kcal": 0.0023,
+      "e_bind_nocp_kcal": -2.0491,
+      "e_bind_cp_kcal": -1.5286,
+      "deformations": {
+        "o3_frozen_minus_opt_kcal": 0.0024,
+        "h2o_frozen_minus_opt_kcal": -0.0001
+      },
+      "thermal_nocp": {
+        "zpe_kcal": 1.0704,
+        "h298_kcal": -0.7197,
+        "g298_kcal": 4.6947,
+        "dG_assoc_1atm_kcal": 4.6947,
+        "dG_assoc_1M_kcal": 2.8007
+      }
+    },
+    "c06_plus": {
+      "id": "c06_plus",
+      "e_complex_hartree": -301.87409391447676,
+      "e_int_nocp_kcal": -1.6212,
+      "e_int_cp_kcal": -1.3761,
+      "bsse_signed_kcal": -0.2452,
+      "bsse_magnitude_kcal": 0.2452,
+      "e_def_kcal": 0.0377,
+      "e_bind_nocp_kcal": -1.5835,
+      "e_bind_cp_kcal": -1.3384,
+      "deformations": {
+        "o3_frozen_minus_opt_kcal": 0.0333,
+        "h2o_frozen_minus_opt_kcal": 0.0044
+      },
+      "thermal_nocp": {
+        "zpe_kcal": 1.186,
+        "h298_kcal": -0.2365,
+        "g298_kcal": 5.0515,
+        "dG_assoc_1atm_kcal": 5.0515,
+        "dG_assoc_1M_kcal": 3.1575
+      }
+    }
+  },
+  "ccsdt_rows": [
+    {
+      "id": "c14_plus",
+      "e_int_ccsdt_nocp_kcal": -2.8553,
+      "e_def_ccsdt_kcal": 0.0452,
+      "e_bind_ccsdt_nocp_kcal": -2.8101,
+      "diagnostics": {
+        "max_abs_t1": 0.0642851706231988,
+        "t1_diagnostic_pyscf": 0.018879239818855278,
+        "d1_diagnostic_janssen": 0.06944306452288392,
+        "n_correlated_electrons": 34,
+        "frozen_orbitals": 0,
+        "rhf_converged": true,
+        "ccsd_converged": true
+      }
+    },
+    {
+      "id": "c06_plus",
+      "e_int_ccsdt_nocp_kcal": -2.784,
+      "e_def_ccsdt_kcal": 0.0574,
+      "e_bind_ccsdt_nocp_kcal": -2.7266,
+      "diagnostics": {
+        "max_abs_t1": 0.06522519342593676,
+        "t1_diagnostic_pyscf": 0.019090654888256814,
+        "d1_diagnostic_janssen": 0.07072329001500553,
+        "n_correlated_electrons": 34,
+        "frozen_orbitals": 0,
+        "rhf_converged": true,
+        "ccsd_converged": true
+      }
+    }
+  ],
+  "single_reference_ok": null,
+  "artifacts": {
+    "revision_dir": "/mnt/e/dft-service/ozone_mnb_uv_simulation/results/01_water_matrices/pure_water_o3_h2o/acceptance_revision",
+    "raw_dir": "/mnt/e/dft-service/ozone_mnb_uv_simulation/run_artifacts/01_pure_water_o3_h2o/acceptance_revision"
+  }
+}

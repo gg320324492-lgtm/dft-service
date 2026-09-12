@@ -1,0 +1,515 @@
+{
+  "job": "JOB-2026-0906-009",
+  "title": "SMD rigid-rotation dependence & residual-torque source diagnosis batch",
+  "phase_statuses": {
+    "unit_fix_regression": "pass (9/9)",
+    "rotation_baseline": "pass (data complete)",
+    "single_factor_controls": "A executed (DFT L9); B executed but direction REVERSED (lebedev 41->31 = coarsening, configuration error, honestly recorded); increase-direction control NOT executed (budget cap)"
+  },
+  "phaseA": {
+    "unit_fix": "T_g = sum (r_i - r_c) x g_i in BOHR coords -> units Eh (= dE/dtheta vector); physical torque = -T_g",
+    "regression": "9/9 PASS (torque_regression.json)",
+    "concept_split": "norm fraction (2.3%/1.3%) vs squared-norm fraction (0.05%/0.02%) - different quantities, never added",
+    "c14_stop_status_three_way": {
+      "step_cap": "reached (60/60, cumulative 120)",
+      "optimizer_return": "internal-coordinate criteria met (converged=True)",
+      "cartesian_acceptance": "FAILED (1.2504e-05 > 1e-5)"
+    }
+  },
+  "endpoint_decomp_fixed": {
+    "c06_plus_step40": {
+      "unit_used": "coords converted to Bohr; g in Eh/Bohr",
+      "center_bohr": [
+        1.1846349881711935,
+        -0.14636911909477682,
+        0.9862892048330586
+      ],
+      "external_rank": 6,
+      "net_force": [
+        -1.5801466292521922e-13,
+        2.427691328402235e-13,
+        -8.59497460589621e-14
+      ],
+      "net_force_norm": 3.021470575844895e-13,
+      "T_g": [
+        -0.00015958118424085375,
+        -1.3526831369104926e-05,
+        -4.858482984828672e-06
+      ],
+      "T_g_norm": 0.0001602271337430567,
+      "physical_torque": [
+        0.00015958118424085375,
+        1.3526831369104926e-05,
+        4.858482984828672e-06
+      ],
+      "g_trans_vec": [
+        -2.6335777542384787e-14,
+        4.046152211901627e-14,
+        -1.432495773935372e-14,
+        -2.6335777542384784e-14,
+        4.046152211901627e-14,
+        -1.4324957739353717e-14,
+        -2.6335777542384784e-14,
+        4.046152211901627e-14,
+        -1.4324957739353717e-14,
+        -2.6335777542384784e-14,
+        4.046152211901627e-14,
+        -1.4324957739353717e-14,
+        -2.6335777542384784e-14,
+        4.046152211901627e-14,
+        -1.4324957739353717e-14,
+        -2.6335777542384784e-14,
+        4.046152211901627e-14,
+        -1.4324957739353717e-14
+      ],
+      "g_trans_norm": 1.2335102022724961e-13,
+      "g_rot_vec": [
+        -9.541860837542324e-06,
+        -4.905029813095529e-06,
+        7.490364297455618e-06,
+        2.113735715263665e-05,
+        -1.0721768219847624e-06,
+        -2.5566440861184478e-05,
+        -4.035722113055456e-06,
+        -2.325615148471541e-06,
+        2.979341541458442e-06,
+        -1.0850990892343434e-05,
+        -1.0260512364261126e-05,
+        4.998230571223983e-06,
+        -6.789611147683109e-07,
+        -7.067894170294029e-06,
+        -4.5175215819417335e-06,
+        3.97017780507287e-06,
+        2.5631228318106987e-05,
+        1.461602603298817e-05
+      ],
+      "g_rot_norm": 5.008535977887515e-05,
+      "g_int_vec": [
+        -7.959395927147475e-08,
+        -5.909178206435642e-07,
+        -1.3912857080960018e-07,
+        -3.1850741771373507e-07,
+        4.093960952439101e-07,
+        -2.36934437766977e-07,
+        4.0457268023711704e-07,
+        2.2698713427781138e-07,
+        3.8824343994078983e-07,
+        -1.0953850876557114e-07,
+        2.708379696686512e-07,
+        -1.1587862096540408e-07,
+        1.405098845523623e-07,
+        -3.3781337947292296e-07,
+        1.3270708182436907e-07,
+        -3.7442679038690956e-08,
+        2.151000092611574e-08,
+        -2.9008892223179335e-08
+      ],
+      "g_int_norm": 1.148459423623667e-06,
+      "g_norm": 5.009852516019882e-05,
+      "int_norm_fraction": 0.02292401662426721,
+      "int_sq_fraction": 0.0005255105381896794,
+      "note": "\"norm fraction\" and \"squared-norm fraction\" are DIFFERENT quantities and are never added as percentages"
+    },
+    "c14_plus_cont120": {
+      "unit_used": "coords converted to Bohr; g in Eh/Bohr",
+      "center_bohr": [
+        0.470789555910237,
+        0.5836544078499993,
+        2.0691531599690505
+      ],
+      "external_rank": 6,
+      "net_force": [
+        1.4094064965401634e-13,
+        -1.612909020854206e-13,
+        -1.3004572182775931e-13
+      ],
+      "net_force_norm": 2.505811477069412e-13,
+      "T_g": [
+        -3.6781147504345515e-05,
+        -0.0001790693796628833,
+        3.6817893010978414e-05
+      ],
+      "T_g_norm": 0.00018647855852712428,
+      "physical_torque": [
+        3.6781147504345515e-05,
+        0.0001790693796628833,
+        -3.6817893010978414e-05
+      ],
+      "g_trans_vec": [
+        2.3490108731414374e-14,
+        -2.6881816964356004e-14,
+        -2.1674287041569674e-14,
+        2.349010873141437e-14,
+        -2.6881816964355998e-14,
+        -2.167428704156967e-14,
+        2.349010873141437e-14,
+        -2.6881816964355998e-14,
+        -2.167428704156967e-14,
+        2.349010873141437e-14,
+        -2.6881816964355998e-14,
+        -2.167428704156967e-14,
+        2.349010873141437e-14,
+        -2.6881816964355998e-14,
+        -2.167428704156967e-14,
+        2.349010873141437e-14,
+        -2.6881816964355998e-14,
+        -2.167428704156967e-14
+      ],
+      "g_trans_norm": 1.0229932581241665e-13,
+      "g_rot_vec": [
+        1.1004820271975169e-05,
+        -1.5376351370695685e-06,
+        -8.785064927489927e-07,
+        9.488061840254332e-06,
+        1.9651981115130524e-06,
+        3.740312978473809e-06,
+        5.090813779416383e-06,
+        -4.346830658867257e-06,
+        -5.375127408255853e-06,
+        -9.355040934610762e-06,
+        2.335453384779283e-06,
+        2.152244399589267e-06,
+        -1.2512815953957353e-05,
+        -3.729244728655577e-07,
+        -1.9002772137812344e-06,
+        -3.7158390030777616e-06,
+        1.9567387725100484e-06,
+        2.261353736723005e-06
+      ],
+      "g_rot_norm": 2.4217653246904437e-05,
+      "g_int_vec": [
+        8.887476029680462e-08,
+        -9.813929915636048e-08,
+        -2.0514278983860862e-07,
+        -1.2517369922818779e-08,
+        3.735201058977383e-09,
+        4.755616916594594e-08,
+        -6.331821547854439e-08,
+        7.219019449227663e-08,
+        1.5509086168491528e-07,
+        3.4225248629095317e-09,
+        -7.76174678970035e-09,
+        6.628910796854584e-08,
+        8.51954569545393e-09,
+        -8.325684921952995e-09,
+        -1.9610427982565857e-08,
+        -2.4981245453820155e-08,
+        3.830133531675982e-08,
+        -4.4182920998232795e-08
+      ],
+      "g_int_norm": 3.230410019960657e-07,
+      "g_norm": 2.421980768454349e-05,
+      "int_norm_fraction": 0.013337884685278604,
+      "int_sq_fraction": 0.00017789916787778955,
+      "note": "\"norm fraction\" and \"squared-norm fraction\" are DIFFERENT quantities and are never added as percentages"
+    }
+  },
+  "rotation_baseline": {
+    "c14_plus": {
+      "axis": [
+        -0.19724062538265227,
+        -0.9602679314835905,
+        0.19743767488219327
+      ],
+      "T_g_norm": 0.00018647855852712428,
+      "dE_vs_theta": [
+        0.0,
+        3.3573405744391493e-07,
+        -3.143057369925373e-07,
+        6.899562094986322e-07,
+        -6.042536710992863e-07
+      ],
+      "central_slope": [
+        {
+          "theta_deg": 0.1,
+          "slope_Eh_per_rad": 0.0001862226836838016,
+          "axis_dot_Tg": 0.00018647855852712428,
+          "resid": -2.558748433226796e-07
+        },
+        {
+          "theta_deg": 0.2,
+          "slope_Eh_per_rad": 0.00018538190990597734,
+          "axis_dot_Tg": 0.00018647855852712428,
+          "resid": -1.0966486211469364e-06
+        }
+      ],
+      "grad_back_vs_orig_max": [
+        4.212233089205604e-06,
+        4.3331584732831046e-06,
+        8.173411942908372e-06,
+        8.649133102948786e-06
+      ],
+      "d2_energy_invariance_max": 7.63478906831705e-15,
+      "d2_grad_covariance_resid": [
+        3.3881317890172014e-21,
+        3.3881317890172014e-21,
+        3.3881317890172014e-21,
+        3.3881317890172014e-21
+      ],
+      "per_orientation_decomposition": [
+        {
+          "theta_deg": 0.0,
+          "g_int_norm": 3.230409831622345e-07,
+          "g_trans_norm": 8.158558405114465e-14,
+          "g_rot_norm": 2.4217653216901683e-05
+        },
+        {
+          "theta_deg": 0.1,
+          "g_int_norm": 7.304129802922646e-06,
+          "g_trans_norm": 1.414323572722884e-13,
+          "g_rot_norm": 2.5285189971902893e-05
+        },
+        {
+          "theta_deg": -0.1,
+          "g_int_norm": 7.140680814223332e-06,
+          "g_trans_norm": 5.837000489773385e-14,
+          "g_rot_norm": 2.3328123807440246e-05
+        },
+        {
+          "theta_deg": 0.2,
+          "g_int_norm": 1.445732251176143e-05,
+          "g_trans_norm": 1.0148408170632811e-13,
+          "g_rot_norm": 2.6503250039953366e-05
+        },
+        {
+          "theta_deg": -0.2,
+          "g_int_norm": 1.4199477324327417e-05,
+          "g_trans_norm": 7.787257170027078e-14,
+          "g_rot_norm": 2.2577356589894088e-05
+        }
+      ],
+      "solvent_surface_points_orientation_dependent": [
+        2147,
+        2148,
+        2149
+      ]
+    },
+    "c06_plus": {
+      "axis": [
+        -0.9959685386169436,
+        -0.0844228505690978,
+        -0.030322473299808434
+      ],
+      "T_g_norm": 0.0001602271337430567,
+      "dE_vs_theta": [
+        0.0,
+        2.792947384477884e-07,
+        -2.792830287035031e-07,
+        5.567260359384818e-07,
+        -5.560955287364777e-07
+      ],
+      "central_slope": [
+        {
+          "theta_deg": 0.1,
+          "slope_Eh_per_rad": 0.00016002074293805117,
+          "axis_dot_Tg": 0.0001602271337430567,
+          "resid": -2.063908050055352e-07
+        },
+        {
+          "theta_deg": 0.2,
+          "slope_Eh_per_rad": 0.0001593999475175494,
+          "axis_dot_Tg": 0.0001602271337430567,
+          "resid": -8.271862255073022e-07
+        }
+      ],
+      "grad_back_vs_orig_max": [
+        2.897180455055815e-06,
+        3.2552534755458626e-06,
+        5.513167285850912e-06,
+        6.953840009679839e-06
+      ],
+      "d2_energy_invariance_max": 8.220800342545465e-15,
+      "d2_grad_covariance_resid": [
+        1.6940658945086007e-21,
+        1.6940658945086007e-21,
+        1.6940658945086007e-21,
+        1.6940658945086007e-21
+      ],
+      "per_orientation_decomposition": [
+        {
+          "theta_deg": 0.0,
+          "g_int_norm": 1.148459476981078e-06,
+          "g_trans_norm": 9.110267884264979e-14,
+          "g_rot_norm": 5.0085359893796363e-05
+        },
+        {
+          "theta_deg": 0.1,
+          "g_int_norm": 5.268865682169047e-06,
+          "g_trans_norm": 7.680768920195196e-14,
+          "g_rot_norm": 5.2434036258874504e-05
+        },
+        {
+          "theta_deg": -0.1,
+          "g_int_norm": 4.181037757063127e-06,
+          "g_trans_norm": 4.305071888443115e-14,
+          "g_rot_norm": 4.765290467903091e-05
+        },
+        {
+          "theta_deg": 0.2,
+          "g_int_norm": 9.790796013061872e-06,
+          "g_trans_norm": 6.980588636915083e-14,
+          "g_rot_norm": 5.472990235030577e-05
+        },
+        {
+          "theta_deg": -0.2,
+          "g_int_norm": 8.902458902968601e-06,
+          "g_trans_norm": 1.1019141444130466e-13,
+          "g_rot_norm": 4.510117198029289e-05
+        }
+      ],
+      "solvent_surface_points_orientation_dependent": [
+        2132,
+        2133,
+        2134
+      ]
+    }
+  },
+  "c06_controls": {
+    "A_dft_L9": {
+      "config": {
+        "dft_grid_level": 9,
+        "lebedev_order": 41,
+        "solvent_surface_points": 2133
+      },
+      "dE_vs_theta": [
+        0.0,
+        2.9265197554195765e-07,
+        -2.931927838289994e-07,
+        5.828057396684017e-07,
+        -5.843838835062343e-07
+      ],
+      "grad_back_vs_orig": [
+        2.758306582857842e-06,
+        3.1248170271291447e-06,
+        5.22765209693816e-06,
+        6.702153826938947e-06
+      ],
+      "internal_norms": [
+        {
+          "theta_deg": 0.0,
+          "g_int_norm": 4.170657734503748e-06,
+          "g_trans_norm": 1.4519858186306785e-13,
+          "g_rot_norm": 5.192541604097423e-05
+        },
+        {
+          "theta_deg": 0.1,
+          "g_int_norm": 5.78487123942385e-06,
+          "g_trans_norm": 4.309255530458813e-14,
+          "g_rot_norm": 5.4303138847205575e-05
+        },
+        {
+          "theta_deg": -0.1,
+          "g_int_norm": 6.608047526720036e-06,
+          "g_trans_norm": 8.500660891818241e-14,
+          "g_rot_norm": 4.94574463607152e-05
+        },
+        {
+          "theta_deg": 0.2,
+          "g_int_norm": 9.540995722362535e-06,
+          "g_trans_norm": 7.314319578503409e-14,
+          "g_rot_norm": 5.662156213009257e-05
+        },
+        {
+          "theta_deg": -0.2,
+          "g_int_norm": 1.0733086832636622e-05,
+          "g_trans_norm": 1.0172531178916082e-13,
+          "g_rot_norm": 4.6863593680180776e-05
+        }
+      ],
+      "finding": "orientation dependence UNCHANGED vs baseline -> DFT grid NOT the dominant source"
+    },
+    "B_surface_leb31": {
+      "config": {
+        "dft_grid_level": 8,
+        "lebedev_order": 31,
+        "solvent_surface_points": 1320
+      },
+      "executed_direction": "DECREASED (41 -> 31); configuration error: assumed class default 29 but the ACTUAL object had lebedev_order=41",
+      "dE_vs_theta": [
+        0.0,
+        5.723160256820847e-08,
+        -7.176095095928758e-08,
+        9.843626003203099e-08,
+        -1.5599175640090834e-07
+      ],
+      "grad_back_vs_orig": [
+        3.4617227134412635e-06,
+        3.1872483413314733e-06,
+        7.089264277814709e-06,
+        6.024966088731567e-06
+      ],
+      "internal_norms": [
+        {
+          "theta_deg": 0.0,
+          "g_int_norm": 0.00015532096119047094,
+          "g_trans_norm": 7.80667935959723e-14,
+          "g_rot_norm": 6.008756518906494e-05
+        },
+        {
+          "theta_deg": 0.1,
+          "g_int_norm": 0.00015671993113806302,
+          "g_trans_norm": 8.896019736906824e-14,
+          "g_rot_norm": 5.875402432912348e-05
+        },
+        {
+          "theta_deg": -0.1,
+          "g_int_norm": 0.00015409434111894604,
+          "g_trans_norm": 3.455342024712352e-14,
+          "g_rot_norm": 6.127097162611263e-05
+        },
+        {
+          "theta_deg": 0.2,
+          "g_int_norm": 0.0001583092244776185,
+          "g_trans_norm": 5.3515425648929917e-14,
+          "g_rot_norm": 5.73024694442303e-05
+        },
+        {
+          "theta_deg": -0.2,
+          "g_int_norm": 0.0001530139164950614,
+          "g_trans_norm": 7.540207965659147e-14,
+          "g_rot_norm": 6.227477998455059e-05
+        }
+      ],
+      "finding": "coarser surface -> internal residual grows ~100x (1.1e-6 -> ~1.6e-4); INVERSE evidence that the solvent surface discretisation dominates the residual; increase-direction control (41->47) NOT executed (budget)"
+    },
+    "cds_attribution": "CDS comes from mnsol_interface_ (charges + coordinates only) and is NOT controlled by the lebedev surface parameter; different numerical grids not conflated"
+  },
+  "answers": {
+    "q1_measured_orientation_dependence": "YES: E(theta) antisymmetric, +/-2.8-6.9e-07 Eh; gradients orientation-dependent (2.5-7.0e-06 after rotating back)",
+    "q2_slope_vs_Tg": "YES: agreement 0.13-0.6% at both angles for both candidates",
+    "q3_refinement_effect": "DFT L9: no reduction (excluded); surface COARSENING: internal residual grows ~100x (inverse evidence for surface origin); increase-direction control NOT executed",
+    "q4_internal_gradient": "small at theta=0 (1.1e-6/3.2e-7); varies strongly with surface discretisation (1.6e-4 at leb31) and grows with |theta|",
+    "q5_dispersion": "PASSES rotational invariance (<=8.2e-15 Eh) and covariance (<=3.4e-21) - dispersion NOT the source"
+  },
+  "boundaries": "energy-component changes are clues only; SCF density may also change; one refinement/coarsening is not strict convergence; acceptance criteria unchanged; no external gradient deleted",
+  "next_batch_recommendation": "ONE forward solvent-surface refinement control (lebedev 41->47, 5 evaluations) to confirm the orientation dependence and internal residual decrease with refinement; if confirmed, propose an acceptance-protocol amendment (net-force/torque + internal-gradient criteria) for USER approval - no criteria changed in this batch",
+  "artifacts": {
+    "protocols/torque_decomp.py": "a98ebcbe4311a01d",
+    "protocols/test_torque_decomp.py": "49cc48e248ef98fe",
+    "protocols/smd_rotation_audit.py": "f883814177b3e5da",
+    "run_artifacts/01_pure_water_o3_h2o/smd_rotation_audit/torque_regression.json": "37a799977b29e3af",
+    "run_artifacts/01_pure_water_o3_h2o/smd_rotation_audit/endpoint_decomp_fixed.json": "d9c53e1f30367d2c",
+    "run_artifacts/01_pure_water_o3_h2o/smd_rotation_audit/rotation_audit_data.json": "373bdab33ddfaffe",
+    "run_artifacts/01_pure_water_o3_h2o/smd_rotation_audit/offline_analysis.json": "f570486945e29f28"
+  },
+  "report": "results/01_water_matrices/pure_water_o3_h2o/smd_rotation_audit/smd_rotation_audit_report.md",
+  "budget_used": {
+    "baseline": 10,
+    "c06_control_A": 5,
+    "c06_control_B": 5,
+    "total": 20,
+    "note": "control B direction reversed; increase-direction control not executed"
+  },
+  "stop": "batch complete; no optimisation/frequency/thermochemistry/reaction-path calculations",
+  "revision_JOB_2026_0906_010": {
+    "retained": "measured numerical orientation dependence and its consistency with the corrected T_g",
+    "revised": {
+      "dft_grid": "was \"excluded\" -> \"no observable improvement in the L8->L9 control of this batch; the residual is NOT adequately explained (DFT grid not excluded)\"",
+      "surface_source": "was \"surface discretisation is the dominant source\" -> \"results are SENSITIVE to surface discretisation; dominant source and convergence trend pending the forward control\"",
+      "order31": "explicitly an UNPLANNED COARSENING (configuration error); must NOT be described as a completed refinement task",
+      "surface_point_variation": "orientation-dependent surface point counts (2132-2134) are a CLUE only, not proof of the error root cause",
+      "both_trends_kept": "under coarsening: orientation energy amplitude DECREASED while internal gradient INCREASED - both retained, not selectively reported"
+    },
+    "unchanged": "dispersion passes rotational invariance/covariance (machine precision); dispersion is not the source"
+  }
+}

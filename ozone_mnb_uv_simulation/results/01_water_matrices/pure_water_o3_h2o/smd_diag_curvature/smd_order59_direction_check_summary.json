@@ -1,0 +1,105 @@
+{
+  "job": "JOB-2026-0906-015",
+  "title": "baseline source verification & order-59 fixed-direction curvature check",
+  "new_evaluations": 5,
+  "budget": "5/5 (1 center + 4 displaced)",
+  "offline_corrections": {
+    "baseline_inventory": "v2 (supersedes 014 v1): full relative paths; historical method evidence per record; monomer -D2 was SINGLE-POINT ONLY (not in opt gradient/Hessian) per all three calculation records; no monomer D2-full re-run found; quantitative-comparison scope tightened (grid/derivative/SCF mismatches -> precision-consistency PENDING; thermochemistry unification cannot be done by one single point)",
+    "gas_complexes": "official endpoints = endpoint_frequency/endpoints_fixed.json (source phaseC attempt2, hash 186008c181d6f2a4); geometry at gas L7 with D2-full (c06 2.14e-6 / c14 2.64e-6, pass_gmax=True); gas frequencies at grid5 with D2-FD-Hessian",
+    "application_scope": "aquaculture pollutant removal or fish-virus inactivation registered as known application scope (notes/project_scope.md); specific species/virus/conditions remain TBD",
+    "draft_correction": "fixed-direction curvature characterises only this geometry/direction/config locally; results do not auto-trigger acceptance-standard revision"
+  },
+  "reuse_gate": "6/6 PASS (center hash bf912a791b3e9761; direction normalized c9a5e6ef09b82e15; 013 8 displaced points on straight-line path <=1e-8 A; orders {41,47}; grid level 8; center finite)",
+  "order59_points": [
+    {
+      "kind": "center",
+      "e_total": -301.891676198,
+      "grad_max": 0.0001269,
+      "surface_points": 4201
+    },
+    {
+      "kind": "displaced",
+      "amp": 0.002,
+      "sign": 1,
+      "e_total": -301.891676145
+    },
+    {
+      "kind": "displaced",
+      "amp": 0.002,
+      "sign": -1,
+      "e_total": -301.89167625
+    },
+    {
+      "kind": "displaced",
+      "amp": 0.004,
+      "sign": 1,
+      "e_total": -301.891676093
+    },
+    {
+      "kind": "displaced",
+      "amp": 0.004,
+      "sign": -1,
+      "e_total": -301.891676301
+    }
+  ],
+  "three_gear": {
+    "convention": "each gear uses its OWN center energy/gradient; same fixed direction (JOB-013 mode 0); recomputed from raw points with one code path",
+    "gear41": {
+      "proj_grad_Eh_per_A": -1.1182e-05,
+      "curvE": [
+        0.00021765,
+        0.00022726
+      ],
+      "curvG": [
+        0.00022161,
+        0.00023763
+      ]
+    },
+    "gear47": {
+      "proj_grad_Eh_per_A": 1.0193e-05,
+      "curvE": [
+        -0.00042479,
+        -0.00042483
+      ],
+      "curvG": [
+        -0.00042588,
+        -0.00042283
+      ]
+    },
+    "gear59": {
+      "proj_grad_Eh_per_A": 2.6238e-05,
+      "curvE": [
+        9.8254e-05,
+        0.00010895
+      ],
+      "curvG": [
+        0.00010332,
+        0.0001178
+      ]
+    }
+  },
+  "observed_statements": [
+    "order59 and order41 agree in sign (positive curvature); order59 vs order47 sign flip persists",
+    "magnitude still gear-sensitive (three-gear max/min |curvE| ratio ~4.3)",
+    "no monotonic trend across gears (+ -> - -> +)",
+    "single new gear / monotonic change / three-gear agreement is NOT a convergence proof; no real-frequency, transition-state, full-minimum or acceptance claims",
+    "fixed-direction curvature characterises only this geometry/direction/config locally"
+  ],
+  "impact_on_013": "the \"negative internal-curvature diagnostic evidence (order47)\" remains registered; at finer order59 the curvature returns positive and smaller -- gear sensitivity of the sign is further highlighted; physical attribution remains PENDING",
+  "acceptance_status": "formal stationary acceptance STILL NOT PASSED (2.503e-5 > 1e-5; threshold unchanged; no auto branch)",
+  "next_step_recommendation": {
+    "proposal": "SMD surface-discretisation-method comparison, OFFLINE evaluation batch (zero or near-zero evaluations): read-only survey of surface_discretization_method options and other solvent-surface construction parameters; assess whether changing the discretisation (instead of adding gears) yields sign-stable curvature; also assess geometry-convergence + energy-plateau supplementary criteria as an acceptance-protocol amendment draft for user approval",
+    "problem_and_value": "answers whether the sign flip is a gear-convergent numerical issue or inherent to the current discretisation; decides the phase-1 closeout route and avoids unbounded gear escalation",
+    "boundary": "no threshold relaxation; not an automatic branch of this batch; requires commander approval before execution"
+  },
+  "artifacts": {
+    "protocols/smd_order59_check.py": "10704467212ccf69",
+    "protocols/smd_order59_analysis.py": "3bcc131d66117479",
+    "run_artifacts/01_pure_water_o3_h2o/smd_diag_curvature/order59_reuse_gate.json": "1b90855355ce501e",
+    "run_artifacts/01_pure_water_o3_h2o/smd_diag_curvature/order59_points.json": "bfbceaacbf582d0b",
+    "run_artifacts/01_pure_water_o3_h2o/smd_diag_curvature/order59_analysis.json": "43a65e2715027988",
+    "results/phase1_closeout/baseline_inventory.md": "44ea8f5041db408a"
+  },
+  "report": "results/01_water_matrices/pure_water_o3_h2o/smd_diag_curvature/smd_order59_direction_check_report.md",
+  "stop": "batch complete; no more gears, no full Hessian, no optimisation, no mode following, no thermochemistry"
+}

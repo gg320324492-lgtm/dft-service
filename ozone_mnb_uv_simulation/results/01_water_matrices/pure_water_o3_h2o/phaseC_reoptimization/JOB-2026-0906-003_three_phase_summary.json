@@ -1,0 +1,199 @@
+{
+  "job": "JOB-2026-0906-003",
+  "title": "\u9a8c\u6536\u8865\u6b63 -> scanner \u9a8c\u8bc1 -> \u6709\u9650\u6b65\u6570\u7ec8\u70b9\u4f18\u5316 \u4e09\u9636\u6bb5\u6279",
+  "phase_statuses": {
+    "A": "pass",
+    "B": "pass",
+    "C": "pass(attempt2)"
+  },
+  "phaseA": {
+    "verdict": "pass",
+    "regression_tests": "28 pass / 0 fail (test_production_path_regression.py, incl. BOHR_A-removal failure item, negative-quadratic sign preservation, quartic O(q^2))",
+    "authoritative_report": "results/01_water_matrices/pure_water_o3_h2o/unit_consistency_revision/phaseA_unit_revision_report.md",
+    "c06_plus_conclusion": "L7 small-amplitude k_E=-1.4065e-05 and k_g(True)=-1.1339e-05 BOTH NEGATIVE; not zeroed; stability/grid-sensitivity/new-stationary-point nature open",
+    "c14_plus_conclusion": "sampled directions only: post-correction energy and full-response gradient consistent, finite-step curvature positive; NOT full acceptance",
+    "withdrawn": [
+      "c06_plus ~=0 / no-negative-curvature / dispute-closed",
+      "c14_plus dispute-closed => candidate accepted (over-reach)",
+      "legacy direction-of-correction wording (old k_E x b^2, old k_g/s_E x b)"
+    ]
+  },
+  "phaseB": {
+    "verdict": "pass",
+    "entry_point": "protocols/grad_factory.py make_mf_d2_gr (grid_response=True enforced; D2 exactly once via attach_d2)",
+    "geometry": "gas-phase c14_plus L7 centre + O-H stretch 0.05 A, A->B->A same scanner",
+    "checks": {
+      "grid_response_always_true": true,
+      "grid_response_actually_active": {
+        "diff_vs_false": 6.768976567505307e-05
+      },
+      "d2_counted_exactly_once": {
+        "e_resid": 4.2923236037543944e-13,
+        "g_resid": 2.205808868893655e-10,
+        "d2_magnitude": 0.00017025391676220007
+      },
+      "scanner_equals_independent_dft_plus_d2": true,
+      "reproducible_no_residue": {
+        "dE": 7.389644451905042e-13,
+        "maxabs_dG": 2.2067503380185371e-10
+      }
+    },
+    "smoke": "water-dimer smoke also pass (scanner_verify_smoke_H2O_dimer.json)",
+    "artifact": "run_artifacts/01_pure_water_o3_h2o/phaseB_scanner_verify/scanner_verify_c14_plus_L7_center.json",
+    "artifact_hash": "9573527c38de84fb"
+  },
+  "phaseC": {
+    "method": "omegaB97X-D empirical-dispersion DFT part (xc=wb97xd) + project empirical full-derivative -D2 / def2-TZVP / L7 / SCF 1e-12/1e-9, gas (naming unified per JOB-2026-0906-004)",
+    "optimizer": "pyscf.geomopt.berny_solver.kernel (pyberny 0.7.0); CONFIRMED params gradientmax/gradientrms/stepmax/steprms (atomic units, ALL AND-ed, no energy criterion); maxsteps=60",
+    "attempt1": {
+      "status": "superseded",
+      "note": "optimizer converged (6/13 steps) by INTERNAL-coordinate gradient criteria (dot(B_inv.T,g), berny.py L294) but Cartesian acceptance failed: max|g|=3.13e-5/1.38e-5 > 1e-5; no relaxation/extension performed",
+      "artifact": "run_artifacts/01_pure_water_o3_h2o/phaseC_reoptimization/phaseC_summary_attempt1.json",
+      "artifact_hash": "5a89cd2c0bcd59c5"
+    },
+    "attempt2": {
+      "status": "official",
+      "note": "internal thresholds TIGHTENED to 1e-6 (no relaxation), fresh start, same Cartesian acceptance and 60-step cap",
+      "artifact": "run_artifacts/01_pure_water_o3_h2o/phaseC_reoptimization/phaseC_summary_attempt2.json",
+      "artifact_hash": "186008c181d6f2a4",
+      "candidates": {
+        "c14_plus": {
+          "n_steps": 46,
+          "maxsteps_cap": 60,
+          "hit_cap": false,
+          "optimizer_converged": true,
+          "independent_max_g": 2.641263989123937e-06,
+          "independent_rms_g": 1.0682287120892616e-06,
+          "pass_gmax": true,
+          "dE_verify_vs_last_step": -1.1368683772161603e-13,
+          "e_end": -301.87483794687887,
+          "e_dft_part": -301.8746646257883,
+          "e_d2": -0.0001733210906016545,
+          "d2_scf_summary": -0.0001733210906016545,
+          "dE_from_start": -2.642657705109741e-06,
+          "all_scf_converged": true,
+          "trajectory": "run_artifacts/01_pure_water_o3_h2o/phaseC_reoptimization/phaseC_steps_c14_plus_attempt2.json",
+          "endpoint_coords_angstrom": [
+            [
+              -0.21283112973145318,
+              0.023754793427813066,
+              0.1357795438372267
+            ],
+            [
+              0.9889881033860493,
+              -0.22328421013741592,
+              0.294608754694698
+            ],
+            [
+              -0.6251291882220469,
+              1.1406450512583364,
+              0.47232008911966955
+            ],
+            [
+              0.24982686804988818,
+              0.1743086841275073,
+              3.208325765746084
+            ],
+            [
+              0.0312711233863104,
+              1.1071929852069144,
+              3.1944023971157107
+            ],
+            [
+              1.1964716316312523,
+              0.1351557466168454,
+              3.0649000706866083
+            ]
+          ]
+        },
+        "c06_plus": {
+          "n_steps": 25,
+          "maxsteps_cap": 60,
+          "hit_cap": false,
+          "optimizer_converged": true,
+          "independent_max_g": 2.14171661139031e-06,
+          "independent_rms_g": 8.29334128705492e-07,
+          "pass_gmax": true,
+          "dE_verify_vs_last_step": 1.7053025658242404e-13,
+          "e_end": -301.87409344934827,
+          "e_dft_part": -301.8739331248343,
+          "e_d2": -0.00016032451395687643,
+          "d2_scf_summary": -0.00016032451395687643,
+          "dE_from_start": -1.0405746593278309e-06,
+          "all_scf_converged": true,
+          "trajectory": "run_artifacts/01_pure_water_o3_h2o/phaseC_reoptimization/phaseC_steps_c06_plus_attempt2.json",
+          "endpoint_coords_angstrom": [
+            [
+              0.023078886827557533,
+              0.0602334759046143,
+              -0.08915867249373212
+            ],
+            [
+              0.5608768206290706,
+              0.7588237684841739,
+              0.78701572589555
+            ],
+            [
+              -0.7424930847433263,
+              0.616626986687086,
+              -0.8784704415458537
+            ],
+            [
+              2.0846697924426385,
+              -1.66698475541169,
+              1.9495626056771707
+            ],
+            [
+              1.797834678774604,
+              -0.7542720759877102,
+              1.8709699063038348
+            ],
+            [
+              2.751642161969458,
+              -1.6709808494764735,
+              2.6360493010630277
+            ]
+          ]
+        }
+      }
+    },
+    "endpoint_dedup": {
+      "candidate_a": "c14_plus",
+      "candidate_b": "c06_plus",
+      "rmsd_A": 1.59447430821879,
+      "same_structure": false,
+      "gap_a_A": 2.89335839465898,
+      "gap_b_A": 3.6628895222435034,
+      "note": "no rotation/permutation registration; same atom order SYMS=O3+H2O; identical only if RMSD ~ 0"
+    },
+    "method_naming_note": "not an independent omegaB97X functional; libxc wb97xd contains no -D2; project -D2 added exactly once",
+    "attempts_actual_step_counts": {
+      "c14_plus": {
+        "attempt1": 6,
+        "attempt2": 46
+      },
+      "c06_plus": {
+        "attempt1": 13,
+        "attempt2": 25
+      },
+      "note": "attempt2 was an ADDITIONAL attempt; no third attempt allowed"
+    },
+    "per_step_full_gradient_evidence": "MISSING in attempt trajectories (only max/RMS recorded) - historical evidence gap, not fabricated",
+    "dedup_correction": "phaseC rmsd_dedup was centroid-translation only (no rotation/permutation); formal registration dedup done in JOB-2026-0906-004 (RMSD 3.745 A, distinct structures)"
+  },
+  "fingerprints": {
+    "protocols/grad_factory.py": "54a82f33c2f05718",
+    "protocols/phaseB_scanner_verify.py": "6652d4188e9fa7b5",
+    "protocols/phaseC_reoptimize.py": "e068bba8308dda8b",
+    "protocols/unit_consistency_audit.py": "e42ad5e5553b95f6",
+    "protocols/phaseA_report.py": "db57e5342662252e",
+    "protocols/test_production_path_regression.py": "9b8058b3128f3e81",
+    "results/01_water_matrices/pure_water_o3_h2o/unit_consistency_revision/phaseA_unit_revision_report.md": "4490fb582d6c0606",
+    "results/01_water_matrices/pure_water_o3_h2o/unit_consistency_revision/phaseA_unit_revision_summary.json": "6fb42d70e1eafdb9"
+  },
+  "supersedes": [
+    "unit_consistency_report.md (JOB-2026-0906-002) verdict sections; attempt-1 phaseC results (archived)"
+  ],
+  "next_batch": "full internal-frequency + soft-mode acceptance at the NEW endpoints; then water-phase, higher-level cross-checks, reaction-path work",
+  "status_note": "even though converged, candidates are ONLY converged-stationary-candidates, not final stable minima"
+}

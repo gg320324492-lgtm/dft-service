@@ -10,3 +10,8 @@ tests/.tmp/
 # WSL 探针/临时输出兜底 (2026-09-04 误提交清理)
 *.log
 *.mdp
+
+# 臭氧项目: 大文件/版权件/检查点 (2026-09-10 整理)
+ozone_mnb_uv_simulation/references/literature/
+ozone_mnb_uv_simulation/results/discussion/assets/tools/
+*.chk

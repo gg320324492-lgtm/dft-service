@@ -1,0 +1,116 @@
+{
+  "species": "h2o",
+  "name": "H2O (water)",
+  "phase": "smd_water",
+  "charge": 0,
+  "multiplicity": 1,
+  "xc": "wb97xd",
+  "basis": "def2-TZVP",
+  "solvent_model": "SMD(water)",
+  "grid_level": 5,
+  "scf_conv_tol": 1e-11,
+  "opt_conv": {
+    "gradientmax": 2e-05,
+    "gradientrms": 1e-05,
+    "stepmax": 0.0001,
+    "steprms": 6e-05,
+    "maxsteps": 200
+  },
+  "T": 298.15,
+  "P": 101325.0,
+  "structure_source": "experimental gas-phase geometry",
+  "initial_geometry_angstrom": "O        0.0000000000       0.0000000000       0.0000000000\nH        0.7575407978       0.0000000000       0.5870796366\nH       -0.7575407978       0.0000000000       0.5870796366",
+  "opt_seconds": 21.4,
+  "optimised_geometry_angstrom": [
+    [
+      "O ",
+      [
+        0.0,
+        0.0,
+        -0.0011034
+      ]
+    ],
+    [
+      "H ",
+      [
+        0.75896398,
+        0.0,
+        0.58763133
+      ]
+    ],
+    [
+      "H ",
+      [
+        -0.75896398,
+        0.0,
+        0.58763133
+      ]
+    ]
+  ],
+  "geom_string": "O  0.00000000 0.00000000 -0.00110340; H  0.75896398 0.00000000 0.58763133; H  -0.75896398 0.00000000 0.58763133",
+  "scf_converged": true,
+  "e_dft_hartree": -76.45089436344462,
+  "max_gradient_hartree_bohr": 1.283993005577952e-05,
+  "rms_gradient_hartree_bohr": 5.176955054870394e-06,
+  "optimisation_converged": true,
+  "n_grid_points": 90064,
+  "n_basis_functions": 43,
+  "e_dispersion_d2_hartree": -4.0227193832245364e-07,
+  "e_total_wb97xd_hartree": -76.45089476571655,
+  "e_dispersion_d2_kcal_mol": -0.0002524294524470667,
+  "hessian_seconds": 9.2,
+  "hessian_method": "analytic",
+  "hessian_asymmetry": 7.239795486724265e-07,
+  "raw_3n_frequencies_cm1": [
+    -163.67,
+    -107.01,
+    -51.36,
+    -47.76,
+    -9.73,
+    66.96,
+    1595.02,
+    3848.09,
+    3930.83
+  ],
+  "tr_rot_mode_max_abs_cm1": 163.67,
+  "n_imaginary": 0,
+  "frequencies_cm1": [
+    1595.02,
+    3848.09,
+    3930.83
+  ],
+  "lowest_frequency_cm1": 1595.02,
+  "n_vibrational_modes": 3,
+  "n_expected_modes": 3,
+  "thermo": {
+    "T": 298.15,
+    "P": 101325.0,
+    "sigma": 2,
+    "linear": false,
+    "rot_constants_cm1": [
+      9.460821,
+      14.516557,
+      27.164898
+    ],
+    "ZPE": 56068.5812165141,
+    "E_0K": -200665727.73849896,
+    "H_298": -200655803.243258,
+    "G_298": -200712044.84570178,
+    "S_tot": 188.6352589092,
+    "S_trans": 144.80403047,
+    "S_rot": 43.7983706063,
+    "S_vib": 0.032857833,
+    "S_elec": 0.0,
+    "thermal_H_corr": 65993.0764574706,
+    "thermal_G_corr": 9751.4740136862
+  },
+  "thermo_hartree": {
+    "ZPE": 0.0213553948,
+    "E_0K": -76.4295393709,
+    "H_298": -76.4257593303,
+    "G_298": -76.4471806254
+  },
+  "is_minimum": true,
+  "total_seconds": 38.7,
+  "pyscf_version": "2.14.0"
+}

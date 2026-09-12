@@ -1,0 +1,760 @@
+{
+  "job": "JOB-2026-0905-009",
+  "purpose": "O3.H2O initial conformer pool for the Phase-2A gas-phase search",
+  "n_conformers": 14,
+  "charge": 0,
+  "multiplicity": 1,
+  "atom_order": "O3 central, O3 terminal(+x), O3 terminal(-x), water O, water H1, water H2",
+  "monomer_geometries": {
+    "ozone": "experimental gas phase r(O-O)=1.2717 A, angle=117.79 deg",
+    "water": "experimental gas phase r(O-H)=0.9584 A, angle=104.45 deg"
+  },
+  "placement_rules": {
+    "h_donor": "H1 placed d (A) from the anchor along u, O_w further out on the same axis; H2 from the H-O-H angle and a rotation phi about O_w->H1",
+    "o_contact": "water O placed d (A) from the anchor along u; bisector along b, H-H axis along e (orthogonalised against b)"
+  },
+  "conformers": [
+    {
+      "id": "c01",
+      "mode": "h_donor",
+      "anchor": 1,
+      "u": "ext_inplane",
+      "d": 2.0,
+      "phi": 0.0,
+      "ref": [
+        0,
+        0,
+        1
+      ],
+      "coverage": "\u672b\u7aef\u6c27\u4f9b\u6c22\u952e / \u9762\u5185\u5916\u90e8\u65b9\u5411 / \u8fd1\u63a5\u89e6",
+      "rule": "H1 \u6cbf\u672b\u7aef\u6c27(+x)\u5904\"\u5782\u76f4\u952e\u8f74\u4e14\u6307\u5411\u5206\u5b50\u5916\u90e8\"\u7684\u9762\u5185\u65b9\u5411\u63a5\u8fd1\uff0cH1\u00b7\u00b7\u00b7O = 2.00 \u00c5\uff1bO_w \u5728\u540c\u4e00\u8f74\u5916\u4fa7\uff1bH2 \u7ed5 O_w\u2013H1 \u8f74\u65cb\u8f6c 0\u00b0\uff08\u53c2\u8003\u5411\u91cf\u53d6 O3 \u5e73\u9762\u6cd5\u7ebf\uff09",
+      "anchor_description": "atom 1 (terminal O)",
+      "u_vector": [
+        0.516608,
+        -0.856222,
+        0.0
+      ],
+      "initial_coords_angstrom": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.08885752,
+          0.65697046,
+          0.0
+        ],
+        [
+          -1.08885752,
+          0.65697046,
+          0.0
+        ],
+        [
+          2.61719078,
+          -1.87607672,
+          0.0
+        ],
+        [
+          2.12207362,
+          -1.05547355,
+          0.0
+        ],
+        [
+          2.74073986,
+          -2.08084597,
+          0.92808175
+        ]
+      ]
+    },
+    {
+      "id": "c02",
+      "mode": "h_donor",
+      "anchor": 1,
+      "u": "ext_inplane",
+      "d": 2.0,
+      "phi": 90.0,
+      "ref": [
+        0,
+        0,
+        1
+      ],
+      "coverage": "\u672b\u7aef\u6c27\u4f9b\u6c22\u952e / \u9762\u5185\u5916\u90e8\u65b9\u5411 / \u5171\u9762\u53d6\u5411",
+      "rule": "\u540c c01 \u7684\u63a5\u8fd1\u8f74\u4e0e\u8ddd\u79bb\uff1bH2 \u7ed5 O_w\u2013H1 \u8f74\u65cb\u8f6c 90\u00b0\uff08\u4e24\u4e2a H \u5747\u843d\u5728 O3 \u5e73\u9762\u5185\uff09",
+      "anchor_description": "atom 1 (terminal O)",
+      "u_vector": [
+        0.516608,
+        -0.856222,
+        0.0
+      ],
+      "initial_coords_angstrom": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.08885752,
+          0.65697046,
+          0.0
+        ],
+        [
+          -1.08885752,
+          0.65697046,
+          0.0
+        ],
+        [
+          2.61719078,
+          -1.87607672,
+          0.0
+        ],
+        [
+          2.12207362,
+          -1.05547355,
+          0.0
+        ],
+        [
+          1.94609584,
+          -2.56030047,
+          0.0
+        ]
+      ]
+    },
+    {
+      "id": "c03",
+      "mode": "h_donor",
+      "anchor": 1,
+      "u": "ext_inplane",
+      "d": 2.9,
+      "phi": 0.0,
+      "ref": [
+        0,
+        0,
+        1
+      ],
+      "coverage": "\u672b\u7aef\u6c27\u4f9b\u6c22\u952e / \u9762\u5185\u5916\u90e8\u65b9\u5411 / \u8fdc\u63a5\u89e6",
+      "rule": "\u540c c01 \u7684\u63a5\u8fd1\u65b9\u5411\uff1bH1\u00b7\u00b7\u00b7O \u653e\u5bbd\u5230 2.90 \u00c5\uff08\u8fdc\u63a5\u89e6\uff0c\u68c0\u9a8c\u662f\u5426\u6536\u655b\u56de\u8fd1\u63a5\u89e6\u6781\u5c0f\uff09",
+      "anchor_description": "atom 1 (terminal O)",
+      "u_vector": [
+        0.516608,
+        -0.856222,
+        0.0
+      ],
+      "initial_coords_angstrom": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.08885752,
+          0.65697046,
+          0.0
+        ],
+        [
+          -1.08885752,
+          0.65697046,
+          0.0
+        ],
+        [
+          3.08213803,
+          -2.64667653,
+          0.0
+        ],
+        [
+          2.58702087,
+          -1.82607336,
+          0.0
+        ],
+        [
+          3.2056871,
+          -2.85144577,
+          0.92808175
+        ]
+      ]
+    },
+    {
+      "id": "c04",
+      "mode": "h_donor",
+      "anchor": 1,
+      "u": "axis",
+      "d": 2.0,
+      "phi": 0.0,
+      "ref": [
+        0,
+        0,
+        1
+      ],
+      "coverage": "\u672b\u7aef\u6c27\u4f9b\u6c22\u952e / \u6cbf O\u2013O \u952e\u8f74\u5ef6\u957f\u7ebf\uff08\u7ebf\u6027 O\u2013O\u00b7\u00b7\u00b7H\uff09",
+      "rule": "H1 \u6cbf\u4e2d\u5fc3\u6c27\u2192\u672b\u7aef\u6c27\u952e\u8f74\u7684\u5ef6\u957f\u7ebf\u63a5\u8fd1\uff08\u7ebf\u6027 O\u2013O\u00b7\u00b7\u00b7H\u2013O\uff09\uff0c2.00 \u00c5",
+      "anchor_description": "atom 1 (terminal O)",
+      "u_vector": [
+        0.856222,
+        0.516608,
+        0.0
+      ],
+      "initial_coords_angstrom": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.08885752,
+          0.65697046,
+          0.0
+        ],
+        [
+          -1.08885752,
+          0.65697046,
+          0.0
+        ],
+        [
+          3.6219047,
+          2.18530371,
+          0.0
+        ],
+        [
+          2.80130153,
+          1.69018656,
+          0.0
+        ],
+        [
+          3.82667395,
+          2.30885279,
+          0.92808175
+        ]
+      ]
+    },
+    {
+      "id": "c05",
+      "mode": "h_donor",
+      "anchor": 1,
+      "u": "perp",
+      "d": 2.0,
+      "phi": 0.0,
+      "ref": [
+        0,
+        1,
+        0
+      ],
+      "coverage": "\u672b\u7aef\u6c27\u4f9b\u6c22\u952e / \u5782\u76f4\u4e8e O3 \u5e73\u9762\uff08\u975e\u5171\u9762\uff09",
+      "rule": "H1 \u6cbf O3 \u5e73\u9762\u6cd5\u7ebf +z \u4ece\u4e0a\u65b9\u63a5\u8fd1\u672b\u7aef\u6c27\uff0c2.00 \u00c5\uff1bH2 \u7ed5\u8f74 0\u00b0\uff08\u53c2\u8003\u5411\u91cf\u53d6 +y\uff09",
+      "anchor_description": "atom 1 (terminal O)",
+      "u_vector": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "initial_coords_angstrom": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.08885752,
+          0.65697046,
+          0.0
+        ],
+        [
+          -1.08885752,
+          0.65697046,
+          0.0
+        ],
+        [
+          1.08885752,
+          0.65697046,
+          2.9584
+        ],
+        [
+          1.08885752,
+          0.65697046,
+          2.0
+        ],
+        [
+          1.08885752,
+          1.58505221,
+          3.19755438
+        ]
+      ]
+    },
+    {
+      "id": "c06",
+      "mode": "h_donor",
+      "anchor": 1,
+      "u": "tilt_up",
+      "d": 2.1,
+      "phi": 60.0,
+      "ref": [
+        0,
+        0,
+        1
+      ],
+      "coverage": "\u672b\u7aef\u6c27\u4f9b\u6c22\u952e / \u9762\u5185\u5916\u90e8\u4e0e\u5782\u76f4\u4e4b\u95f4\u7684\u503e\u659c\u65b9\u5411",
+      "rule": "H1 \u6cbf (\u9762\u5185\u5916\u90e8\u65b9\u5411 + \u5e73\u9762\u6cd5\u7ebf) \u5f52\u4e00\u5316\u540e\u7684\u503e\u659c\u65b9\u5411\u63a5\u8fd1\uff0c2.10 \u00c5\uff1bH2 \u65cb\u8f6c 60\u00b0",
+      "anchor_description": "atom 1 (terminal O)",
+      "u_vector": [
+        0.365297,
+        -0.60544,
+        0.707107
+      ],
+      "initial_coords_angstrom": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.08885752,
+          0.65697046,
+          0.0
+        ],
+        [
+          -1.08885752,
+          0.65697046,
+          0.0
+        ],
+        [
+          2.20608204,
+          -1.19470842,
+          2.16261538
+        ],
+        [
+          1.85598134,
+          -0.61445435,
+          1.48492424
+        ],
+        [
+          1.43574976,
+          -1.47377284,
+          2.65984952
+        ]
+      ]
+    },
+    {
+      "id": "c07",
+      "mode": "h_donor",
+      "anchor": 0,
+      "u": "cent_out_neg",
+      "d": 2.1,
+      "phi": 45.0,
+      "ref": [
+        0,
+        0,
+        1
+      ],
+      "coverage": "\u4e2d\u5fc3\u6c27\u4f5c\u53d7\u4f53 / \u9762\u5185\u5f00\u653e\u4fa7\u4f9b\u6c22\u952e",
+      "rule": "H1 \u6cbf\u4e2d\u5fc3\u6c27\u80cc\u5411\u4e24\u4e2a\u672b\u7aef\u6c27\u7684\u5f00\u653e\u4fa7\uff08\u9762\u5185 \u2212y\uff09\u63a5\u8fd1\uff0c2.10 \u00c5\uff1bH2 \u65cb\u8f6c 45\u00b0\uff08\u4e2d\u5fc3\u6c27\u4e3a\u5f31\u53d7\u4f53\uff0c\u7528\u4e8e\u68c0\u9a8c\u662f\u5426\u6536\u655b\u5230\u672b\u7aef\u6c27\u578b\u6781\u5c0f\uff09",
+      "anchor_description": "atom 0 (central O)",
+      "u_vector": [
+        -0.0,
+        -1.0,
+        -0.0
+      ],
+      "initial_coords_angstrom": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.08885752,
+          0.65697046,
+          0.0
+        ],
+        [
+          -1.08885752,
+          0.65697046,
+          0.0
+        ],
+        [
+          0.0,
+          -3.0584,
+          0.0
+        ],
+        [
+          0.0,
+          -2.1,
+          0.0
+        ],
+        [
+          -0.6562529,
+          -3.29755438,
+          0.6562529
+        ]
+      ]
+    },
+    {
+      "id": "c08",
+      "mode": "h_donor",
+      "anchor": 2,
+      "u": "ext_inplane_L",
+      "d": 2.05,
+      "phi": 30.0,
+      "ref": [
+        0,
+        0,
+        1
+      ],
+      "coverage": "\u53e6\u4e00\u4fa7\u672b\u7aef\u6c27\u4f9b\u6c22\u952e\uff08\u5bf9\u79f0\u7b49\u6548\u8d77\u70b9\uff09",
+      "rule": "\u4e0e c01 \u955c\u50cf\uff1aH1 \u6cbf\u672b\u7aef\u6c27(\u2212x) \u9762\u5185\u5916\u90e8\u65b9\u5411\u63a5\u8fd1\uff0c2.05 \u00c5\uff1bH2 \u65cb\u8f6c 30\u00b0",
+      "anchor_description": "atom 2 (terminal O)",
+      "u_vector": [
+        0.516608,
+        0.856222,
+        0.0
+      ],
+      "initial_coords_angstrom": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.08885752,
+          0.65697046,
+          0.0
+        ],
+        [
+          -1.08885752,
+          0.65697046,
+          0.0
+        ],
+        [
+          0.46530613,
+          3.23282874,
+          0.0
+        ],
+        [
+          -0.02981102,
+          2.41222557,
+          0.0
+        ],
+        [
+          0.98617722,
+          3.19787073,
+          0.80374238
+        ]
+      ]
+    },
+    {
+      "id": "c09",
+      "mode": "o_contact",
+      "anchor": 0,
+      "u": "cent_z",
+      "d": 2.8,
+      "b": "+u",
+      "e": [
+        1,
+        0,
+        0
+      ],
+      "coverage": "\u6c34\u6c27\u63a5\u89e6\u4e2d\u5fc3\u6c27 / \u5b64\u5bf9\u671d\u5411 O3\uff08\u975e\u5171\u9762\uff09",
+      "rule": "O_w \u6cbf +z \u4f4d\u4e8e\u4e2d\u5fc3\u6c27\u4e0a\u65b9 2.80 \u00c5\uff1b\u6c34\u5206\u5b50\u5bf9\u79f0\u8f74\u6cbf +u\uff08H \u671d\u4e0a\u80cc\u79bb O3\uff0c\u5b64\u5bf9\u7535\u5b50\u7aef\u671d\u5411\u4e2d\u5fc3\u6c27\uff09",
+      "anchor_description": "atom 0 (central O)",
+      "u_vector": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "initial_coords_angstrom": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.08885752,
+          0.65697046,
+          0.0
+        ],
+        [
+          -1.08885752,
+          0.65697046,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          2.8
+        ],
+        [
+          0.7575408,
+          0.0,
+          3.38707964
+        ],
+        [
+          -0.7575408,
+          0.0,
+          3.38707964
+        ]
+      ]
+    },
+    {
+      "id": "c10",
+      "mode": "o_contact",
+      "anchor": 0,
+      "u": "cent_out_neg",
+      "d": 2.9,
+      "b": "+u",
+      "e": [
+        0,
+        0,
+        1
+      ],
+      "coverage": "\u6c34\u6c27\u63a5\u89e6\u4e2d\u5fc3\u6c27 / \u9762\u5185\u65b9\u5411",
+      "rule": "O_w \u5728 O3 \u5e73\u9762\u5185\u3001\u80cc\u79bb\u4e24\u4e2a\u672b\u7aef\u6c27\u7684\u4e00\u4fa7\uff0c\u8ddd\u4e2d\u5fc3\u6c27 2.90 \u00c5\uff1b\u5bf9\u79f0\u8f74\u6cbf +u\uff08H \u671d\u5916\uff09",
+      "anchor_description": "atom 0 (central O)",
+      "u_vector": [
+        -0.0,
+        -1.0,
+        -0.0
+      ],
+      "initial_coords_angstrom": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.08885752,
+          0.65697046,
+          0.0
+        ],
+        [
+          -1.08885752,
+          0.65697046,
+          0.0
+        ],
+        [
+          0.0,
+          -2.9,
+          0.0
+        ],
+        [
+          0.0,
+          -3.48707964,
+          0.7575408
+        ],
+        [
+          0.0,
+          -3.48707964,
+          -0.7575408
+        ]
+      ]
+    },
+    {
+      "id": "c11",
+      "mode": "o_contact",
+      "anchor": 0,
+      "u": "cent_z",
+      "d": 2.9,
+      "b": "-u",
+      "e": [
+        1,
+        0,
+        0
+      ],
+      "coverage": "\u6c34\u6c27\u63a5\u89e6\u4e2d\u5fc3\u6c27 / \u4e24\u4e2a H \u671d\u5411 O3\uff08\u5206\u53c9\u578b\uff09",
+      "rule": "O_w \u4f4d\u4e8e\u4e2d\u5fc3\u6c27\u4e0a\u65b9 2.90 \u00c5\uff1b\u5bf9\u79f0\u8f74\u6cbf \u2212u\uff08\u4e24\u4e2a H \u540c\u65f6\u671d\u5411\u4e2d\u5fc3\u6c27\uff0c\u5206\u53c9\u53cc\u6c22\u7ed9\u4f53\uff09",
+      "anchor_description": "atom 0 (central O)",
+      "u_vector": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "initial_coords_angstrom": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.08885752,
+          0.65697046,
+          0.0
+        ],
+        [
+          -1.08885752,
+          0.65697046,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          2.9
+        ],
+        [
+          0.7575408,
+          0.0,
+          2.31292036
+        ],
+        [
+          -0.7575408,
+          0.0,
+          2.31292036
+        ]
+      ]
+    },
+    {
+      "id": "c12",
+      "mode": "o_contact",
+      "anchor": "mid23",
+      "u": "perp",
+      "d": 2.6,
+      "b": "-u",
+      "e": [
+        1,
+        0,
+        0
+      ],
+      "coverage": "\u5bf9\u79f0\u5206\u53c9\u53cc\u6c22\u952e\uff08\u4e24\u4e2a H \u5206\u522b\u6307\u5411\u4e24\u4e2a\u672b\u7aef\u6c27\uff09",
+      "rule": "O_w \u4f4d\u4e8e\u4e24\u4e2a\u672b\u7aef\u6c27\u8fde\u7ebf\u4e2d\u70b9\u4e0a\u65b9 2.60 \u00c5\uff1b\u5bf9\u79f0\u8f74 \u2212u\uff08H \u671d\u4e0b\uff09\uff0cH\u2013H \u8f74\u6cbf O\u2013O \u8fb9\u7f18\u65b9\u5411",
+      "anchor_description": "midpoint of the two terminal O",
+      "u_vector": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "initial_coords_angstrom": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.08885752,
+          0.65697046,
+          0.0
+        ],
+        [
+          -1.08885752,
+          0.65697046,
+          0.0
+        ],
+        [
+          0.0,
+          0.65697046,
+          2.6
+        ],
+        [
+          0.7575408,
+          0.65697046,
+          2.01292036
+        ],
+        [
+          -0.7575408,
+          0.65697046,
+          2.01292036
+        ]
+      ]
+    },
+    {
+      "id": "c13",
+      "mode": "o_contact",
+      "anchor": "mid23",
+      "u": "cent_out",
+      "d": 3.0,
+      "b": "+u",
+      "e": [
+        0,
+        0,
+        1
+      ],
+      "coverage": "\u4fa7\u5411\u63a5\u89e6\u672b\u7aef O\u2013O \u8fb9\u7f18\uff08\u9762\u5185\uff0c\u5b64\u5bf9\u671d\u5411\u8fb9\u7f18\uff09",
+      "rule": "O_w \u5728 O3 \u5e73\u9762\u5185\u81ea\u4e24\u672b\u7aef\u6c27\u4e2d\u70b9\u5411\u5916 3.00 \u00c5\uff1b\u5bf9\u79f0\u8f74\u6cbf +u\uff08H \u671d\u5916\uff0c\u5b64\u5bf9\u671d\u5411 O\u2013O \u8fb9\u7f18\uff09",
+      "anchor_description": "midpoint of the two terminal O",
+      "u_vector": [
+        0.0,
+        1.0,
+        0.0
+      ],
+      "initial_coords_angstrom": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.08885752,
+          0.65697046,
+          0.0
+        ],
+        [
+          -1.08885752,
+          0.65697046,
+          0.0
+        ],
+        [
+          0.0,
+          3.65697046,
+          0.0
+        ],
+        [
+          0.0,
+          4.24405009,
+          0.7575408
+        ],
+        [
+          0.0,
+          4.24405009,
+          -0.7575408
+        ]
+      ]
+    },
+    {
+      "id": "c14",
+      "mode": "o_contact",
+      "anchor": "centroid",
+      "u": "perp",
+      "d": 3.2,
+      "b": "+x",
+      "e": [
+        0,
+        1,
+        0
+      ],
+      "coverage": "\u5806\u53e0\u53d6\u5411\uff08\u6c34\u5206\u5b50\u5e73\u9762\u4e0e O3 \u5e73\u9762\u5e73\u884c\uff09",
+      "rule": "O_w \u4f4d\u4e8e O3 \u51e0\u4f55\u4e2d\u5fc3\u4e0a\u65b9 3.20 \u00c5\uff1b\u5bf9\u79f0\u8f74\u6cbf +x\u3001H\u2013H \u8f74\u6cbf +y\uff08\u4e09\u8005 z \u76f8\u540c\uff0c\u6c34\u5206\u5b50\u5e73\u9762\u4e0e O3 \u5e73\u9762\u5e73\u884c\uff0c\u5806\u53e0\uff09",
+      "anchor_description": "geometric centroid of O3",
+      "u_vector": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "initial_coords_angstrom": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.08885752,
+          0.65697046,
+          0.0
+        ],
+        [
+          -1.08885752,
+          0.65697046,
+          0.0
+        ],
+        [
+          0.0,
+          0.43798031,
+          3.2
+        ],
+        [
+          0.58707964,
+          1.1955211,
+          3.2
+        ],
+        [
+          0.58707964,
+          -0.31956049,
+          3.2
+        ]
+      ]
+    }
+  ]
+}

@@ -1,0 +1,776 @@
+{
+  "job": "JOB-2026-0905-009",
+  "document": "subspace_summary (supersedes the soft-mode sections of curvature_summary.json and validation_summary.json)",
+  "method_fix": {
+    "internal_subspace": "U = orthonormal complement of mass-weighted TR basis (QR), H_int = U^T H_mw U (12x12)",
+    "withdrawn_approach": "lowest eigenvalues of full P H_mw P (selects external zero modes when internal spectrum is positive)"
+  },
+  "subspace_validation": {
+    "invariants": {
+      "U_orthonormal": true,
+      "VU_orthogonal": true,
+      "n_internal": 12,
+      "completes_to_identity": true
+    },
+    "cases": {
+      "A_all_positive": true,
+      "B_one_negative": true,
+      "C_near_zero_soft": true,
+      "D_rotation_invariance": true,
+      "pyscf_cross_check": true
+    },
+    "pyscf_cross_check_max_freq_diff_cm1": 3.917381036444567e-06,
+    "all_pass": true
+  },
+  "candidates": {
+    "c14_plus": {
+      "internal_eigenvalues_analytic": [
+        -0.00022962556108849984,
+        0.00010495726958913909,
+        0.00020462134201441613,
+        0.00030593880549936383,
+        0.000780844089661987,
+        0.002223243422645118,
+        0.023515385592883093,
+        0.06711338657366495,
+        0.06811749782338415,
+        0.10032615860700086,
+        0.5666870803252076,
+        0.5980386441362425
+      ],
+      "internal_frequencies_analytic": [
+        -77.9,
+        52.66,
+        73.53,
+        89.91,
+        143.64,
+        242.38,
+        788.28,
+        1331.71,
+        1341.63,
+        1628.21,
+        3869.69,
+        3975.29
+      ],
+      "internal_eigenvalues_fd": [
+        8.363905049882679e-05,
+        0.00020059441779008032,
+        0.00021576637013034924,
+        0.0003516207146502384,
+        0.0011728027620041687,
+        0.002406059432266553,
+        0.02350128776671817,
+        0.06716124309681855,
+        0.06815153760907319,
+        0.10080436323155681,
+        0.5671059134749245,
+        0.5984738781037527
+      ],
+      "internal_frequencies_fd": [
+        47.01,
+        72.81,
+        75.51,
+        96.39,
+        176.04,
+        252.15,
+        788.04,
+        1332.18,
+        1341.97,
+        1632.09,
+        3871.12,
+        3976.74
+      ],
+      "n_negative_internal": {
+        "analytic": 1,
+        "fd": 0
+      },
+      "external_overlaps_all_zero": true,
+      "pyscf_cross_check": {
+        "analytic": {
+          "max_freq_diff_cm1": 0.008546187268592575,
+          "pyscf_n_modes": 12,
+          "freq_error": 1
+        },
+        "fd": {
+          "max_freq_diff_cm1": 3.912399279215606e-06,
+          "pyscf_n_modes": 12,
+          "freq_error": 0
+        }
+      },
+      "provenance": {
+        "matrix_sha256_16": {
+          "analytic": "3c24c1ca1798d8cc",
+          "fd": "333839cea375d590"
+        },
+        "geometry_from": "candidate_curvature_c14_plus.json",
+        "masses_recorded": [
+          15.999,
+          15.999,
+          15.999,
+          15.999,
+          1.008,
+          1.008
+        ],
+        "masses_used": [
+          15.999,
+          15.999,
+          15.999,
+          15.999,
+          1.008,
+          1.008
+        ],
+        "masses_match": true,
+        "settings_recorded": "grid_level=6, scf_tol=1e-12, scf_tol_grad=1e-9, fd_step=0.02 (candidate_curvature json)",
+        "matrix_symmetry": {
+          "analytic": 1.0601491126749352e-05,
+          "fd": 0.0
+        },
+        "cache_provenance": "written by curvature_audit_candidates.py in the 2026-09-05 session with the settings above; script sha256 archived",
+        "script_sha256_16": {
+          "candidates": "5b50e5fae7373f6d",
+          "lib": "1065325c90c354c7"
+        }
+      },
+      "old_scan_audit": {
+        "analytic_lowest": {
+          "source": "analytic",
+          "recorded_external_overlap": 4.1002492587237627e-14,
+          "direction_valid_internal": true,
+          "disposition": "keep",
+          "reuse_for_new_modes": {
+            "best_new_mode_index": 0,
+            "overlap": 1.0,
+            "reusable": true
+          },
+          "probe_rows": [
+            {
+              "k_E": 3.247044371979715e-05,
+              "k_g": 0.00014289507807368132,
+              "slope_g": -4.711215203108679e-06,
+              "slope_E": 1.0839900875356319e-05,
+              "k_E_noise_floor": 1.725550044899138e-05,
+              "resolvable_E": true,
+              "amp_a": 0.005
+            },
+            {
+              "k_E": 4.4626588974167806e-05,
+              "k_g": 0.00016687455571643594,
+              "slope_g": -4.711215203108679e-06,
+              "slope_E": 1.0865314531679636e-05,
+              "k_E_noise_floor": 4.313875112247845e-06,
+              "resolvable_E": true,
+              "amp_a": 0.01
+            },
+            {
+              "k_E": 9.31757662531004e-05,
+              "k_g": 0.0002625070764760849,
+              "slope_g": -4.711215203108679e-06,
+              "slope_E": 1.093851782506234e-05,
+              "k_E_noise_floor": 1.0784687780619613e-06,
+              "resolvable_E": true,
+              "amp_a": 0.02
+            }
+          ],
+          "k_H": -0.00024342383273271296
+        },
+        "fd_lowest": {
+          "source": "fd(0.02)",
+          "recorded_external_overlap": 0.9999999999999991,
+          "direction_valid_internal": false,
+          "disposition": "withdraw (external/TR direction, not internal-mode evidence)",
+          "reuse_for_new_modes": {
+            "best_new_mode_index": 0,
+            "overlap": 0.0,
+            "reusable": false
+          },
+          "probe_rows": [
+            {
+              "k_E": -9.50027884717691e-06,
+              "k_g": 1.0298725593072084e-05,
+              "slope_g": 9.624152069339134e-06,
+              "slope_E": -1.0636117514591008e-06,
+              "k_E_noise_floor": 1.6550868781280074e-05,
+              "resolvable_E": false,
+              "amp_a": 0.005
+            },
+            {
+              "k_E": -9.251121537343872e-06,
+              "k_g": 1.0971047877459977e-05,
+              "slope_g": 9.624152069339134e-06,
+              "slope_E": -1.084953482485651e-06,
+              "k_E_noise_floor": 4.137717195320018e-06,
+              "resolvable_E": true,
+              "amp_a": 0.01
+            },
+            {
+              "k_E": -8.166487552798508e-06,
+              "k_g": 1.3635040495464574e-05,
+              "slope_g": 9.624152069339134e-06,
+              "slope_E": -1.1624324420059964e-06,
+              "k_E_noise_floor": 1.0344292988300046e-06,
+              "resolvable_E": true,
+              "amp_a": 0.02
+            }
+          ],
+          "k_H": 8.878703642745165e-06
+        }
+      },
+      "verdict": {
+        "verdict": "待定",
+        "reason": "两种 Hessian 构造的投影内模符号相反：解析最低内模 -2.296e-04 vs 差分最低内模 8.364e-05（均为干净内模，外模重叠 0）。解析 Hessian 层存在已定位的平台误差（7.5×10⁻⁴–2×10⁻³），差分受梯度网格响应噪声（4×10⁻⁴–1.6×10⁻³）限制——两者均 ≥ 争议本征值量级，符号不可分辨。能量/梯度层沿两个争议方向均给出正曲率（指向极小值一侧），但随幅度漂移、未构成独立裁决。",
+        "geometry_convergence": "未完成：新鲜复核 max|grad|=nan > 1e-5（400 步上限）；完整梯度向量未持久化，max|grad| 无法从存档重算（脚本假设阈值与实测误差的区分见 §4）"
+      }
+    },
+    "c06_plus": {
+      "internal_eigenvalues_analytic": [
+        2.2381312128933158e-05,
+        6.923537567547612e-05,
+        0.00023184983554965232,
+        0.000400874739664488,
+        0.0016867364834894203,
+        0.0034045035885959416,
+        0.02363000640153885,
+        0.06513696148562324,
+        0.06969979010448252,
+        0.10028529285240176,
+        0.5613266146446092,
+        0.5959843303607257
+      ],
+      "internal_frequencies_analytic": [
+        24.32,
+        42.77,
+        78.27,
+        102.92,
+        211.12,
+        299.94,
+        790.2,
+        1311.95,
+        1357.13,
+        1627.88,
+        3851.34,
+        3968.46
+      ],
+      "internal_eigenvalues_fd": [
+        -4.443369837353523e-05,
+        3.978912574661744e-05,
+        5.794183427259038e-05,
+        0.0004312600462952227,
+        0.0019401155642331741,
+        0.0030846646974890314,
+        0.02362050006197926,
+        0.0651434099466512,
+        0.0697030836641744,
+        0.10049017035904975,
+        0.5620386948534105,
+        0.5964008637932731
+      ],
+      "internal_frequencies_fd": [
+        -34.27,
+        32.43,
+        39.13,
+        106.75,
+        226.42,
+        285.5,
+        790.04,
+        1312.02,
+        1357.16,
+        1629.54,
+        3853.78,
+        3969.84
+      ],
+      "n_negative_internal": {
+        "analytic": 0,
+        "fd": 1
+      },
+      "external_overlaps_all_zero": true,
+      "pyscf_cross_check": {
+        "analytic": {
+          "max_freq_diff_cm1": 0.045393364139989956,
+          "pyscf_n_modes": 12,
+          "freq_error": 0
+        },
+        "fd": {
+          "max_freq_diff_cm1": 3.905616722477134e-06,
+          "pyscf_n_modes": 12,
+          "freq_error": 1
+        }
+      },
+      "provenance": {
+        "matrix_sha256_16": {
+          "analytic": "70e0a13f2de9c536",
+          "fd": "c9b1395cf4127cb8"
+        },
+        "geometry_from": "candidate_curvature_c06_plus.json",
+        "masses_recorded": [
+          15.999,
+          15.999,
+          15.999,
+          15.999,
+          1.008,
+          1.008
+        ],
+        "masses_used": [
+          15.999,
+          15.999,
+          15.999,
+          15.999,
+          1.008,
+          1.008
+        ],
+        "masses_match": true,
+        "settings_recorded": "grid_level=6, scf_tol=1e-12, scf_tol_grad=1e-9, fd_step=0.02 (candidate_curvature json)",
+        "matrix_symmetry": {
+          "analytic": 8.769430942301426e-06,
+          "fd": 0.0
+        },
+        "cache_provenance": "written by curvature_audit_candidates.py in the 2026-09-05 session with the settings above; script sha256 archived",
+        "script_sha256_16": {
+          "candidates": "5b50e5fae7373f6d",
+          "lib": "1065325c90c354c7"
+        }
+      },
+      "old_scan_audit": {
+        "analytic_lowest": {
+          "source": "analytic",
+          "recorded_external_overlap": 1.0,
+          "direction_valid_internal": false,
+          "disposition": "withdraw (external/TR direction, not internal-mode evidence)",
+          "reuse_for_new_modes": {
+            "best_new_mode_index": 0,
+            "overlap": 0.0002,
+            "reusable": false
+          },
+          "probe_rows": [
+            {
+              "k_E": 3.6176285490741344e-06,
+              "k_g": -1.198340497790674e-06,
+              "slope_g": -1.012429275318845e-05,
+              "slope_E": -4.35720282983224e-08,
+              "k_E_noise_floor": 1.7616348350683584e-05,
+              "resolvable_E": false,
+              "amp_a": 0.005
+            },
+            {
+              "k_E": 9.342313770599871e-06,
+              "k_g": 1.0062044079456303e-05,
+              "slope_g": -1.012429275318845e-05,
+              "slope_E": -3.637826595355789e-08,
+              "k_E_noise_floor": 4.404087087670896e-06,
+              "resolvable_E": true,
+              "amp_a": 0.01
+            },
+            {
+              "k_E": 3.202938933988407e-05,
+              "k_g": 5.4908277409726345e-05,
+              "slope_g": -1.012429275318845e-05,
+              "slope_E": -7.76275126773446e-09,
+              "k_E_noise_floor": 1.101021771917724e-06,
+              "resolvable_E": true,
+              "amp_a": 0.02
+            }
+          ],
+          "k_H": 3.4278070503716403e-05
+        },
+        "fd_lowest": {
+          "source": "fd(0.02)",
+          "recorded_external_overlap": 5.000929374394527e-13,
+          "direction_valid_internal": true,
+          "disposition": "keep",
+          "reuse_for_new_modes": {
+            "best_new_mode_index": 0,
+            "overlap": 1.0,
+            "reusable": true
+          },
+          "probe_rows": [
+            {
+              "k_E": 8.24702817652399e-05,
+              "k_g": 9.318213376961751e-05,
+              "slope_g": -1.7648002451285598e-05,
+              "slope_E": 3.7632031616807068e-06,
+              "k_E_noise_floor": 3.329022838408284e-05,
+              "resolvable_E": true,
+              "amp_a": 0.005
+            },
+            {
+              "k_E": 9.555196179284584e-05,
+              "k_g": 0.00011883396167185558,
+              "slope_g": -1.7648002451285598e-05,
+              "slope_E": 3.733056842299166e-06,
+              "k_E_noise_floor": 8.32255709602071e-06,
+              "resolvable_E": true,
+              "amp_a": 0.01
+            },
+            {
+              "k_E": 0.0001479464115620267,
+              "k_g": 0.00022213668715751115,
+              "slope_g": -1.7648002451285598e-05,
+              "slope_E": 3.6155366451649815e-06,
+              "k_E_noise_floor": 2.0806392740051775e-06,
+              "resolvable_E": true,
+              "amp_a": 0.02
+            }
+          ],
+          "k_H": -4.846025910715456e-05
+        }
+      },
+      "verdict": {
+        "verdict": "待定",
+        "reason": "两种 Hessian 构造的投影内模符号相反：解析最低内模 2.238e-05 vs 差分最低内模 -4.443e-05（均为干净内模，外模重叠 0）。解析 Hessian 层存在已定位的平台误差（7.5×10⁻⁴–2×10⁻³），差分受梯度网格响应噪声（4×10⁻⁴–1.6×10⁻³）限制——两者均 ≥ 争议本征值量级，符号不可分辨。能量/梯度层沿两个争议方向均给出正曲率（指向极小值一侧），但随幅度漂移、未构成独立裁决。",
+        "geometry_convergence": "未完成：新鲜复核 max|grad|=nan > 1e-5（400 步上限）；完整梯度向量未持久化，max|grad| 无法从存档重算（脚本假设阈值与实测误差的区分见 §4）"
+      }
+    }
+  },
+  "error_threshold_audit": {
+    "assumed_in_code": {
+      "DE_E_FLOOR_eh": 1e-09,
+      "status": "ASSUMED (documented constant in validation_stepD_softmode.py / curvature_audit_candidates.py), NOT measured"
+    },
+    "direct_repeat": {
+      "same_geometry_repeat": "deterministic SCF -> exactly 0 (same code path, same grid); not a meaningful noise measure",
+      "note": "the relevant non-smoothness is ACROSS neighbouring geometries (grid response), which the H2O rows probe indirectly"
+    },
+    "decomposition": [
+      {
+        "functional": "wb97xd",
+        "direction": "OH1_stretch",
+        "amp_a": 0.005,
+        "q_bohr": 0.0133623815726533,
+        "k_E": 1.1270407783876404,
+        "k_g": 1.12743087095681,
+        "k_H": 1.126622907503005,
+        "k_g_minus_k_E": 0.00039009256916955337,
+        "k_H_minus_k_E": -0.00041787088463540734,
+        "implied_E_noise_upper_bound_eh": 7.461220089370234e-08,
+        "implied_g_noise_upper_bound_eh_bohr": 5.2125657579002224e-06
+      },
+      {
+        "functional": "wb97xd",
+        "direction": "OH1_stretch",
+        "amp_a": 0.01,
+        "q_bohr": 0.0267247631453066,
+        "k_E": 1.1281726074505969,
+        "k_g": 1.1297250073156277,
+        "k_H": 1.126622907503005,
+        "k_g_minus_k_E": 0.0015523998650308624,
+        "k_H_minus_k_E": -0.0015496999475919093,
+        "implied_E_noise_upper_bound_eh": 1.106815794697654e-06,
+        "implied_g_noise_upper_bound_eh_bohr": 4.1487518699755725e-05
+      },
+      {
+        "functional": "wb97xd",
+        "direction": "OH1_stretch",
+        "amp_a": 0.02,
+        "q_bohr": 0.0534495262906132,
+        "k_E": 1.1327590310102045,
+        "k_g": 1.1389919856612392,
+        "k_H": 1.126622907503005,
+        "k_g_minus_k_E": 0.006232954651034683,
+        "k_H_minus_k_E": -0.006136123507199498,
+        "implied_E_noise_upper_bound_eh": 1.752999585897237e-05,
+        "implied_g_noise_upper_bound_eh_bohr": 0.00033314847348867813
+      },
+      {
+        "functional": "wb97xd",
+        "direction": "OH1_stretch",
+        "amp_a": 0.05,
+        "q_bohr": 0.13362381572653298,
+        "k_E": 1.1657844560634785,
+        "k_g": 1.205790690565964,
+        "k_H": 1.126622907503005,
+        "k_g_minus_k_E": 0.04000623450248564,
+        "k_H_minus_k_E": -0.03916154856047349,
+        "implied_E_noise_upper_bound_eh": 0.0006992421429532983,
+        "implied_g_noise_upper_bound_eh_bohr": 0.005345785707072607
+      },
+      {
+        "functional": "wb97xd",
+        "direction": "OH2_stretch",
+        "amp_a": 0.005,
+        "q_bohr": 0.0133623815726533,
+        "k_E": 1.127040781571196,
+        "k_g": 1.127430870642965,
+        "k_H": 1.1266229060368456,
+        "k_g_minus_k_E": 0.000390089071768962,
+        "k_H_minus_k_E": -0.00041787553435046476,
+        "implied_E_noise_upper_bound_eh": 7.461303111539692e-08,
+        "implied_g_noise_upper_bound_eh_bohr": 5.212519024299009e-06
+      },
+      {
+        "functional": "wb97xd",
+        "direction": "OH2_stretch",
+        "amp_a": 0.01,
+        "q_bohr": 0.0267247631453066,
+        "k_E": 1.128172607371008,
+        "k_g": 1.1297250074534817,
+        "k_H": 1.1266229060368456,
+        "k_g_minus_k_E": 0.0015524000824735928,
+        "k_H_minus_k_E": -0.0015497013341625454,
+        "implied_E_noise_upper_bound_eh": 1.1068167850043793e-06,
+        "implied_g_noise_upper_bound_eh_bohr": 4.14875245108612e-05
+      },
+      {
+        "functional": "wb97xd",
+        "direction": "OH2_stretch",
+        "amp_a": 0.02,
+        "q_bohr": 0.0534495262906132,
+        "k_E": 1.132759031099742,
+        "k_g": 1.1389919856608528,
+        "k_H": 1.1266229060368456,
+        "k_g_minus_k_E": 0.006232954561110837,
+        "k_H_minus_k_E": -0.006136125062896403,
+        "implied_E_noise_upper_bound_eh": 1.7530000303367967e-05,
+        "implied_g_noise_upper_bound_eh_bohr": 0.0003331484686822911
+      },
+      {
+        "functional": "wb97xd",
+        "direction": "OH2_stretch",
+        "amp_a": 0.05,
+        "q_bohr": 0.13362381572653298,
+        "k_E": 1.1657844560507442,
+        "k_g": 1.2057906905234805,
+        "k_H": 1.1266229060368456,
+        "k_g_minus_k_E": 0.040006234472736324,
+        "k_H_minus_k_E": -0.03916155001389865,
+        "implied_E_noise_upper_bound_eh": 0.0006992421689046756,
+        "implied_g_noise_upper_bound_eh_bohr": 0.00534578570309739
+      },
+      {
+        "functional": "pbe",
+        "direction": "OH1_stretch",
+        "amp_a": 0.005,
+        "q_bohr": 0.0133623815726533,
+        "k_E": 1.1167064867010603,
+        "k_g": 1.1170851923372784,
+        "k_H": 1.1163343130980885,
+        "k_g_minus_k_E": 0.00037870563621811293,
+        "k_H_minus_k_E": -0.0003721736029718148,
+        "implied_E_noise_upper_bound_eh": 6.645280313438027e-08,
+        "implied_g_noise_upper_bound_eh_bohr": 5.060409214860856e-06
+      },
+      {
+        "functional": "pbe",
+        "direction": "OH1_stretch",
+        "amp_a": 0.01,
+        "q_bohr": 0.0267247631453066,
+        "k_E": 1.1178586757965352,
+        "k_g": 1.1193927705871358,
+        "k_H": 1.1163343130980885,
+        "k_g_minus_k_E": 0.0015340947906006264,
+        "k_H_minus_k_E": -0.0015243626984466907,
+        "implied_E_noise_upper_bound_eh": 1.088719602856327e-06,
+        "implied_g_noise_upper_bound_eh_bohr": 4.0998319921250464e-05
+      },
+      {
+        "functional": "pbe",
+        "direction": "OH1_stretch",
+        "amp_a": 0.02,
+        "q_bohr": 0.0534495262906132,
+        "k_E": 1.1224797491465073,
+        "k_g": 1.1286575370895102,
+        "k_H": 1.1163343130980885,
+        "k_g_minus_k_E": 0.006177787943002944,
+        "k_H_minus_k_E": -0.006145436048418773,
+        "implied_E_noise_upper_bound_eh": 1.755660040968242e-05,
+        "implied_g_noise_upper_bound_eh_bohr": 0.00033019983907736904
+      },
+      {
+        "functional": "pbe",
+        "direction": "OH1_stretch",
+        "amp_a": 0.05,
+        "q_bohr": 0.13362381572653298,
+        "k_E": 1.155436774386205,
+        "k_g": 1.1953065665581624,
+        "k_H": 1.1163343130980885,
+        "k_g_minus_k_E": 0.0398697921719573,
+        "k_H_minus_k_E": -0.03910246128811656,
+        "implied_E_noise_upper_bound_eh": 0.000698187120553448,
+        "implied_g_noise_upper_bound_eh_bohr": 0.005327553762240789
+      },
+      {
+        "functional": "pbe",
+        "direction": "OH2_stretch",
+        "amp_a": 0.005,
+        "q_bohr": 0.0133623815726533,
+        "k_E": 1.116706487656127,
+        "k_g": 1.1170851923391623,
+        "k_H": 1.1163343133074888,
+        "k_g_minus_k_E": 0.00037870468303524696,
+        "k_H_minus_k_E": -0.0003721743486382323,
+        "implied_E_noise_upper_bound_eh": 6.645293627553604e-08,
+        "implied_g_noise_upper_bound_eh_bohr": 5.060396478067692e-06
+      },
+      {
+        "functional": "pbe",
+        "direction": "OH2_stretch",
+        "amp_a": 0.01,
+        "q_bohr": 0.0267247631453066,
+        "k_E": 1.117858675597563,
+        "k_g": 1.1193927705812434,
+        "k_H": 1.1163343133074888,
+        "k_g_minus_k_E": 0.0015340949836804008,
+        "k_H_minus_k_E": -0.0015243622900742437,
+        "implied_E_noise_upper_bound_eh": 1.0887193111914306e-06,
+        "implied_g_noise_upper_bound_eh_bohr": 4.0998325081261703e-05
+      },
+      {
+        "functional": "pbe",
+        "direction": "OH2_stretch",
+        "amp_a": 0.02,
+        "q_bohr": 0.0534495262906132,
+        "k_E": 1.122479749206199,
+        "k_g": 1.1286575370948861,
+        "k_H": 1.1163343133074888,
+        "k_g_minus_k_E": 0.0061777878886870585,
+        "k_H_minus_k_E": -0.006145435898710305,
+        "implied_E_noise_upper_bound_eh": 1.7556599981987503e-05,
+        "implied_g_noise_upper_bound_eh_bohr": 0.00033019983617421075
+      },
+      {
+        "functional": "pbe",
+        "direction": "OH2_stretch",
+        "amp_a": 0.05,
+        "q_bohr": 0.13362381572653298,
+        "k_E": 1.155436774378246,
+        "k_g": 1.1953065665961249,
+        "k_H": 1.1163343133074888,
+        "k_g_minus_k_E": 0.039869792217878786,
+        "k_H_minus_k_E": -0.03910246107075732,
+        "implied_E_noise_upper_bound_eh": 0.0006981871166724283,
+        "implied_g_noise_upper_bound_eh_bohr": 0.005327553768376994
+      }
+    ],
+    "figure_6_6e_8_audit": {
+      "origin": "indirect upper bound: |k_H - k_E| * q^2 at amp=0.005 A (3.7e-4 * 1.8e-4 Eh) on the pbe O-H stretch direction",
+      "classification": "indirect estimate (upper bound) that BUNDLES energy-layer non-smoothness with Hessian-layer error and residual truncation; NOT a same-geometry repeat measurement",
+      "measured_components": {
+        "analytic_hessian_matrix_error_pbe": 2.8e-05,
+        "analytic_hessian_matrix_error_wb97xd": 0.0019,
+        "note": "for pbe the Hessian-layer error is negligible, so the 0.005 A spread (~4e-4) is dominated by the energy/gradient layers; for wb97xd the Hessian layer may contribute"
+      },
+      "operational_usage": "per-scan-point resolvability must use the amplitude-dependent floor 3*dE/q^2 with dE stated per source (assumed 1e-9 vs implied bound ~2.2e-8)"
+    }
+  },
+  "remeasurement_plan": {
+    "plan": [
+      {
+        "candidate": "c14_plus",
+        "construction": "analytic",
+        "direction_mw": [
+          0.02003524592947544,
+          -0.003214484288040394,
+          -0.03127548870241762,
+          0.027105304926334596,
+          0.12011337125513093,
+          0.0751774452359574,
+          -0.12877583691613753,
+          -0.06277916098636614,
+          -0.036770965593975066,
+          -0.05636149293552126,
+          0.07184557743953336,
+          0.004819927962628985,
+          0.5838851279523628,
+          0.09181424827199762,
+          -0.3727199771986449,
+          -0.034109981724945754,
+          -0.5936563464092043,
+          0.32510786454778967
+        ],
+        "direction_cart": [
+          0.005157267893058485,
+          -0.0008274396366187121,
+          -0.008050616113845466,
+          0.006977170099144639,
+          0.030918354348212343,
+          0.019351408311248847,
+          -0.033148157575259664,
+          -0.01615996890918188,
+          -0.00946520551442669,
+          -0.014507998501459706,
+          0.01849375301363488,
+          0.001240696511339109,
+          0.5987817846120298,
+          0.09415670446328626,
+          -0.3822291790342843,
+          -0.03498022941939549,
+          -0.6088022960882169,
+          0.33340233892926613
+        ],
+        "normalization": "unit 3N Euclidean (Bohr per unit q)",
+        "coordinate_source": "stepC_reopt_c14_plus.json new_geometry",
+        "amplitudes_a": [
+          0.002,
+          0.005,
+          0.01
+        ],
+        "note": "negative internal mode: verify with energy+gradient directional differences at SMALL amplitudes",
+        "estimated_scf_grad": 6
+      },
+      {
+        "candidate": "c06_plus",
+        "construction": "fd(0.02)",
+        "direction_mw": [
+          0.025038505451048743,
+          -0.0015728015979387644,
+          0.021473419971179037,
+          -0.06903523093149314,
+          0.01599761546131919,
+          0.0649172862069175,
+          0.08640999367801985,
+          -0.02201551977483919,
+          -0.05672652822853384,
+          -0.21456762617793265,
+          -0.03081579588237775,
+          0.11119238743987396,
+          -0.037740793396917695,
+          -0.0007874035311472201,
+          0.04577650827969304,
+          0.7235987389304517,
+          0.15379778749398743,
+          -0.606944960163623
+        ],
+        "direction_cart": [
+          0.0065373030450077375,
+          -0.00041064274764720274,
+          0.0056064949259357205,
+          -0.018024407497627196,
+          0.004176817201514095,
+          0.016949253365933035,
+          0.022560784064959358,
+          -0.005748031756242706,
+          -0.014810728477628803,
+          -0.05602145857768555,
+          -0.008045695724533234,
+          0.029031218912545828,
+          -0.039257025888255304,
+          -0.0008190373869902424,
+          0.04761557478960177,
+          0.7526692438114349,
+          0.15997659778135317,
+          -0.6313289114858773
+        ],
+        "normalization": "unit 3N Euclidean (Bohr per unit q)",
+        "coordinate_source": "stepC_reopt_c06_plus.json new_geometry",
+        "amplitudes_a": [
+          0.002,
+          0.005,
+          0.01
+        ],
+        "note": "negative FD internal mode: verify likewise",
+        "estimated_scf_grad": 6
+      }
+    ],
+    "total_estimated_scf_grad": 12,
+    "note": "prepared only; NOT executed in this batch"
+  },
+  "withdrawn_statements": [
+    "c14_plus fd_lowest 探针作为内部软模证据（外模重叠=1）",
+    "c06_plus analytic_lowest 探针作为内部软模证据（外模重叠=1）",
+    "\"全部是正曲率\"类概括",
+    "此前三处撤回表述继续有效"
+  ],
+  "conclusions": {
+    "old_tool_errors": "fixed and regression-tested (unit test + PySCF cross-check)",
+    "remaining_numerical_issues": "wb97xd analytic Hessian layer inconsistency (platform, 7.5e-4~2e-3) + FD gradient grid-response noise (4e-4~1.6e-3) both exceed the disputed curvature signal (2e-5~2.4e-4)",
+    "geometry_convergence": "incomplete (max|grad| 1.38/1.47e-5 > 1e-5; full gradient vectors not persisted -> recompute flagged missing)"
+  }
+}

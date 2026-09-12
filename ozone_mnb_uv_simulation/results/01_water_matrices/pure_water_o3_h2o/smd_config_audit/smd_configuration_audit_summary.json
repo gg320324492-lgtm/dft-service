@@ -1,0 +1,164 @@
+{
+  "job": "JOB-2026-0906-007",
+  "title": "SMD \u540c\u914d\u7f6e\u9a8c\u8bc1\u4fee\u590d\u4e0e\u672a\u6536\u655b\u8f68\u8ff9\u8bca\u65ad\u6279",
+  "phase_statuses": {
+    "A": "pass",
+    "B": "pass",
+    "C": "pass (offline diagnosis; proposals only, nothing executed)"
+  },
+  "phaseA": {
+    "config_error_reproduced": {
+      "production_branch": "make_mf_d2_gr without grid_level -> grad_factory default L7",
+      "native_branch": "explicit L8",
+      "old_phaseB_fingerprint_grid_level": 7,
+      "phaseC": "explicit L8 both optimisation and verification"
+    },
+    "affected_scope": {
+      "retained_with_labels": [
+        "scanner-vs-fresh reproducibility (L7-vs-L7)",
+        "same-density D2-once machine precision (L7-vs-L7)",
+        "grid_response activity check (L8-vs-L8 native)"
+      ],
+      "withdrawn": [
+        "same-config independent SMD benchmark passed (was cross-grid)",
+        "L8 five-point verification completed (production was L7)"
+      ]
+    },
+    "script_fix": "both sides explicit L8; pre-SCF item-by-item config assertion reading ACTUAL objects; DFT grid vs solvent surface grid recorded separately; no global defaults changed",
+    "config_regression": "5/5 PASS (config_regression.json): single-side L7 fails pre-SCF with dft_grid_level 7!=8"
+  },
+  "phaseB": {
+    "gates_fixed_before_running": {
+      "scanner_dE": 1e-06,
+      "scanner_dG": 1e-05,
+      "d2once_rel": 0.01,
+      "d2once_floor": 1e-06,
+      "repro_dE": 1e-08,
+      "repro_dG": 1e-08
+    },
+    "verdicts": {
+      "config_consistent": true,
+      "scanner_vs_fresh": true,
+      "d2_counted_once": true,
+      "reproducible": true,
+      "grid_response_executed": true,
+      "overall_pass": true
+    },
+    "numeric": {
+      "scanner_vs_fresh_max_dG": 5.160674179660596e-10,
+      "prod_vs_native_max_dG": 5.163793004303585e-10,
+      "d2once_samedensity_max_resid_e": 8.031593510919588e-14,
+      "d2once_samedensity_max_resid_g": 3.5527085966028174e-15,
+      "repro": {
+        "dE": 2.8421709430404007e-13,
+        "dG": 6.458979184831293e-10
+      },
+      "slope_resid": [
+        -9.665670947650584e-09,
+        -3.9085090821396745e-08
+      ],
+      "note": "006 cross-run residual 3-4.6e-5 was the L7/L8 cross-grid difference; same-config rerun drops it to ~1e-12"
+    },
+    "missing_values": "none"
+  },
+  "endpoint_recheck": {
+    "c14_plus": {
+      "grid_level": 8,
+      "grad_max": 0.0023867410399767345,
+      "recorded": 0.002386741040005531,
+      "record_holds": true,
+      "d2once_resid_e": 1.1624948508155708e-13,
+      "d2once_resid_g": 1.7763703919274065e-15
+    },
+    "c06_plus": {
+      "grid_level": 8,
+      "grad_max": 2.5803375424148664e-05,
+      "recorded": 2.5803375313276416e-05,
+      "record_holds": true,
+      "d2once_resid_e": 9.065675727476519e-14,
+      "d2once_resid_g": 4.440892098500626e-16
+    }
+  },
+  "phaseC": {
+    "c14_plus": {
+      "trajectory_class": "monotonic relaxation -> ONE large-step structural rearrangement (step 30, disp 0.055-0.079 A) -> continued relaxation to the 60-step cutoff",
+      "lowest_energy_step": 60,
+      "lowest_energy": -301.891478457876,
+      "lowest_gradient_step": 26,
+      "lowest_gradient": 8.339074969347581e-05,
+      "gradient_rebound": {
+        "lowest_grad_step": 26,
+        "lowest_grad": 8.339074969347581e-05,
+        "next_steps": [
+          {
+            "step": 26,
+            "grad_max": 8.339074969347581e-05,
+            "disp_from_prev_A": 0.0003845580373184193,
+            "gap_Ow_O3c_A": 3.5124
+          },
+          {
+            "step": 27,
+            "grad_max": 0.0003467664519572897,
+            "disp_from_prev_A": 0.002624165758211658,
+            "gap_Ow_O3c_A": 3.5114
+          },
+          {
+            "step": 28,
+            "grad_max": 0.00046920474712490933,
+            "disp_from_prev_A": 0.002738440302189088,
+            "gap_Ow_O3c_A": 3.5095
+          },
+          {
+            "step": 29,
+            "grad_max": 0.0004390217254116124,
+            "disp_from_prev_A": 0.005717433930684357,
+            "gap_Ow_O3c_A": 3.505
+          },
+          {
+            "step": 30,
+            "grad_max": 0.0027265797218144496,
+            "disp_from_prev_A": 0.05496253865977681,
+            "gap_Ow_O3c_A": 3.5081
+          },
+          {
+            "step": 31,
+            "grad_max": 0.00017393738324445105,
+            "disp_from_prev_A": 0.05133425476423878,
+            "gap_Ow_O3c_A": 3.5024
+          }
+        ]
+      },
+      "energy_rises": 3,
+      "plan": "restart from the SAVED step-60 geometry with berny trust reduced 0.3 -> 0.1; cap 60; rationale: energy still descending monotonically, the rebound was a single large rearrangement step, and small steps already reached 8.3e-5 at step 26"
+    },
+    "c06_plus": {
+      "stop_reason": "NORMAL internal-coordinate convergence of pyberny (optimizer_converged=True; NOT an abnormal exit or step failure); internal criterion VALUES not logged -> recorded missing, not inferred",
+      "gradient_plateau": "steps 36-40 at 2.55-2.71e-05 with ~zero displacement",
+      "residual_nature": "UNDETERMINED (real residual force vs SMD solvent-surface discretisation noise) - requires the derivative diagnostic proposed below",
+      "plan": "derivative diagnostic FIRST (small finite-difference check along the largest Cartesian gradient components, verified L8 path); if real force -> continue from the step-40 geometry, cap 30; if noise floor -> user threshold discussion (no silent acceptance)"
+    }
+  },
+  "corrections_applied": {
+    "noise_attribution_withdrawn": "the 006 native-benchmark gradient residual (3-4.6e-5) was the L7/L8 cross-grid difference, NOT noise (same-config rerun ~1e-12)",
+    "undo_solvent_wording": "only the assertion failure was measured; D2 double-counting is a speculated, never-observed consequence",
+    "cds_wording": "Python-level paired energy/gradient C call; internal C algorithm NOT verified",
+    "files": [
+      "notes/smd_d2_undo_solvent_fix.md",
+      "results/.../smd_restart/smd_restart_report.md (revision banner)",
+      "results/.../smd_restart/smd_restart_summary.json (revision block)"
+    ]
+  },
+  "artifacts": {
+    "protocols/smd_config_audit_verify.py": "c17ead5b4f161653",
+    "protocols/test_smd_config_regression.py": "606628063cadb759",
+    "protocols/smd_config_audit_endpoints.py": "e41e6ad15d5aaa36",
+    "protocols/smd_config_audit_trajectory.py": "882ea0a2c8d54be8",
+    "run_artifacts/01_pure_water_o3_h2o/smd_config_audit/phaseB2_same_config_verification.json": "3e1809f9fb0e876a",
+    "run_artifacts/01_pure_water_o3_h2o/smd_config_audit/endpoint_recheck.json": "ee9741736b0e931c",
+    "run_artifacts/01_pure_water_o3_h2o/smd_config_audit/trajectory_diagnosis.json": "9fa9b85baa1a56b4",
+    "run_artifacts/01_pure_water_o3_h2o/smd_config_audit/config_regression.json": "ae0ffcf580fd5ead"
+  },
+  "report": "results/01_water_matrices/pure_water_o3_h2o/smd_config_audit/smd_configuration_audit_report.md",
+  "not_executed": "no optimisation continuation, no threshold relaxation, no frequency calculations, no new geometry scans",
+  "stop": "batch complete; after closure the next batch arranges bounded water-phase optimisation; stationary acceptance precedes water-phase frequencies"
+}

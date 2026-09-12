@@ -1,0 +1,759 @@
+===== PDF PAGE 1 =====
+266
+Progress in Reaction Kinetics and Mechanism, 2013, 38(3), 266 – 282 
+doi:10.3184/146867813X13738207456659
+R eseaRch PaPeR
+Mechanism and thermodynamics of multichannel 
+1:1 ammonia and ozone tropospheric oxidation 
+reaction
+Somaie Asgharzade and Morteza Vahedpour*
+Department of Chemistry, University of Zanjan, Zanjan 45371-38791, Iran
+*E-mail: vahed@znu.ac.ir
+aBsTRacT
+The reaction of NH 3 + O3 on the singlet potential energy surface has been 
+investigated theoretically using CCSD(T) and G3B3 methods with the 
+6‑311++G(3df,3pd) basis set based on the geometric parameters optimised at 
+the B3LYP/6‑311++G(3df,3pd) level of theory. The calculated results revealed 
+that the reactants are firstly associated with the adduct NH 3 – O3, through a 
+barrier‑less process and two stable collision complexes, C1 and C2 have been 
+considered. Six kinds of products P 1 (HOO + H2NO), P 2 (OH + H2NO2), P 3 
+(O2 + H3NO), P4 (HNO + H2O2), P5 (HNO 2 + H2O) and P 6 (NO  + HO2 + H2) are 
+obtained through a variety of transformations of C1 and C2. Thermodynamic 
+parameters of all possible products show five production channels which are 
+spontaneous. After taking into account the reaction barrier and enthalpy, 
+the most probable reaction pathways are P1(2) and P4. Also, P 4 is the most 
+stable product in comparison with the others and P 1 yields the other important 
+products from the kinetic viewpoint; this is relatively stable, with a negative 
+Gibbs free energy. Branching ratio results show P 1 is the major product at low 
+temperature. Finally, the rates constant have been computed only for the P1(2) 
+and P4 pathways by related theories in the temperature range of 200 – 2500 K.
+KeywoRds: reaction mechanism, ammonia, rate constant, ozone
+1. InTRoducTIon
+Ozone molecules (O 3) are well ‑known species in the Earth’s atmosphere [1] 
+and most of them are concentrated in the ozone layer [2,3]. Ozone molecules 
+are powerful oxidising agents, far stronger than O2 [4], and therefore they have 
+many industrial and consumer applications.
+PRK1200172_FINAL.indd   266 21/08/2013   14:09:14
+
+===== PDF PAGE 2 =====
+Ammonia and ozone tropospheric oxidation reaction
+www.prkm.co.uk
+267
+Ammonia is the most third abundant nitrogen species in the terrestrial 
+atmosphere and plays a critical role in both homogeneous and heterogeneous 
+atmospheric reactions. Being the dominant basic gas in the atmosphere, 
+ammonia partially neutralises atmospheric acids in precipitation. Ammonia 
+can be found in trace quantities in the atmosphere and is produced from the 
+decay of nitrogenous animal and vegetable matter [5,6]; dozens of chemical 
+plants worldwide also produce ammonia [7] and it has a major role as a non ‑
+aqueous solvent [8]. Many physical and chemical mechanisms are responsible 
+for the removal of NH3 from the atmosphere, chiefly these involve atmospheric 
+moisture (e.g. clouds, rain, and fog) and surface water ( e.g. seas, rivers, lakes) 
+and deposition on vegetation and soil.
+NH3 catalyses the atmospheric oxidation of sulfur dioxide to sulfur trioxide 
+and reacts rapidly with acidic components in the atmosphere ( e.g. sulfuric, 
+nitric, and hydrochloric acids) [9]. The main atmosphere reaction of NH 3 is its 
+heterogeneous reaction with acidic components such as aerosols with sulfuric 
+acid, yielding NH 4HSO4 and (NH 4)2SO4, respectively. Also, its reaction with 
+nitric acid forming NH 4NO3 particles is possible. It does react with ozone to 
+form ammonium nitrate (NH 4NO3) as shown experimentally in [11] and the 
+process is described by the following reactions [10,11]:
+NH3 + 4O3 → H NO3 + 4O2 + H2O
+NH3 + HNO3 → N H4NO3
+In these reaction processes, NH 3 is first oxidised to nitric acid, and then reacts 
+with nitric acid to form NH 4NO3. The kinetics of the reaction are a function 
+of the initial stoichiometric ratio of NH 3 to O3 [10,11]. Olszyna et al. [11] have 
+initiated a program to examine the kinetics of particle formation, i.e.  both the 
+size distribution and growth rates, as a function of time for particles produced 
+from gas ‑phase chemical reactions. In their work, NH 4NO3 particles were 
+prepared from the reaction of NH 3 and O3 at room temperature. In all of their 
+experiments, N2 was also present. One molecule of NH 4NO3 was presumed to 
+be produced for every four molecules of O3 consumed.
+Ammonia has been at the forefront of advances in refrigeration technology, 
+making it essential to the food processing, storage and delivery infrastructure 
+of our economy. The advantages of ammonia in refrigeration are well known. 
+Ammonia does not destroy atmospheric ozone and does not contribute to the 
+greenhouse effect linked to global warming. In fact, ammonia, one of the most 
+common compounds found in nature, is essential to the earth’s nitrogen cycle 
+and its release in the atmosphere is immediately recycled. The use of ammonia 
+as a refrigerant is consistent with international agreements on reducing global 
+PRK1200172_FINAL.indd   267 21/08/2013   14:09:15
+
+===== PDF PAGE 3 =====
+Somaie Asgharzade and Morteza Vahedpour
+www.prkm.co.uk
+268
+warming and ozone depletion. The most important advantage of ammonia for 
+using in refrigeration industry is an environmentally compatible refrigerant 
+because it has an ozone depletion potential (ODP) of zero and a global warming 
+potential (GWP) of zero.
+To the best of our knowledge, there is no direct experimental nor theoretical 
+investigation that report the kinetic and thermodynamic data for ammonia 
+and O3 reaction at room temperature. So, in this work, we have carried out 
+a theoretical study on the mechanism of the NH 3 + O3 reaction with a 1:1 
+stoichiometry ratio on the singlet potential energy surface (PES). Our main 
+objective is to suggest the reaction mechanism and provide further information 
+about the purely gaseous phase reaction of NH3 + O3 on the singlet PES.
+2. coMPuTaTIonal deTaIls
+All computations were carried out with the GAUSSIAN 03 suite of programs 
+[12]. The geometrical parameters of the reactants (denoted as R), pre ‑reactive 
+complexes (denoted by prefix C), transition states (denoted as TS), products, 
+intermediates (denoted as IN), product complex (denoted as CP) in the NH3 + O3 
+reaction have been optimised using density functional theory (DFT) with the 
+Becke 3‑parameter hybrid exchange [13] and Lee–Yang–Parr [14] correlation 
+density functional (B3LYP) in conjunction with the 6‑311++G (3df, 3pd) basis 
+set.
+Single‑point calculations were carried out at the CCSD (T) [15] level on the 
+B3LYP optimised geometries. The CCSD (T) method is employed to compute 
+the T1 diagnostic values for all the structures. In the CCSD, the wave function 
+assesses the reliability of these calculations with regard to the possible 
+multireference character of the wave function at the corresponding stationary 
+point. In the case of the T1 diagnostic, the extent of multireference character in 
+a given species is diagnosed by CCSD calculations, as described by Lee and 
+Taylor [16]. A low T1 value indicates that the wave function is dominated by 
+a single determinant. It has been suggested that the presence of large single 
+amplitudes is problematic and, in general, a value in excess of 0.02 for the T 1 
+diagnostic for the closed-shell species in question has significant multireference 
+character. In the case of open‑shell species, it has been suggested that a higher 
+threshold for the T 1 diagnostic may be more appropriate, and several recent 
+studies [17 – 22] have shown that T1 diagnostic values for open‑shell systems of 
+up to 0.045 may acceptable.
+The optimised geometries are described by harmonic vibrational analysis and 
+the computed stationary points are characterised according to the number of 
+negative eigenvalues of the Hessian matrix at the B3LYP level. In this way, the 
+PRK1200172_FINAL.indd   268 21/08/2013   14:09:15
+
+===== PDF PAGE 4 =====
+Ammonia and ozone tropospheric oxidation reaction
+www.prkm.co.uk
+269
+stationary point can be categorised as a minimum if no imaginary frequencies 
+are found or as transition states if only one imaginary frequency is obtained. 
+The reaction paths were traced out by an intrinsic reaction coordinate (IRC) 
+[23] analysis at the B3LYP level. The intrinsic reaction coordinate (IRC) 
+method has been employed to describe minimum energy paths from transition 
+state structures to the corresponding minima on the PES. The counterpoise 
+(CP) procedure [24] was employed to adjust the interaction energy for basis 
+set superposition error (BSSE). Topological analysis was carried out with 
+AIM2000 program [25].
+3. ResulTs and dIscussIon
+The optimised geometric parameters of all species on the reaction PES at the 
+B3LYP/6‑311++G (3df, 3pd) level are shown in Figure 1. The total energies and 
+relative energies of all species at B3LYP, CCSD (T)//B3LYP and G3B3//B3LYP 
+levels are listed in Table 1.
+Table 1 Total energies ( ET), relative energies (in parentheses) and T1 diagnostic values 
+obtained in the NH 3 + O3 reaction
+Species B3LY P 
+ET
+a (relative energy) 
+CCSD(T)//B3LYP 
+ET
+a (relative energy) 
+G3B3//B3LYP 
+ET
+a (relative energy)
+T1b 
+diagnostic 
+R or 
+NH3 + O3
+– 282.0439 (0.00) – 281.5677 (0.00) – 281.7895 (0.00) 0.0346
+C1 – 282.0451 (– 0.69) – 281.5701 (– 1.41) – 281.7895 (0.007) 0.0241 
+C2 – 282.0446 (– 0.42) – 281.5686 (– 0.57) – 281.7866 (1.82) 0.0228 
+IN1 – 282.0633 (– 12.14) – 281.5836 (– 10.00) – 281.7977 (– 5.13) 0.0174 
+IN2 – 282.0178 (16.40) – 281.5564 (7.08) – 281.7670 (14.10) 0.0185 
+IN3 – 282.0964 (– 32.90) – 281.6208 (– 33.31) – 281.8334 (– 27.53) 0.0154 
+CP1 – 282.0775 (– 21.02) – 281.5962 (– 17.86) – 281.8107 (– 13.30) 0.0212 
+CP2 – 282.0518 (– 4.09) – 281.5323 (22.23) – 281.7874 (1.28) 0.0314 
+CP3 – 282.0973 (– 33.50) – 281.6251 (– 35.99) – 281.8416 (– 32.68) 0.0145 
+CP4 – 282.0084 (22.29) – 281.5195 (30.26) – 281.8287 (– 24.59) 0.0334 
+CP5 – 282.0436 (0.23) – 281.5721 (– 2.79) – 0.0338 
+P1 – 282.0749 (– 19.40) – 281.7988 (– 5.82) – 281.8397 (– 5.16) 0.0201 
+P2 – 282.0110 (20.65) – 281.5173 (31.59) – 281.7387 (31.90) 0.0334 
+P3 – 282.0503 (– 4.01) – 281.6228 (– 8.52) – 281.7956 (– 3.81) 0.0261 
+P4 – 282.0969 (– 33.23) – 281.6613 (– 32.64) – 281.8402 (– 31.83) 0.0284 
+P5 – 282.0633 (– 12.15) – 281.5821 (– 9.05) – 281.8272 (– 23.62) 0.0470 
+P6 – 282.0595 (– 9.77) – 281.5498 (11.21) – 281.8049 (– 9.66) 0.0601 
+TS1 – 282.0068 (23.28) – 281.5226 (28.27) – 281.7387 (31.86) 0.0452 
+TS2 – 282.0140 (18.81) – 281.5346 (20.77) – 0.0507 
+TS3 – 282.0353 (18.39) – 281.5497 (11.31) – 0.0239 
+TS4 – 282.0109 (20.70) – 281.5386 (18.28) – 0.0563 
+TS5 – 282.0343 (6.05) – 281.5576 (6.31) – 0.0201 
+TS6 – 281.9702 (46.25) – 281.5451 (41.20) – 281.6855 (65.24) 0.1048 
+TS7 – 281.9788 (40.86) – 281.5137 (33.89) – 281.7326 (35.72) 0.0464 
+TS8 – 281.9753 (43.05) – 281.5426 (41.80) – 281.7218 (42.50) 0.0215 
+TS9 – 282.0156 (22.40) – 281.5732 (22.62) – 281.7572 (20.25) 0.0327 
+TS10 – 282.0045 (24.72) – 281.5309 (23.08) – 0.0464
+aThe total energies ( ET) are in hartree and relative energies in parentheses are in kcal mol  – 1.
+bT1 diagnostic values obtained at the CCSD/6 ‑311++G (3df,3pd)//B3LYP level.
+PRK1200172_FINAL.indd   269 21/08/2013   14:09:15
+
+===== PDF PAGE 5 =====
+Somaie Asgharzade and Morteza Vahedpour
+www.prkm.co.uk
+270
+            
+         
+  
+                 C1      C2    IN1 
+   
+  
+  
+ IN2 IN3                                         CP1 
+ 
+   
+  CP2                                                   CP3                                      CP4 
+   
+  
+ CP5                                               TS1                                      TS2 
+   
+  
+                TS3                                         TS4                                   TS5 
+PRK1200172_FINAL.indd   270 21/08/2013   14:09:16
+
+===== PDF PAGE 6 =====
+Ammonia and ozone tropospheric oxidation reaction
+www.prkm.co.uk
+271
+   
+     
+        
+  
+ TS6                                        TS7                                      TS8 
+       
+  
+ TS9                                     TS10 NH3                            O3      
+       
+     
+     
+  
+             H3NO                    O2                          H2O  HNO NO 
+ 
+       H2NO           HO2 HNO2 H2O2 H2NO2 
+                 
+     H2                                                                                                 
+Figure 1 Geometries of reactants, products, intermediates and transition states optimised at 
+B3LYP level (bond distances are in angstrom and angles are in degrees).
+PRK1200172_FINAL.indd   271 21/08/2013   14:09:16
+
+===== PDF PAGE 7 =====
+Somaie Asgharzade and Morteza Vahedpour
+www.prkm.co.uk
+272
+Finally, by means of the transition states and their connected intermediates 
+or products at the B3LYP level, a schematic PES for the NH 3 + O3 reaction on 
+the singlet PES are plotted in Figure 2. To simplify our discussion, the total 
+energy of the reactant R (NH 3 + O3) is set as zero for reference. The calculated 
+vibrational frequencies at the B3LYP level are listed in Table 2.
+3.1 Initial association
+Two stable collision complexes, C1 (O 3 – NH3) and C2 (O 3 – H3N), have been 
+considered between NH3 and O3 on the singlet PES. The atoms terminal oxygen 
+of ozone approach the N‑atom of NH3 to form C1 (O3 – NH3 which includes the 
+four‑membered ring of OOON) (Figure 1). C2 (O3 – H3N) forms when the atoms 
+terminal oxygen of ozone approach two H‑atoms of NH 3. This intermediate 
+has a six‑membered ring of OOOHNH (Figure 1). The C1 and C2 species are 
+1.41 and 0.57 kcal mol  – 1 below the original reactants at the CCSD (T) level. 
+Therefore, C1 is only 0.84 kcal mol – 1 more stable than C2. No transition state 
+has been found for C1 and C2 formation. So, their formation is a barrier ‑less 
+process.
+3.2 Formation paths of P1 (hoo + h2no)
+For product P1 (HOO + H2NO), there are two possible paths as follows:
+Path P1 (1):
+R → C1 → T S1 → I N1 → T S8 → C P 3 → T S3 → I N2 → T S 4 → I N3 → T S5 → C P1 → P1
+Path P1 ( 2 ) :  R → C1 → T S1 → I N1 → T S2 → C P1 → P1
+               
+ 
+Figure 2 Potential energy profiles of the NH 3 + O3 reaction at the B3LYP level.
+PRK1200172_FINAL.indd   272 21/08/2013   14:09:16
+
+===== PDF PAGE 8 =====
+Ammonia and ozone tropospheric oxidation reaction
+www.prkm.co.uk
+273
+Table 2 Vibrational frequencies (cm  – 1) of reactants, intermediates, transition states, product complex and products calculated at the B3LYP level
+Species Frequencies
+C1 34 77 99 149 168 231 755 986 1214 1251 1653 1658 3481 3604 3608
+C2 26 71 89 123 138 234 751 954 1199 1231 1649 1651 3478 3610 3612
+IN1 155 313 387 497 599 648 886 932 1118 1316 1412 1645 3460 3561 3708
+IN2 68 92 107 246 414 465 723 958 1112 1558 1619 1644 2996 3267 3757
+IN3 154 290 378 503 602 782 874 944 1145 1372 1406 1510 3462 3734 3804
+CP1 108 218 423 478 602 947 1070 1246 1316 1381 1437 1649 3240 3315 3696
+4CP2 148 183 195 284 357 478 972 1131 1284 1456 1478 1660 3240 3525 3798
+CP3 21 55 72 157 224 270 581 953 1353 1480 1562 1669 2930 3681 3776
+CP4 29 46 93 118 266 456 691 849 1111 1297 1553 1646 3360 3757 3890
+CP5 73 142 215 249 319 371 392 528 618 621 1043 1370 2046 3588 4324
+TS1 737i 324 401 438 694 796 818 906 973 1125 1540 1588 2350 3545 3670
+TS2 1338i 131 174 339 592 673 995 1135 1243 1372 1524 1633 1732 3372 3458
+TS3 1258i 39 72 94 212 341 409 694 1132 1412 1563 1667 2840 2969 3491
+TS4 328i 176 183 309 678 689 778 1177 1254 1352 1488 1510 1749 3275 3725
+TS5 986i 133 415 544 778 848 899 1006 1137 1331 1478 1512 2390 3408 3688
+TS6 550i 73 231 302 375 509 640 743 787 1123 1407 1527 3408 3469 3509
+TS7 1028i 180 292 321 495 586 679 720 934 1196 1330 1560 1994 3461 3565
+TS8 1767i 201 277 417 484 538 615 890 1038 1128 1395 1434 2547 3361 3625
+TS9 1237i 115 130 194 309 348 527 533 719 1211 1515 1646 2221 2984 3820
+TS10 807i 94 270 309 556 577 630 708 942 1145 1269 1331 2011 2573 3689
+H 2NO2 598 643 686 1030 1083 1330 1447 3113 3127
+H3NO 419 932 1143 1328 1393 1663 3447 3523 3824
+H2NO 289 1269 1383 1660 3414 3543
+HNO2 690 846 1120 1272 1561 3358
+H2O2 392 653 1330 1440 3772 3774
+NH3 1027 1661 1661 3471 3590 3590
+HNO 1560 1671 2867
+H2O 1628 3815 3916
+HO2 1172 1436 3603
+O3 754 1213 1265
+O2 1634
+PRK1200172_FINAL.indd   273 21/08/2013   14:09:17
+
+===== PDF PAGE 9 =====
+Somaie Asgharzade and Morteza Vahedpour
+www.prkm.co.uk
+274
+In Path P 1 (1), C1 undergoes rupture of the 7O – 1N and 1N – 4H bonds, and 
+the 4N – 7O bond forms via TS1 with an energy barrier of 29.68 kcal mol – 1 at 
+the CCSD(T) level. The energy of intermediate IN1 is 8.59 kcal mol  – 1 lower 
+than for the C1 and can undergo a 6O – 3H bond formation and 1N – 3H bond 
+rupture to form CP3 through a four ‑membered ring transition state TS8. The 
+energy barrier for the conversion IN1 → CP3 is 51.08 kcal mol – 1. The CP3 
+is 35.99 kcal mol  – 1 lower than the original reactants (NH 3 + O3) and can be 
+transformed to IN2 via TS3 by 6O – 4H bond formation. The energy barrier for 
+this process is 47.30 kcal mol – 1. As shown in Figure 2, IN2 is 7.08 kcal mol  – 1 
+above the original reactants and can be converted to IN3 through transition 
+state TS4 with an energy barrier of 11.20 kcal mol  – 1. Intermediate IN3 is 
+40.39 kcal mol – 1 lower than intermediate IN2 and can be converted to CP1 
+with 1N – 3H bond formation and 5O – 4H bond rupture via TS5. The energy 
+barrier for the transformation IN3 → CP1 is 39.62 kcal mol – 1 at the B3LYP 
+level. CP1 is the complex between HO2 and H2NO molecules which is indicated 
+by the long bond of 1N – 7O. CP1 can be directly decomposed to HO 2 + H2NO 
+products through 1N – 7O bond rupture without any transition state. The 
+product HO2 + H2NO is 12.04 kcal mol – 1 above CP1 and 5.82 kcal mol – 1 lower 
+than the original reactants.
+In P1 (2), the formation of IN1 is similar to path P1 (1). In this path, IN1 can be 
+converted to CP1 with the rupture of the 5O – 6O bond and formation of the 
+1N – 7O bond via TS2. The energy barrier for this process is 30.77 kcal mol – 1 at 
+the CCSD(T) level. Finally, CP1 can be decomposed to HO 2 + H2NO products 
+directly.
+For product P2 (H2NO2 + OH) there is one possible path as follows:
+Path P2:  R → C2 → TS7 → P2
+In path P2, C2 is directly transformed into P 2 by TS7 with an energy barrier of 
+34.46 kcal mol – 1 at the CCSD(T) level. In this step, the H‑atom of NH3 migrates 
+to the O‑atom of O 3 to form P 2 which is 31.59 kcal mol – 1 above the original 
+reactants at the CCSD(T) level.
+3.3 Formation pathway of P3 (o2 + h3no) and P4 (hno + h2o2)
+For products of P 3 (O2 + H3NO) and P4 (HNO + H2O2), there are two possible 
+paths as follows:
+Path P3:  R → C2 → TS6 → P3
+Path P4:  R → C1 → TS1 → IN1 → TS8 → CP3 → P4
+In path P3, C2 is directly transformed into P3 via TS6 with an energy barrier of 
+PRK1200172_FINAL.indd   274 21/08/2013   14:09:17
+
+===== PDF PAGE 10 =====
+Ammonia and ozone tropospheric oxidation reaction
+www.prkm.co.uk
+275
+41.77 kcal mol – 1 at the CCSD(T) level. In this step, the 7O – 6O, 1N – 4H bonds 
+of C2 rupture and 1N – 7O, 7O – 4H bonds form.
+In path P 4, the formation of CP3 is similar to path P 1(1). CP3 is the complex 
+between HNO and H2O2 with is indicated by the long bond of 5O – 3H. Thus it 
+can be decomposed directly to HNO + H2O2 via 5O – 3H bond rupture without 
+any transition state. The product HNO + H2O2 is 3.35 kcal mol – 1 above the CP3, 
+and 32.64 kcal mol – 1 below the original reactants.
+3.4 Formation pathway of P5 (h2o + hno2) and P6 (no + ho2 + h2)
+For products of P5 (H2O + HNO2) and P6 (NO + HO2 + H2) there are two possible 
+paths as follows:
+Path P5: R → C1 → TS1 → IN1 → TS8 → CP3 → TS9 → CP4 → P5
+Path P6: R → C1 → TS1 → IN1 → TS8 → CP3 → TS10 → CP5 → P6
+In paths P5 and P6 the formation of CP3 is similar to path P1 (1). In path P5, the 
+CP3 is transformed to CP4 via TS9 by the O – O bond rupture with an energy 
+barrier of 58.61 kcal mol – 1 at the CCSD(T) level. CP4 is the product complex 
+and can be converted to P5 without any transition state.
+In path P6, the CP3 is converted to CP5 through TS10 with an energy barrier of 
+59.07 kcal mol – 1. These transformations occur with H – H bond formation. The 
+CP5 is the complex between the species of product P6 which is indicated by the 
+long bonds of 7O – 6O, 1N – 5O and 6O – 3H. It can be decomposed directly to 
+NO + HO2 + H2 with 7O – 6O, 1N – 5O, and 6O – 3H bonds rupture without any 
+transition state.
+3.5 Thermodynamic data in the nh3 and o3 reaction process
+The change of thermodynamic parameters for each reaction channel is the 
+difference between the corresponding thermodynamic properties of the 
+products and the reactants (Table 3).
+Table 3 Thermodynamic data for NH 3 + O3 reaction at the B3LYP level
+Reaction ΔE0 
+(kcal mol – 1)
+ΔH0 
+(kcal mol – 1)
+ΔG0 
+(kcal mol – 1)
+TΔS0 
+(kcal mol – 1)
+NH3 + O3 → HO2 + H2NO – 19.40 – 19.20 – 21.35 6.18
+NH3 + O3 → OH + H2NO2 20.57 20.57 20.59 – 0.02
+NH3 + O3 → O2 + H3NO – 4.16 – 4.16 – 3.76 – 0.40
+NH3 + O3 → H2O2 + HNO – 33.09 – 33.09 (– 31.9) – 34.33 
+(– 33.45) 9.22
+NH3 + O3 → H2O + HNO2 – 12.11 – 12.11 – 12.38 0.26
+NH3 + O3 → NO + HO2 + H2 – 8.07 – 8.07 – 17.21 13.16
+The values in parentheses refer to experimental data.
+PRK1200172_FINAL.indd   275 21/08/2013   14:09:17
+
+===== PDF PAGE 11 =====
+Somaie Asgharzade and Morteza Vahedpour
+www.prkm.co.uk
+276
+The results of the analysis of frequencies show that the zero ‑point‑energy 
+(ZPE) of the reactants, intermediates, transition states and products are large, 
+so each activation parameter data must be corrected by the ZPE for NH 3 + O3 
+reaction at the B3LYP level. The relationships of thermodynamics properties 
+are given in the following:
+ΔE0 = Eel + ZPE
+ΔE = ΔE0 + ΔEvib + ΔErot + ΔEtrans
+ΔG0 = ΔH0 – TΔS0
+The calculated relative internal energies, enthalpies, Gibbs free energies and 
+entropies of all possible reaction channels in the gas phase at atmospheric 
+pressure and temperature of 298.15 K are summarised in Table 4.
+From the six reaction pathways, six products (P 1 – P6) are produced and the 
+corresponding reaction enthalpies are – 19.20, 20.57, – 4.16, – 33.09, – 12.11 
+and – 8.06 kcal mol  – 1, respectively. In terms of the reaction exothermicity, 
+the most favourable pathway is that resulting in the products P 4 which are 
+highly exothermic. Δ H for the P 2 product is positive, which implies that it is 
+endothermic.
+Also, the Gibbs free energies of products P1, P3, P4, P5 and P6 are negative, which 
+this means they are spontaneous in the gas phase at atmospheric pressure and 
+298.15 K. Values of TΔS for products P1, P4, P5 and P6 are positive.
+Overall the P 4 (H2O2 + HNO) path product channel is thermodynamically the 
+most feasible in comparison with the other products by – 34.33 kcal mol – 1 in 
+its Gibbs free energy. Our calculated data are compared with the experimental 
+value for the H 2O2 + HNO reaction channel and the calculated data are 
+acceptable in comparison with experimental value (relative error in Gibbs free 
+energy is – 2.6%).
+Table 4 Rate constant k 1 and k 2 in cm 3 molecule  – 1 s  – 1 computed using the multichannel 
+RRKM methodology at the temperature range of 200 – 2500 K
+T(K) k1 k1 k1 / k k2 / k
+200 3.12 E–34 6.29 E–47 100 2.01 E–11
+298.15 2.19 E–27 1.18 E–35 100 5.41 E–07
+300 2.68 E–27 1.63 E–35 100 6.09 E–07
+400 1.01 E–23 3.32 E–30 100 3.29 E–05
+500 1.55 E–21 3.77 E–27 100 2.43 E–04
+600 4.72 E–20 4.52 E–25 100 9.58 E–04
+700 5.66 E–19 1.56 E–23 100 2.76 E–03
+800 3.77 E–18 2.47 E–22 100 6.54 E–03
+900 1.70 E–17 2.29 E–21 100 1.35 E–02
+1000 5.85 E–17 1.46 E–20 100 2.49 E–02
+1500 2.97 E–15 6.02 E–18 99.8 2.02 E–01
+2000 2.72 E–14 1.87 E–16 99.3 6.83 E–01
+2500 1.20 E–13 1.85 E–15 98.5 1.52 E+00 
+PRK1200172_FINAL.indd   276 21/08/2013   14:09:17
+
+===== PDF PAGE 12 =====
+Ammonia and ozone tropospheric oxidation reaction
+www.prkm.co.uk
+277
+3.6 calculation of the rate constants
+The microcanonical rate constant for a unimolecular reaction is calculated 
+using RRKM [26,27] theory as follows:
+I / Ij
+IMki(E) = αiκ  Ni(E – Ei
+#)
+hρj(E)
+where ki(E) is the energy-specific rate constant for the ith channel; α i is the 
+statistical factor for the reaction path degeneracy; κ is the tunnelling factor; 
+Ii ≠ IIM are the moments of inertia (I a, Ib, IC, i.e. the product of I a, Ib and IC) of 
+the transition state i and the intermediate j; h is Planck’s constant; ρj(E) is the 
+density of states at energy E of the intermediate j; Ni(E – Ei
+#) is the number 
+of states at the energy above the barrier height for transition state i; and the 
+density of states and the number of states is calculated using the extended 
+Beyer–Swinehart algorithm [28,29].
+The general expression for generalised transition ‑state theory (TST) for 
+bimolecular reaction is as follows [30,31]:
+kBT
+hk(T ) = Γ          σ            exp  – Qǂ
+QAQB
+( (
+VMEP(s)
+kBT
+here kB is Boltzmann’s constant, Γ is the tunnelling factor, σ is the reaction 
+path degeneracy (the ratio of symmetry numbers from the rotational partition 
+functions), the Q parameters are the product of translational, rotational, 
+vibrational, and electronic partition for the transition state (numerator) and 
+reactants (denominator), and s is the distance along the reaction path from the 
+saddle point.
+The reaction path is generally taken to be the minimum energy path (MEP) 
+from the saddle point to the reactant and product geometries [32]. V MEP is the 
+value of potential energy corrected for zero ‑point energy at the generalised 
+transition‑state theory.
+To show the influence of a possible tunnelling process on the curvature of the 
+Arrhenius plot at lower temperatures, calculations were carried out by including 
+and excluding the tunnelling factor.
+Canonical variational transition ‑state theory [33] was also applied on the 
+assumption that the conserved vibrational frequencies and moments of inertia 
+of the fragments do not change during the course of reaction. The methods of 
+calculations are described in [30].
+A careful investigation was done to follow the changes, which may occur in 
+different degrees of freedom as reactions proceed.
+PRK1200172_FINAL.indd   277 21/08/2013   14:09:18
+
+===== PDF PAGE 13 =====
+Somaie Asgharzade and Morteza Vahedpour
+www.prkm.co.uk
+278
+The translational partition function per unit volume of a molecule of mass m in 
+three dimensions is:
+2�mkBT
+h2Qtr
+ = 
+( (
+3/2
+The external rotational partition function for a nonlinear molecule has the 
+following form:
+8�2(8�3IaIbIc)1/2(kBT)3/2
+σh3Qrot= 
+here, the I parameters are the moments of inertia and σ is a symmetry number. 
+As two reactants approach each other, three (for nonlinear molecules) or two 
+(for linear molecules) external rotations would transform to hindered rotations 
+or harmonic vibrations as they approach the transition state. One of those 
+rotations is the rotation around the reaction coordinate axis, which could be 
+treated as a vibrational motion or an internal rotation. The partition function 
+for this kind of internal rotation might be written as:
+(2�)1.5(IIRkBT)0.5
+σxhQrot= 
+here, IIR is the reduced moment of inertia. To calculate the reduced moment of 
+inertia for this internal rotation, we used a FORTRAN program based on the 
+method introduced by Pitzer [34].
+The other two rotations around the axes perpendicular to the reaction coordinate 
+axis would transform to two ‑dimensional hindered internal rotations as the 
+transition state is approaching.
+These two motions are usually considered as rocking or tumbling vibrational 
+motions in molecules. The partition function for this kind of hindered rotations 
+is difficult to calculate. In the limit of high temperatures or low barriers 
+for rotation, LeBlanc and Pacey suggested the partition function for a two ‑
+dimensional hindered rotor as [35]:
+IIRkBT
+η2 (Qhin=                 exp  
+(
+E0 – V
+kBT ((
+here IIR is the reduced moment of inertia for the hindered rotation, E0 is the 
+zero‑point energy for this degree of freedom, and V is two‑thirds the height 
+of the barrier to rotation. The value of V might be calculated from the related 
+bending frequency as [36]:
+V = 4/3
+ I(�v)2
+PRK1200172_FINAL.indd   278 21/08/2013   14:09:18
+
+===== PDF PAGE 14 =====
+Ammonia and ozone tropospheric oxidation reaction
+www.prkm.co.uk
+279
+here, ν is the term value for the rocking or tumbling motion. Pitt, Gilbert, 
+and Ryan introduced a hindered rotational constant B eff(2Bfree / (1 – cos θhin)) to 
+calculate the hindered rotation partition function [37]. They rewrote the Q hin 
+equation as follow:
+�kBT
+Bhin
+(Qhin= (
+1/2
+here, θhin is the average hindrance angle which could vary from 0 to π / 2. Bfree is 
+the rotational constant of the corresponding two‑dimensional free rotor. When 
+the separation of reactants is longer than the critical distance, θhin = 90, then 
+Beff = 2Bfree. Vibrations in the transition state are usually treated as harmonic 
+oscillators and occasionally as hindered rotations. The vibrational partition 
+function for one degree of freedom is calculated as:
+1
+1 – e–hv/(kBT)Qv= 
+The number of bending motions (low frequencies) is different in reactants, 
+transition state, and products. At high temperatures, when T > > θ (θ = h ν / kB), 
+the vibrational partition function may be approximated by expanding the 
+exponential term as Q v = kBT / hν, which causes an increased sensitivity of the 
+pre‑exponential factor in temperature.
+According to classical mechanics, a particle can cross a potential energy barrier 
+only if its energy is higher than the barrier height, while quantum mechanics 
+predicts that there is a probability for the crossing at lower particle energies. 
+This transmission probability is very sensitive to the particle energy and mass, 
+the barrier height, and the shape of the barrier [38].
+The tunnelling correction factor is defined as the quotient of the quantum 
+mechanical rate to the classical rate. Although the tunnelling process is a 
+multidimensional phenomenon, this is treated as a one‑dimensional process for 
+simplicity. In this study, two methods were considered for the correction of any 
+possible tunnelling effect. A simple expression, which is suggested by Shavitt 
+for the tunnelling correction, is [39]:
+hv*
+kBT (Γtunnel =                     1 +   
+(
+kBT
+E0
+((
+1
+24
+                                    
+2
+where ν * is the imaginary frequency of the activated complex at the top of 
+the barrier and E 0 is the barrier height corrected for zero‑point energy for the 
+reaction.
+On the singlet PES, because of two transition states with low levels of energy, 
+P1 path is kinetically more reliable than the others and P 4 is the most stable 
+PRK1200172_FINAL.indd   279 21/08/2013   14:09:19
+
+===== PDF PAGE 15 =====
+Somaie Asgharzade and Morteza Vahedpour
+www.prkm.co.uk
+280
+product in a thermodynamic approach. So, the rate constants and their 
+branching ratio have been calculated for two important paths as P 1 and P4. For 
+the multichannel reaction, the calculated rate constant for P 1 and P4 paths are 
+denoted as k 1 and k4 and their branching ratio as k1 / k and k4 / k (k = k1 + k4), 
+respectively. The rate constants of the reaction have been calculated on the 
+singlet PES for reliable pathways, P 1 and P 4, by the RRKM (unimolecular 
+reaction) and TST (bimolecular reaction) theories implemented in the Ssumes 
+and Gpop programs [40,41].
+Figure 3 shows the Arrhenius plots for the calculated rate constant, and the 
+Arrhenius parameters for the rate constant are as follows:
+k1 = 2.08 × 10 – 12 exp (– 85.135 kJ mol – 1 / RT)
+k4 = 1.34 × 10 – 13 exp (– 127.62 kJ mol – 1 / RT)
+The rate constant and branching ratio for the P 1 and P 4 product channels 
+show that over almost all the temperature range, the P 1 channel is the main 
+kinetically is the main, but because the P 4 product is more stable than the P 1, 
+so with increasing reaction times, production of the P4 product increases and it 
+becomes the main product at infinity.
+Table 4 shows that, with increasing temperature, the rate constants values 
+of NH 3 + O3 at atmospheric pressure increase. Because of the kinetic and 
+thermodynamic products of reaction are different, the main products of reaction 
+depend on the time and a few to temperature.
+Figure 3 Arrhenius plots for the k 1 and k2 (path P1 and P4) rate constant.
+PRK1200172_FINAL.indd   280 21/08/2013   14:09:19
+
+===== PDF PAGE 16 =====
+Ammonia and ozone tropospheric oxidation reaction
+www.prkm.co.uk
+281
+4. conclusIons
+The theoretical study carried out in this work leads to the following conclusions:
+1. In the present work, details of the reaction pathways of NH 3 + O3 on 
+the singlet potential energy surfaces have been characterised with the 
+B3LYP/6‑311++G (3df, 3pd), G3B3//B3LYP and CCSD//B3LYP levels.
+2. Two stable collision complexes, C1 and C2 have been considered. C1 has 
+a four‑membered‑ring structure, lying 1.41 kcal mol – 1 below the energy 
+of the reactants at the CCSD (T) level. C2, lying 0.57 kcal mol  – 1 below 
+the energy of reactants at the CCSD (T) level, has two hydrogen bonds.
+3. Via a variety of transformations of C1 and C2, six kinds of products P 1 
+(HO2 + H2NO), P2 (H 2NO2 + OH), P3 (O2 + H3NO), P4 (HNO + H2O2), P5 
+(H2O + HNO2) and P6 (NO + HO2 + H2) are obtained.
+4. P 4 is the most stable product in comparison with the others and P 1 is the 
+other important products form the kinetic viewpoint, which is relatively 
+stable with a negative Gibbs free energy.
+5. Branching ratio results show P1 to be the major product when the kinetic 
+variable is important (low temperature and initial time for the reaction).
+5. ReFeRences
+[1] Science: Ozone basics, http://www.ozonelayer.noaa.gov/science/basics.htm. Retrieved 
+2007.
+[2] NASA facts archive, http://www.nasa.gov/facts/Earth/earth_facts_archives.html. 
+Retrieved 2011.
+[3] Atmospheric chemistry and greenhouse gases, Intergovernmental Panel on Climate 
+Change. http://www.grida.no/climate/ipcc_tar/wg1/142.htm. Retrieved 2006.
+[4] Mack, K.M. and Muenter, J.S. (1977) J. Chem. Phys., 66, 5278.
+[5] Kirschbaum, B., Sica, D. and Anderson, F.P. (1999) J. Lab. Clin. Med., 133, 597.
+[6] Papoušek, D. (1983) J. Mol. Struct., 100 179.
+[7] New coal ‑based ammonia and urea capacity. (China) (2004). http://www.highbeam.
+com/doc/1G1‑113564920.html. Retrieved 2009.
+[8] Adjei, M.B., Quesenberry, K.H. and Chamblis, C.G. (2002) IFAS, SS ‑AGR‑56, 
+University of Florida.
+[9] Rennard, J.J., Calidonna, S.E. and Henley, M.V. (2004) J. Hazard. Mater., 108, 29.
+[10] De Pena, R.G., Olszyna, K. and Heicklen, J. (1973) J. Phys. Chem., 77, 438.
+[11] Olszyna, K.J. and Heicklen, J. (1972) Reaction of ozone with ammonia. Adv. Chem. 
+Series, 191.
+[12] Frisch, M.J. et al. (2003) GAUSSIAN 03, Revision B.03, Gaussian Inc, Pittsburgh, PA.
+[13] Becke, A.D. (1993) J. Chem. Phys., 98, 1372.
+PRK1200172_FINAL.indd   281 21/08/2013   14:09:19
+
+===== PDF PAGE 17 =====
+Somaie Asgharzade and Morteza Vahedpour
+www.prkm.co.uk
+282
+[14] Lee, C., Yang, W. and Parr, R.G. (1988) Phys. Rev. B, 37, 785.
+[15] Curtiss, L.A., Raghavachari, K., Redfern, P.C., Rassolov, V. and Pople, J.A. (1998) J. 
+Chem. Phys., 109, 7764.
+[16] Lee, T.J. and Taylor, P.R. (1989) Int. J. Quantum. Chem., 23 199.
+[17] Rienstra ‑Kiracofe, J.C., Allen, W.D. and Schaefer, H.F. (2000) J. Phys. Chem. A , 104, 
+9823.
+[18] Peiro‑Garcia, J. and Nebot‑Gil, I. (2003) Chem. Phys. Chem., 4, 843.
+[19] Peiro‑Garcia, J. and Nebot‑Gil, I. (2003) J. Comput. Chem., 24, 1657.
+[20] Martinez ‑Avila, M. and Peiro‑Garcia, J. (2003) Chem. Phys. Lett., 370, 313.
+[21] Lambert, N., Kaltsoyannis, N., Price, S.D., Zabka, J. and Herman, Z. (2006) J. Phys. 
+Chem. A, 110, 2898.
+[22] Miller, S.R., Schultz, N.E., Truhlar, D.G. and Leopold, D.G. (2009) J. Chem. Phys., 
+130, 24304.
+[23] Gonzalez, C. and Schlegel, H.B. (1990) J. Phys. Chem., 94, 5523.
+[24] Boys, S.F. and Bernardi, F. (1970) Mol. Phys., 19, 553.
+[25] Biegler‑König, F. (2000) AIM2000 ver. 1.0. University of Applied Science, Bielefeld, 
+Germany.
+[26] Robinson, P.J. and Holbrook, K.A. (1972) Unimolecular reactions. Wiley Inter Science, 
+New York.
+[27] Forst, W. (1973) Theory of unimolecular reactions. Academic Press, New York.
+[28] Stein, S.E. and Rabinovitech, B.S. (1973) J. Chem. Phys., 58 , 2438.
+[29] Astholz, D.C., Troe, J. and Wieters, W. (1979) J. Chem. Phys., 70, 5107.
+[30] Laidler, K.J. (1969) Theories of chemical reaction rates . McGraw‑Hill, New York.
+[31] LeRoy, D.J., Ridley, B.A. and Quickert, K.A. (1967) Discuss. Faraday Soc. , 44, 92.
+[32] Gonzales‑Lafont, A., Truong, T.N. and Truhlar, D.G. (1991) J. Chem. Phys., 95, 8875.
+[33] Mousavipour, S.H., Emad, L. and Fakhraee, S. J. (2002) Phys. Chem. A , 106, 2489.
+[34] Pitzer, K.S. (1946) J. Chem. Phys., 14, 239.
+[35] LeBlanc, J.F. and Pacey, P.D. (1985) J. Chem. Phys., 83, 4511.
+[36] Pacey, P.D. (1982) J. Chem. Phys., 77 3540.
+[37] Pitt, I.G., Gilbert, G.R. and Ryan, K.R. (1995) J. Phys. Chem. , 99, 239.
+[38] Stern, M.J. and Weston, R.E. (1974) J. Chem. Phys., 60, 2808.
+[39] Shavitt, I. (1959) J. Chem. Phys., 31, 1359.
+[40] Miyoshi, A. (2010) Steady-state unimolecular master-equation solver (SSUMES).  
+University of Tokyo.
+[41] Miyoshi A. (2010) Gaussian post processor (GPOP). University of Tokyo.
+PRK1200172_FINAL.indd   282 21/08/2013   14:09:19
+
+===== PDF PAGE 18 =====
+Copyright
+of
+Progress
+in
+Reaction
+Kinetics
+&
+Mechanism
+is
+the
+property
+of
+Science
+Reviews
+2000
+Ltd.
+and
+its
+content
+may
+not
+be
+copied
+or
+emailed
+to
+multiple
+sites
+or
+posted
+to
+a
+listserv
+without
+the
+copyright
+holder's
+express
+written
+permission.
+However,
+users
+may
+print,
+download,
+or
+email
+articles
+for
+individual
+use.

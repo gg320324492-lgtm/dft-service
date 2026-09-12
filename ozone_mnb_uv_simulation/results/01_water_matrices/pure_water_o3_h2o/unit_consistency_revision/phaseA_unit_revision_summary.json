@@ -1,0 +1,206 @@
+{
+  "job": "JOB-2026-0906-002",
+  "phase": "A",
+  "status": "PASS",
+  "correction_direction": {
+    "k_E": "old * b^2",
+    "k_g": "old * b",
+    "s_E": "old * b"
+  },
+  "b": 0.52917721092,
+  "amplification": 1.8897261245650618,
+  "counts": {
+    "directional_confirmation/c14_plus": {
+      "central": 2,
+      "displaced": 12,
+      "displaced_nonconverged": 0,
+      "coverage_pct": 100.0
+    },
+    "directional_confirmation/c06_plus": {
+      "central": 2,
+      "displaced": 12,
+      "displaced_nonconverged": 0,
+      "coverage_pct": 100.0
+    },
+    "grid_response_diagnostic/c14_plus": {
+      "central": 1,
+      "displaced": 4,
+      "displaced_nonconverged": 0,
+      "coverage_pct": 100.0
+    },
+    "grid_response_diagnostic/c06_plus": {
+      "central": 1,
+      "displaced": 4,
+      "displaced_nonconverged": 0,
+      "coverage_pct": 100.0
+    }
+  },
+  "withdrawn": [
+    "c06_plus ≈0 / 无负曲率证据 / 争议关闭",
+    "c14_plus 该方向已通过验收",
+    "旧曲率被低估（方向反了）"
+  ],
+  "key_numbers": {
+    "c06_plus_L7_small_amp": {
+      "k_E": -1.4064601188507898e-05,
+      "k_gT": -1.1338969995095073e-05,
+      "note": "both negative; stability pending"
+    },
+    "c14_plus_L7_small_amp": {
+      "k_E": 3.93417899254801e-05,
+      "k_gT": 4.164858638419317e-05
+    }
+  },
+  "regression_tests": {
+    "scope": "production-path displacement + difference analysis",
+    "overall": "PASS",
+    "n_pass": 28,
+    "n_fail": 0,
+    "cases": [
+      {
+        "name": "Bohr/Angstrom round trip (same Bohr displacement)",
+        "status": "PASS",
+        "detail": "(max diff 8.88e-16 Bohr)"
+      },
+      {
+        "name": "recovered q identical for both units",
+        "status": "PASS",
+        "detail": "(q = 0.0140559304 Bohr)"
+      },
+      {
+        "name": "recovered actual amplitude equals nominal",
+        "status": "PASS",
+        "detail": "(0.005000 A vs 0.005000 A)"
+      },
+      {
+        "name": "+/- displacements symmetric in length",
+        "status": "PASS",
+        "detail": "(diff 0.00e+00 Bohr; signs +1/-1)"
+      },
+      {
+        "name": "+/- signs opposite",
+        "status": "PASS",
+        "detail": ""
+      },
+      {
+        "name": "non-axial multi-atom direction: q recovered",
+        "status": "PASS",
+        "detail": "(q = 0.0133676430)"
+      },
+      {
+        "name": "non-axial direction: max atom displacement = nominal",
+        "status": "PASS",
+        "detail": "(0.004000 A)"
+      },
+      {
+        "name": "positive quadratic: k_E == k_true (amp 0.002 A)",
+        "status": "PASS",
+        "detail": "(k_E = 3.000000e-04)"
+      },
+      {
+        "name": "positive quadratic: k_g == k_true (amp 0.002 A)",
+        "status": "PASS",
+        "detail": "(k_g = 3.000000e-04)"
+      },
+      {
+        "name": "positive quadratic: s_E == 0 (symmetric)",
+        "status": "PASS",
+        "detail": "(s_E = 0.0e+00)"
+      },
+      {
+        "name": "positive quadratic: k_E == k_true (amp 0.005 A)",
+        "status": "PASS",
+        "detail": "(k_E = 3.000000e-04)"
+      },
+      {
+        "name": "positive quadratic: k_g == k_true (amp 0.005 A)",
+        "status": "PASS",
+        "detail": "(k_g = 3.000000e-04)"
+      },
+      {
+        "name": "positive quadratic: s_E == 0 (symmetric)",
+        "status": "PASS",
+        "detail": "(s_E = 0.0e+00)"
+      },
+      {
+        "name": "negative quadratic: k_E == k_true (amp 0.002 A)",
+        "status": "PASS",
+        "detail": "(k_E = -1.400000e-05, sign preserved)"
+      },
+      {
+        "name": "negative quadratic: k_g == k_true (amp 0.002 A)",
+        "status": "PASS",
+        "detail": "(k_g = -1.400000e-05, sign preserved)"
+      },
+      {
+        "name": "negative quadratic: k_E == k_true (amp 0.005 A)",
+        "status": "PASS",
+        "detail": "(k_E = -1.400000e-05, sign preserved)"
+      },
+      {
+        "name": "negative quadratic: k_g == k_true (amp 0.005 A)",
+        "status": "PASS",
+        "detail": "(k_g = -1.400000e-05, sign preserved)"
+      },
+      {
+        "name": "quartic: k_E(q) = k0 + (c4/12) q^2",
+        "status": "PASS",
+        "detail": "(max err 3.39e-21)"
+      },
+      {
+        "name": "quartic: k_g(q) = k0 + (c4/6) q^2",
+        "status": "PASS",
+        "detail": "(max err 6.78e-21)"
+      },
+      {
+        "name": "quartic: k_g - k_E = (c4/12) q^2 -> O(q^2), not an inconsistency",
+        "status": "PASS",
+        "detail": "(max err 7.94e-21)"
+      },
+      {
+        "name": "quartic: finite-step curvature drifts with q (O(q^2) evidence)",
+        "status": "PASS",
+        "detail": "(k_E: ['2.013e-05', '2.078e-05', '2.314e-05'])"
+      },
+      {
+        "name": "defect reproduction: amplitude amplified by 1/b",
+        "status": "PASS",
+        "detail": "(0.009449 A vs nominal 0.005000 A, factor 1.88973)"
+      },
+      {
+        "name": "defect reproduction: k_E with the wrong q is wrong (>100% error)",
+        "status": "PASS",
+        "detail": "(k_E_wrong = 3.571e-04 vs k_true 1.000e-04)"
+      },
+      {
+        "name": "after fix: k_E with the recovered q is exact",
+        "status": "PASS",
+        "detail": "(1.000000e-04)"
+      },
+      {
+        "name": "asymmetric +/- amplitudes are detected (q+ != q-)",
+        "status": "PASS",
+        "detail": "(q+ = 0.014491, q- = 0.018839)"
+      },
+      {
+        "name": "wrong direction raises ValueError",
+        "status": "PASS",
+        "detail": ""
+      },
+      {
+        "name": "missing coordinates raise",
+        "status": "PASS",
+        "detail": ""
+      },
+      {
+        "name": "inconsistent per-atom displacement raises (no silent average)",
+        "status": "PASS",
+        "detail": ""
+      }
+    ]
+  },
+  "artifacts": {
+    "raw": "/mnt/e/dft-service/ozone_mnb_uv_simulation/run_artifacts/01_pure_water_o3_h2o/unit_consistency_revision",
+    "processed": "/mnt/e/dft-service/ozone_mnb_uv_simulation/results/01_water_matrices/pure_water_o3_h2o/unit_consistency_revision"
+  }
+}

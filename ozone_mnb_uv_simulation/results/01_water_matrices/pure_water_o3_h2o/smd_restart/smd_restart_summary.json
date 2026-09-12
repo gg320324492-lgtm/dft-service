@@ -1,0 +1,189 @@
+{
+  "job": "JOB-2026-0906-006",
+  "title": "\u6c14\u76f8\u7ed3\u679c\u5f52\u6863\u4e0e SMD \u6c34\u76f8\u68af\u5ea6\u9a8c\u8bc1\u3001\u53cc\u5019\u9009\u4f18\u5316\u6279",
+  "phase_statuses": {
+    "A": "pass",
+    "B": "pass(with 1 project-wrapper fix)",
+    "C": "executed; BOTH candidates NOT converged (honestly recorded)"
+  },
+  "phaseA": {
+    "registry": "run_artifacts/01_pure_water_o3_h2o/smd_restart/gas_phase_registry.json",
+    "c14_primary": "L8 endpoint (005), L7 endpoint + evidence retained",
+    "c06_primary": "L7 endpoint (004)",
+    "energy_portability": "total energies across grids/geometries NOT combined; historical CP/CCSD(T)/thermochemistry keep original labels",
+    "attribution_revision": "005 lowest-direction curvature-ratio decrease attributed jointly to geometry+mode-direction changes; contributions NOT separately decomposed; non-stationarity not claimed as proven dominant cause"
+  },
+  "phaseB": {
+    "method": "SMD(water)/def2-TZVP/L8/xc=wb97xd + project empirical full-derivative -D2; SCF 1e-12/1e-9; charge 0 spin 0; explicit water atoms 3-5",
+    "read_only_findings": {
+      "energy": "e_tot = E_DFT + e_solvent(electrostatic) + e_cds; scf_summary records e_solvent and e_cds separately",
+      "gradient": "with_solvent.grad = grad_qv + grad_solver + grad_nuc + de_cds",
+      "cds_implementation": "libsolvent C routine mnsol_interface_ returns CDS energy AND gradient (analytic; NO finite-difference term)"
+    },
+    "five_point": {
+      "geometries": "centre + water translation along Ow..O3c axis +/-0.002/+/-0.004 A (max-atom-displacement); scanner A->+2->-2->+4->-4->A; no optimisation; centre not required stationary",
+      "tolerances": {
+        "scanner_dE": 1e-06,
+        "scanner_dG": 1e-05,
+        "d2once_rel": 0.01,
+        "d2once_floor": 1e-06,
+        "repro_dE": 1e-08,
+        "repro_dG": 1e-08,
+        "gr_active_min": 1e-06
+      },
+      "results": {
+        "scanner_vs_fresh": "PASS (dE~1e-13, dG~1e-13..1e-10)",
+        "reproducible": "PASS (dE=1.25e-12, dG=5.25e-10)",
+        "d2_counted_once_samedensity": "PASS at machine precision (resid_e~1e-14, resid_g~3e-15 vs |D2_E|=1.7e-4, |D2_g|=4.6e-5)",
+        "independent_native_benchmark": "fresh native SMD object + explicit d2_energy/d2_grad (cross-run residual = grid-response/noise floor, documentary)",
+        "grid_response_active": "PASS (native True vs False diff 2.76e-05)",
+        "slope_vs_projected_grad": "PASS (s_E=-1.342e-03 == d.g0, resid -5.6e-09/-2.3e-08)",
+        "curvature_step_trend": "k_E +1.986/+1.983e-3, k_g +1.985/+1.978e-3 (consistent)"
+      },
+      "components_present": {
+        "e_solvent": "yes (scf_summary)",
+        "e_cds": "yes (scf_summary)",
+        "e_d2": "yes (analytic == scf_summary d2_dispersion)"
+      }
+    },
+    "wrapper_fix": {
+      "file": "protocols/d2_full.py undo_solvent",
+      "root_cause": "single-class strip left RKS_D2 whose Gradients closure references the SMD parent -> re-entered solvent machinery (_Solvation assert); if it had not failed, D2 would have been DOUBLE-COUNTED inside SMD gradients (vac_grad D2-wrapped + outer attach_d2_grad)",
+      "fix": "strip ALL project wrapper classes (SMD/_D2/_GR) down to clean vacuum RKS; D2 enters exactly once via the outer attach_d2_grad",
+      "regression": "Phase B full suite passes after fix; gas path unaffected (28/0 regression maintained)",
+      "record": "notes/smd_d2_undo_solvent_fix.md"
+    },
+    "verdict": "PASS"
+  },
+  "phaseC": {
+    "runs": "ONE <=60-step optimisation per candidate from registry gas references; no restart/extension/threshold change",
+    "candidates": {
+      "c14_plus": {
+        "n_steps": 60,
+        "hit_cap": true,
+        "optimizer_converged": false,
+        "indep_e": -301.89147845787625,
+        "indep_max_g": 0.002386741040005531,
+        "pass_gmax": false,
+        "verdict": "maxsteps_reached_not_converged",
+        "dE_relaxation": -0.001507,
+        "components": {
+          "e_solvent": -0.021845351658528328,
+          "e_cds": 0.0014813259816158879,
+          "e_d2": -0.00017571241005754715,
+          "d2_once": true
+        }
+      },
+      "c06_plus": {
+        "n_steps": 40,
+        "hit_cap": false,
+        "optimizer_converged": true,
+        "optimizer_note": "internal-coordinate criteria met at step 40 but independent CARTESIAN check 2.58e-05 > 1e-5 (known representation gap, recorded)",
+        "indep_e": -301.8916484802481,
+        "indep_max_g": 2.5803375313276416e-05,
+        "pass_gmax": false,
+        "verdict": "stopped_early_not_converged",
+        "dE_relaxation": -0.000617,
+        "components": {
+          "e_solvent": -0.022923571060889287,
+          "e_cds": 0.0016454472347891028,
+          "e_d2": -0.00016578666978801098,
+          "d2_once": true
+        }
+      }
+    },
+    "per_step_full_gradients_saved": true,
+    "all_scf_converged": true,
+    "all_grid_response_true": true,
+    "dedup": {
+      "rmsd_A": 3.909268421238563,
+      "same_structure": false,
+      "both_sources_retained": true,
+      "note": "dedup recorded on current (unconverged) geometries"
+    },
+    "topology": {
+      "c14_plus": {
+        "ow_o3": [
+          3.6316,
+          3.2039,
+          3.2471
+        ],
+        "gap_Ow_O3c": 3.2397,
+        "o_h": [
+          0.9606,
+          0.9638
+        ],
+        "hbonds": [
+          [
+            "H5-O1",
+            2.284
+          ]
+        ]
+      },
+      "c06_plus": {
+        "ow_o3": [
+          3.6209,
+          3.0739,
+          4.8446
+        ],
+        "gap_Ow_O3c": 3.8089,
+        "o_h": [
+          0.9642,
+          0.9604
+        ],
+        "hbonds": [
+          [
+            "H4-O1",
+            2.11
+          ]
+        ]
+      }
+    },
+    "dissociation": false,
+    "verdict": "BOTH candidates NOT converged (max|g|>1e-5); sites preserved; no SMD converged-stationary-candidate claim"
+  },
+  "interpretation_boundaries": {
+    "status": "unconverged water-phase relaxed geometries (NOT converged stationary candidates)",
+    "model_scope": "explicit single water + SMD continuum only",
+    "energy_note": "gas->water total energy differences are NOT binding free energies"
+  },
+  "not_executed": "water Hessian, thermochemistry, CP, CCSD(T), excited states, ions, reaction paths, L9",
+  "artifacts": {
+    "protocols/smd_restart_step1_registry.py": "ca9dc60870896e7c",
+    "protocols/smd_restart_step2_verify.py": "4b4c69dba7761ea5",
+    "protocols/smd_restart_step3_optimize.py": "825e76232ba00024",
+    "run_artifacts/01_pure_water_o3_h2o/smd_restart/gas_phase_registry.json": "dcf8ba19e865a41a",
+    "run_artifacts/01_pure_water_o3_h2o/smd_restart/phaseB_smd_verification.json": "0367f5bd88fea89c",
+    "run_artifacts/01_pure_water_o3_h2o/smd_restart/phaseC_smd_optimize.json": "bdc17b3473bf4200",
+    "run_artifacts/01_pure_water_o3_h2o/smd_restart/phaseC_dedup_topology.json": "30b52ce241088a57",
+    "notes/smd_d2_undo_solvent_fix.md": "fa43c0af4de08159"
+  },
+  "trajectories": {
+    "c14": "run_artifacts/.../smd_restart/smd_traj_c14_plus.json (60 steps)",
+    "c06": "run_artifacts/.../smd_restart/smd_traj_c06_plus.json (40 steps)"
+  },
+  "report": "results/01_water_matrices/pure_water_o3_h2o/smd_restart/smd_restart_report.md",
+  "next_batch_decision": "user to choose: longer step cap / water-phase-nearer start / threshold discussion; THEN water-phase frequency acceptance and first reaction path",
+  "stop": "batch complete",
+  "revision_JOB_2026_0906_007": {
+    "config_error_confirmed": {
+      "production_branch": "make_mf_d2_gr called WITHOUT grid_level -> grad_factory default L7 (phaseB_smd_verification.json fingerprint records grid_level=7)",
+      "native_branch": "explicit L8",
+      "phaseC": "explicit L8 (optimisation AND independent verification)"
+    },
+    "withdrawn": [
+      "same-configuration independent SMD benchmark passed (was L7-vs-L8 cross-grid)",
+      "L8 five-point verification completed (production side was L7)",
+      "grid-response/cross-path-noise attribution for the native-benchmark residual (residual was the L7/L8 cross-grid difference; same-config rerun drops it to ~1e-12)",
+      "D2 double-counting as a historical event (only the assertion failure was measured; double-counting is speculated, never observed)",
+      "unqualified CDS \"analytic\" claim (Python-level paired C call; internal C algorithm not verified)"
+    ],
+    "retained_with_correct_labels": [
+      "scanner-vs-fresh reproducibility (L7-vs-L7)",
+      "same-density D2-once machine precision (L7-vs-L7)",
+      "grid_response activity check (L8-vs-L8 native)"
+    ],
+    "phaseC_maxg_records_hold": true,
+    "endpoint_recheck": "run_artifacts/01_pure_water_o3_h2o/smd_config_audit/endpoint_recheck.json"
+  }
+}

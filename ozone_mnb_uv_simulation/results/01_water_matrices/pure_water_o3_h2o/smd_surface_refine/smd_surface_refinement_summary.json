@@ -1,0 +1,435 @@
+{
+  "job": "JOB-2026-0906-010",
+  "title": "SMD forward solvent-surface refinement supplementary control batch",
+  "budget": {
+    "new_smd_evaluations": 5,
+    "used": 5,
+    "note": "exactly five, as authorised"
+  },
+  "phase_statuses": {
+    "previous_batch_corrections": "done (5 revisions applied to 009 report + JSON)",
+    "config_regression": "pass (5/5, no SCF)",
+    "five_point_refinement": "pass (5/5 config + SCF)",
+    "unified_analysis": "done",
+    "stationary_frequency": "not executed (forbidden this batch)"
+  },
+  "config_gate": {
+    "baseline_order": 41,
+    "target_order": 47,
+    "points_per_sphere": {
+      "o31": 350,
+      "o41": 590,
+      "o47": 770
+    },
+    "checks": [
+      "baseline 41 basic gate passes",
+      "target 47 refinement gate passes and is in effect (770 pts/sphere)",
+      "target 31 fails pre-SCF (not above baseline)",
+      "failed assignment (actual still 41) fails",
+      "41 and 47 supported, 47 has more points"
+    ],
+    "regression": {
+      "all_pass": true,
+      "n_pass": 5,
+      "n_total": 5,
+      "baseline_order": 41,
+      "target_order": 47
+    },
+    "geometry_reuse": "five rotated coordinates and rotation matrices hash-checked; axis reused from 009 (not re-chosen)",
+    "everything_else_identical": "SMD(water), DFT L8 (520384 pts), xc/basis/dispersion, SCF 1e-12/1e-9, grid_response=True, CDS path unchanged"
+  },
+  "five_points": [
+    {
+      "theta_deg": 0.0,
+      "e_total": -301.8916552674345,
+      "grad_max": 9.104064816151576e-05,
+      "surface_order_actual": 47,
+      "surface_points": 2750,
+      "dft_grid_points": 520384,
+      "scf_converged": true,
+      "coord_sha": "adc9e4e3f02a2c2a",
+      "R_sha": "1332df685c45a61a",
+      "e_solvent": -0.022932104986318994,
+      "e_cds": 0.0016454472347891028,
+      "e_d2": -0.00016578666978801098
+    },
+    {
+      "theta_deg": 0.1,
+      "e_total": -301.89165523354677,
+      "grad_max": 8.910659152825529e-05,
+      "surface_order_actual": 47,
+      "surface_points": 2753,
+      "dft_grid_points": 520384,
+      "scf_converged": true,
+      "coord_sha": "7620c34b4dde1e36",
+      "R_sha": "9957fdafa087ae3b",
+      "e_solvent": -0.022932066233827833,
+      "e_cds": 0.0016454472347101569,
+      "e_d2": -0.0001657866697903963
+    },
+    {
+      "theta_deg": -0.1,
+      "e_total": -301.89165530650035,
+      "grad_max": 9.26245359997822e-05,
+      "surface_order_actual": 47,
+      "surface_points": 2748,
+      "dft_grid_points": 520384,
+      "scf_converged": true,
+      "coord_sha": "d9c79dc3df6b4095",
+      "R_sha": "18c61a43ecaa3f90",
+      "e_solvent": -0.02293214833089494,
+      "e_cds": 0.001645447234760092,
+      "e_d2": -0.00016578666979346124
+    },
+    {
+      "theta_deg": 0.2,
+      "e_total": -301.89165520517327,
+      "grad_max": 8.686571592743711e-05,
+      "surface_order_actual": 47,
+      "surface_points": 2753,
+      "dft_grid_points": 520384,
+      "scf_converged": true,
+      "coord_sha": "92cb70d130c9de9f",
+      "R_sha": "d43f064eb858ea42",
+      "e_solvent": -0.022932032161767157,
+      "e_cds": 0.0016454472347584741,
+      "e_d2": -0.00016578666979623179
+    },
+    {
+      "theta_deg": -0.2,
+      "e_total": -301.891655350283,
+      "grad_max": 9.381419696473125e-05,
+      "surface_order_actual": 47,
+      "surface_points": 2747,
+      "dft_grid_points": 520384,
+      "scf_converged": true,
+      "coord_sha": "b71bc2df325e8f25",
+      "R_sha": "95007ab7bae92209",
+      "e_solvent": -0.0229321960941719,
+      "e_cds": 0.0016454472348235271,
+      "e_d2": -0.00016578666978957413
+    }
+  ],
+  "unified": {
+    "31": {
+      "order": 31,
+      "surface_points": {
+        "0.0": 1320,
+        "0.1": 1320,
+        "-0.1": 1318,
+        "0.2": 1321,
+        "-0.2": 1320
+      },
+      "E0": -301.89160450444064,
+      "dE_vs_theta": {
+        "0.0": 0.0,
+        "0.1": 5.723160256820847e-08,
+        "-0.1": -7.176095095928758e-08,
+        "0.2": 9.843626003203099e-08,
+        "-0.2": -1.5599175640090834e-07
+      },
+      "dE_abs_max": 1.5599175640090834e-07,
+      "axis_dot_Tg0": 3.712944218646e-05,
+      "T_g0_norm": 0.00013169723131436624,
+      "central_slopes": {
+        "0.1": 3.695364452870442e-05,
+        "0.2": 3.644412882873144e-05
+      },
+      "slope_resid": {
+        "0.1": -1.7579765775557917e-07,
+        "0.2": -6.853133577285568e-07
+      },
+      "grad_back_vs_orig_max": {
+        "0.1": 3.4617227134412635e-06,
+        "-0.1": 3.1872483413314733e-06,
+        "0.2": 7.089264277814709e-06,
+        "-0.2": 6.024966088731567e-06
+      },
+      "per_angle": [
+        {
+          "theta": 0.0,
+          "grad_max": 8.087602998320077e-05,
+          "trans": 7.80667935959723e-14,
+          "rot": 6.008756518906494e-05,
+          "internal": 0.00015532096119047094
+        },
+        {
+          "theta": 0.1,
+          "grad_max": 8.165527211944692e-05,
+          "trans": 8.896019736906824e-14,
+          "rot": 5.875402432912348e-05,
+          "internal": 0.00015671993113806302
+        },
+        {
+          "theta": -0.1,
+          "grad_max": 8.014406303053768e-05,
+          "trans": 3.455342024712352e-14,
+          "rot": 6.127097162611263e-05,
+          "internal": 0.00015409434111894604
+        },
+        {
+          "theta": 0.2,
+          "grad_max": 8.247510407605916e-05,
+          "trans": 5.3515425648929917e-14,
+          "rot": 5.73024694442303e-05,
+          "internal": 0.0001583092244776185
+        },
+        {
+          "theta": -0.2,
+          "grad_max": 7.946601577989626e-05,
+          "trans": 7.540207965659147e-14,
+          "rot": 6.227477998455059e-05,
+          "internal": 0.0001530139164950614
+        }
+      ]
+    },
+    "41": {
+      "order": 41,
+      "surface_points": {
+        "0.0": 2133,
+        "0.1": 2134,
+        "-0.1": 2133,
+        "0.2": 2134,
+        "-0.2": 2132
+      },
+      "E0": -301.89164848024785,
+      "dE_vs_theta": {
+        "0.0": 0.0,
+        "0.1": 2.792947384477884e-07,
+        "-0.1": -2.792830287035031e-07,
+        "0.2": 5.567260359384818e-07,
+        "-0.2": -5.560955287364777e-07
+      },
+      "dE_abs_max": 5.567260359384818e-07,
+      "axis_dot_Tg0": 0.00016022713404146145,
+      "T_g0_norm": 0.00016022713404146145,
+      "central_slopes": {
+        "0.1": 0.00016002074293805117,
+        "0.2": 0.0001593999475175494
+      },
+      "slope_resid": {
+        "0.1": -2.0639110341028229e-07,
+        "0.2": -8.271865239120493e-07
+      },
+      "grad_back_vs_orig_max": {
+        "0.1": 2.897180455055815e-06,
+        "-0.1": 3.2552534755458626e-06,
+        "0.2": 5.513167285850912e-06,
+        "-0.2": 6.953840009679839e-06
+      },
+      "per_angle": [
+        {
+          "theta": 0.0,
+          "grad_max": 2.5803375456790956e-05,
+          "trans": 9.110267884264979e-14,
+          "rot": 5.0085359893796363e-05,
+          "internal": 1.148459476981078e-06
+        },
+        {
+          "theta": 0.1,
+          "grad_max": 2.869921685325497e-05,
+          "trans": 7.680768920195196e-14,
+          "rot": 5.2434036258874504e-05,
+          "internal": 5.268865682169047e-06
+        },
+        {
+          "theta": -0.1,
+          "grad_max": 2.5774868814182735e-05,
+          "trans": 4.305071888443115e-14,
+          "rot": 4.765290467903091e-05,
+          "internal": 4.181037757063127e-06
+        },
+        {
+          "theta": 0.2,
+          "grad_max": 3.131929967164029e-05,
+          "trans": 6.980588636915083e-14,
+          "rot": 5.472990235030577e-05,
+          "internal": 9.790796013061872e-06
+        },
+        {
+          "theta": -0.2,
+          "grad_max": 2.583319389671452e-05,
+          "trans": 1.1019141444130466e-13,
+          "rot": 4.510117198029289e-05,
+          "internal": 8.902458902968601e-06
+        }
+      ]
+    },
+    "47": {
+      "order": 47,
+      "surface_points": {
+        "0.0": 2750,
+        "0.1": 2753,
+        "-0.1": 2748,
+        "0.2": 2753,
+        "-0.2": 2747
+      },
+      "E0": -301.8916552674345,
+      "dE_vs_theta": {
+        "0.0": 0.0,
+        "0.1": 3.3887715744640445e-08,
+        "-0.1": -3.906586698576575e-08,
+        "0.2": 6.226122195585049e-08,
+        "-0.2": -8.284848718176363e-08
+      },
+      "dE_abs_max": 8.284848718176363e-08,
+      "axis_dot_Tg0": 2.0948529429261495e-05,
+      "T_g0_norm": 9.482698931261352e-05,
+      "central_slopes": {
+        "0.1": 2.0899661954053818e-05,
+        "0.2": 2.0785434749890613e-05
+      },
+      "slope_resid": {
+        "0.1": -4.886747520767759e-08,
+        "0.2": -1.630946793708819e-07
+      },
+      "grad_back_vs_orig_max": {
+        "0.1": 2.840256837045328e-06,
+        "-0.1": 2.7173628574505257e-06,
+        "0.2": 5.814099224470436e-06,
+        "-0.2": 5.314569733417725e-06
+      },
+      "per_angle": [
+        {
+          "theta": 0.0,
+          "grad_max": 9.104064816151576e-05,
+          "trans": 5.771911934935747e-14,
+          "rot": 2.8265724833102272e-05,
+          "internal": 0.0001995628358019424
+        },
+        {
+          "theta": 0.1,
+          "grad_max": 8.910659152825529e-05,
+          "trans": 1.225371940399322e-13,
+          "rot": 2.5709033775101416e-05,
+          "internal": 0.0001994627284460416
+        },
+        {
+          "theta": -0.1,
+          "grad_max": 9.26245359997822e-05,
+          "trans": 8.174302614222622e-14,
+          "rot": 3.0659550438577e-05,
+          "internal": 0.00019970963733025905
+        },
+        {
+          "theta": 0.2,
+          "grad_max": 8.686571592743711e-05,
+          "trans": 1.1522664862109094e-13,
+          "rot": 2.304025805129556e-05,
+          "internal": 0.0001995878756850442
+        },
+        {
+          "theta": -0.2,
+          "grad_max": 9.381419696473125e-05,
+          "trans": 8.19196115209903e-14,
+          "rot": 3.291576715734972e-05,
+          "internal": 0.0001997355850115368
+        }
+      ]
+    },
+    "diff_47_vs_41": [
+      {
+        "theta_deg": 0.0,
+        "dE": -6.787186634937825e-06,
+        "dg_norm": 0.00021386720248147513,
+        "dg_max": 9.440823307012638e-05,
+        "dg_trans": 9.058224113478938e-14,
+        "dg_rot": 7.540584445797927e-05,
+        "dg_int": 0.00020013280320534994
+      },
+      {
+        "theta_deg": 0.1,
+        "dE": -7.032593657640973e-06,
+        "dg_norm": 0.00021395097346352935,
+        "dg_max": 9.480754531313723e-05,
+        "dg_trans": 1.434011699163053e-13,
+        "dg_rot": 7.540941105068096e-05,
+        "dg_int": 0.00020022097734998017
+      },
+      {
+        "theta_deg": -0.1,
+        "dE": -6.546969473220088e-06,
+        "dg_norm": 0.0002134836071981506,
+        "dg_max": 9.37316511158727e-05,
+        "dg_trans": 6.759966554406925e-14,
+        "dg_rot": 7.509475753518344e-05,
+        "dg_int": 0.00019984000583733545
+      },
+      {
+        "theta_deg": 0.2,
+        "dE": -7.2816514489204565e-06,
+        "dg_norm": 0.000213936523451795,
+        "dg_max": 9.494466769968679e-05,
+        "dg_trans": 7.36424112958807e-14,
+        "dg_rot": 7.512927891287974e-05,
+        "dg_int": 0.00020031082725771755
+      },
+      {
+        "theta_deg": -0.2,
+        "dE": -6.313939593383111e-06,
+        "dg_norm": 0.00021262508592019476,
+        "dg_max": 9.276172117817644e-05,
+        "dg_trans": 8.802259280296876e-14,
+        "dg_rot": 7.448883413580926e-05,
+        "dg_int": 0.0001991502968907104
+      }
+    ]
+  },
+  "key_numbers": {
+    "dE_abs_max": {
+      "o31": 1.56e-07,
+      "o41": 5.567e-07,
+      "o47": 8.285e-08
+    },
+    "ratio_47_over_41": 0.149,
+    "monotonic": false,
+    "ordering_dE_abs_max": "47 (8.285e-08) < 31 (1.56e-07) < 41 (5.567e-07) -- NON-monotonic; one forward refinement is not strict convergence",
+    "internal_grad_at_theta0": {
+      "o31": 0.000155,
+      "o41": 1.15e-06,
+      "o47": 0.0002
+    },
+    "slope_resid_fraction": "0.13-1.8% across all three settings",
+    "surface_points_ranges": {
+      "o31": [
+        1318,
+        1321
+      ],
+      "o41": [
+        2132,
+        2134
+      ],
+      "o47": [
+        2747,
+        2753
+      ]
+    }
+  },
+  "judgments": {
+    "orientation_dependence_refined_41_to_47": "REDUCED (ratio 0.149) but NOT monotonic across 31/41/47; ordering is 47 < 31 < 41 (47 smallest); one forward refinement is not strict convergence",
+    "gradient_covariance_error": "did NOT drop by an order of magnitude (47 is 0.8-0.98x of 41) -- must be reported alongside the orientation-energy improvement, not omitted",
+    "new_stationary_point": "surface gear change may move the stationary point; this batch did NOT directly measure the new stationary position",
+    "slope_Tg_consistency": "HOLDS in all three settings",
+    "internal_gradient": "smallest at baseline 41 (1.15e-6), largest at 47 (2.0e-4) - the geometry was optimised under the OLD discretisation, so refinement moves the numerical stationary point; larger internal residual is NOT evidence that refinement is worse",
+    "two_distinct_statements": "orientation dependence improved (yes) vs old geometry still near stationary in new setting (no)",
+    "dispersion": "analytic, unaffected (009 evidence retained; not remeasured)",
+    "revision_JOB_2026_0906_011": {
+      "ordering_corrected": "was '31 < 47 < 41' -> corrected to '47 < 31 < 41' (max|dE|: 47=8.285e-8, 31=1.56e-7, 41=5.567e-7)",
+      "wording_noise_floor": "was 'orientation noise floor reduced by an order of magnitude' -> 'within the measured fixed-axis/angle range, energy orientation-change magnitude reduced to 0.149x'",
+      "covariance_error": "explicitly added: gradient covariance error did NOT drop by an order of magnitude (must be reported alongside)",
+      "new_stationary_point": "explicitly added: surface gear change may move stationary point but this batch did NOT directly measure the new position",
+      "source_crosscheck": "added protocols/smd_source_crosscheck.py + test (009 source vs 010 output item-by-item; perturbation regression passes); file hashes 009=373bdab33ddfaffe 010=cd8259768f5208a9; task(full) vs actual(10-decimal) input max diff 4.82e-11 A (hashes differ, not conflated)"
+    }
+  },
+  "acceptance_boundaries": "max|g|<=1e-5 unchanged; no external component removed; no favourable orientation selected; no frequencies approved; no acceptance-protocol amendment proposed (evidence insufficient)",
+  "next_batch_recommendation": "ONE bounded controlled re-optimisation of c06_plus under order=47 (<=30 steps, start = the saved theta=0 geometry, all else unchanged), then full Cartesian re-check against max|g|<=1e-5; do NOT auto-refine further; if it still fails, user decides between keeping 41 as the production setting or refining further",
+  "artifacts": {
+    "protocols/smd_surface_refine_config.py": "8c95570fbadd7440",
+    "protocols/smd_surface_refine_run.py": "c814b32e6589815a",
+    "run_artifacts/01_pure_water_o3_h2o/smd_surface_refine/order47_five_points.json": "cd8259768f5208a9",
+    "run_artifacts/01_pure_water_o3_h2o/smd_surface_refine/surface_config_regression.json": "5169efd823c0f5b9",
+    "run_artifacts/01_pure_water_o3_h2o/smd_surface_refine/unified_analysis.json": "faa6164d5f5a7098"
+  },
+  "report": "results/01_water_matrices/pure_water_o3_h2o/smd_surface_refine/smd_surface_refinement_report.md",
+  "stop": "batch complete; no optimisation/frequency/thermochemistry/reaction-path calculations"
+}

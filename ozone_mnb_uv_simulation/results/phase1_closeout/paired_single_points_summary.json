@@ -1,0 +1,96 @@
+{
+  "job": "JOB-2026-0906-018",
+  "title": "paired gas & SMD single points on accepted gas-phase geometries (restricted electronic-energy work)",
+  "new_evaluations": 4,
+  "budget": "4/4 (2 geometries x {gas, SMD(water,order41,SWIG)})",
+  "job017_correction": "4 traceable spots: attribute-read path described precisely (hessian/pcm.py reads the attribute; build/grad do not); runtime-reproduced vs static-inference exceptions separated; problem = current PySCF ISWIG wiring issue, historical SWIG results NOT invalidated; route-B \"only path\" overstatement removed",
+  "provenance": {
+    "c06": {
+      "source": "endpoint_frequency/endpoints_fixed.json",
+      "coords_sha": "7cce84e20546124a",
+      "file_sha": "451a3f0b7261f09b (=registry)",
+      "opt_label": "gas L7, phaseC attempt2, pass_gmax=True"
+    },
+    "c14": {
+      "source": "c14_l8_check/l8_optimize_result.json",
+      "coords_sha": "fd9e1295ca20d020",
+      "file_sha": "29ecc3617147fefb (=registry)",
+      "opt_label": "gas L8, JOB-005, + L8 freq 12/12"
+    },
+    "atom_order": "O,O,O,O,H,H (0-2 O3, central=0)",
+    "unit": "Angstrom"
+  },
+  "points": {
+    "c06_gas": {
+      "E": -301.874094021,
+      "grad_max": 4.685e-06
+    },
+    "c06_smd": {
+      "E": -301.891031484,
+      "grad_max": 0.004049,
+      "surface": "SWIG/41 (2132 pts)"
+    },
+    "c14_gas": {
+      "E": -301.874837967,
+      "grad_max": 2.541e-06,
+      "reproduces_L8_acceptance": "E and grad_max match registry bit-for-bit"
+    },
+    "c14_smd": {
+      "E": -301.889971752,
+      "grad_max": 0.003412,
+      "surface": "SWIG/41"
+    },
+    "d2_consistency": "exact (absdiff 0.0 for both geometries across phases)"
+  },
+  "unified_energies": {
+    "sign_convention": "dE_solv_fixed = E_SMD - E_gas (negative = stabilized)",
+    "dE_solv_fixed_hartree": {
+      "c06": -0.016937,
+      "c14": -0.015134
+    },
+    "dE_solv_fixed_kcal": {
+      "c06": -10.63,
+      "c14": -9.5
+    },
+    "dE_gas": {
+      "hartree": 0.000744,
+      "kcal": 0.467
+    },
+    "dE_SMD_fixed": {
+      "hartree": -0.00106,
+      "kcal": -0.665
+    },
+    "solvent_effect_on_relative_energy": {
+      "hartree": -0.001804,
+      "kcal": -1.132
+    }
+  },
+  "naming": "dE_solv_fixed = solvent electronic-energy change at FIXED gas-phase geometry; NOT solvation free energy / binding energy / aqueous reaction energy",
+  "scope": "observations under current model (wb97xd+-D2/def2-TZVP/L8; SMD water order41 SWIG = existing reference config, NOT a proven convergence limit) and FIXED gas-phase geometries; no robust aqueous ordering / solution minima / free energies / mechanisms claimed; ordering flip (gas c14 lower 0.467 kcal vs SMD-fixed c06 lower 0.665 kcal) reported as observation only",
+  "acceptance_status": "formal aqueous stationary acceptance STILL NOT PASSED (unchanged); gas L8 single-point gradients are batch-config checks, NOT rewritten acceptance evidence",
+  "next_step_recommendation": {
+    "proposal": "geometry-choice sensitivity: repeat paired single points on one candidate across its two accepted geometries (e.g. c14 L7 retained endpoint + L8 primary; 4 evals) to test how much the fixed-geometry choice moves dE_solv_fixed",
+    "decision_value": "if |delta| < 0.2 kcal/mol the restricted electronic-energy workflow is a robust phase-1 reference; otherwise a geometry-dependence warning must be registered",
+    "boundary": "requires commander approval; not auto-expanded"
+  },
+  "artifacts": {
+    "protocols/paired_sp_provenance.py": "371d78686d994c64",
+    "protocols/paired_single_points.py": "dc3622a27c0baaa5",
+    "protocols/paired_sp_analysis.py": "2126febf91d52e3c",
+    "run_artifacts/01_pure_water_o3_h2o/paired_sp/provenance.json": "bf3909d8566871fe",
+    "run_artifacts/01_pure_water_o3_h2o/paired_sp/single_points.json": "12962e4441a438a7",
+    "run_artifacts/01_pure_water_o3_h2o/paired_sp/unified_energies.json": "4971557514f1997b",
+    "notes/iswig_callpath_verification_2026-09-07.md": "2bc8b42770a03b2e"
+  },
+  "report": "results/phase1_closeout/paired_single_points_report.md",
+  "stop": "batch complete; no optimisation, no frequencies, no further expansion",
+  "revision_JOB_2026_0906_019": {
+    "execution_counts": "corrected: 3 script starts; 5 SCF/gradient attempts (run 2 computed 1 c06 gas point then lost it to a post-computation record error; recomputed in run 3); 4 unique points saved; 1 attempt OVER the original cap of 4. Original \"4/4, no failures\" wording replaced",
+    "audit": "run_artifacts/01_pure_water_o3_h2o/paired_sp/execution_audit.json (evidence: run-3 log + single_points.json file-based; run-1/2 tracebacks preserved in session record, logs overwritten)",
+    "d2_column": "E(-D2) is a SIGNED contribution (negative); the report table now shows signed values to avoid confusion with the \"-D2\" header",
+    "bitwise_claim": "c14 gas single point vs L8 acceptance record is NOT bit-identical at full precision (dE=9.66e-13 Eh, dgrad=1.01e-11 Eh/Bohr); \"bitwise reproduction\" replaced by the actual full-precision differences",
+    "hash_types": "coords hash compared only to registry inline coords hash; file hash only to registry source_hash; not interchangeable",
+    "driver_fix": "v2 ledger mechanism (protocols/sp_ledger.py + paired_single_points.py v2): attempts persisted before computation; SCF/grad/save states separate; restart keeps budget; saved results reused after verification; error records never overwritten; no-SCF tests 3/3 PASS (protocols/test_sp_ledger.py)",
+    "next_step": "geometry-choice sensitivity SUSPENDED; the 0.2 kcal/mol criterion DELETED (no research target or error-budget basis); future reuse of c14 L8 paired results after compatibility verification"
+  }
+}

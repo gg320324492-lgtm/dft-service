@@ -1,0 +1,309 @@
+{
+  "job": "JOB-2026-0905-009",
+  "step": "directional_confirmation",
+  "settings": {
+    "grid_levels": [
+      6,
+      7
+    ],
+    "scf_tol": 1e-12,
+    "scf_tol_grad": 1e-09,
+    "amplitudes_a": [
+      0.002,
+      0.005,
+      0.01
+    ],
+    "amplitude_convention": "max per-atom displacement-VECTOR length",
+    "functional": "wb97xd (libxc) + full-derivative -D2 (ghost n/a)",
+    "basis": "def2-TZVP"
+  },
+  "verification": {
+    "c14_plus": {
+      "construction": "analytic",
+      "norm_1": 1.0,
+      "norm_pass": true,
+      "mw_external_overlap_max": 4.273715474047992e-17,
+      "orthogonality_pass": true,
+      "identical_to_persisted": true,
+      "lam_mw": -0.00022962556108849984,
+      "nu_cm1": -77.89586288955661
+    },
+    "c06_plus": {
+      "construction": "fd",
+      "norm_1": 1.0,
+      "norm_pass": true,
+      "mw_external_overlap_max": 1.618085164300031e-16,
+      "orthogonality_pass": true,
+      "identical_to_persisted": true,
+      "lam_mw": -4.443369837353523e-05,
+      "nu_cm1": -34.26577103692555
+    }
+  },
+  "hashes": {
+    "internal_subspace_analysis": "9b0036d62030bbc8",
+    "stepC_reopt_c14_plus": "7f94fe13979dc7ea",
+    "stepC_reopt_c06_plus": "28dfeaea716db134",
+    "script": "8e678d36bd48c33b"
+  },
+  "n_tasks": 28,
+  "candidates": {
+    "c14_plus": {
+      "direction_construction": "analytic",
+      "verdict": {
+        "verdict": "待定",
+        "reason": "能量层与梯度层一致为正（网格间差异 28%）；k_g 与 k_E 幅值差超过 50%%",
+        "grid_stable": true,
+        "eg_consistent": false,
+        "grid_comparison": [
+          {
+            "amp_a": 0.002,
+            "d_grid_k_E": -3.055384007586502e-05,
+            "d_grid_k_g": -2.7301739733705634e-05,
+            "rel_d_E": -0.2780629323811649,
+            "rel_d_g": -0.10359073503787894
+          },
+          {
+            "amp_a": 0.005,
+            "d_grid_k_E": -3.09801879352436e-05,
+            "d_grid_k_g": -2.687434507978991e-05,
+            "rel_d_E": -0.2022695931724353,
+            "rel_d_g": -0.08700816551966005
+          },
+          {
+            "amp_a": 0.01,
+            "d_grid_k_E": -3.200518834870359e-05,
+            "d_grid_k_g": -2.5384972552109795e-05,
+            "rel_d_E": -0.10391768030522745,
+            "rel_d_g": -0.053978385596626564
+          }
+        ],
+        "advice": "优先设计最小导数诊断（同方向能量/梯度层交叉核对），而非继续长时间优化。"
+      },
+      "tables": {
+        "6": {
+          "rows": [
+            {
+              "amp_a": 0.002,
+              "q_bohr": 0.005274202970582594,
+              "k_E": 0.00010988102518455151,
+              "k_g": 0.0002635538759689512,
+              "s_E": 2.0477161358830158e-05,
+              "nonconverged": false
+            },
+            {
+              "amp_a": 0.005,
+              "q_bohr": 0.013185507426456486,
+              "k_E": 0.0001531628528507145,
+              "k_g": 0.00030887152854311683,
+              "s_E": 2.0525961398892212e-05,
+              "nonconverged": false
+            },
+            {
+              "amp_a": 0.01,
+              "q_bohr": 0.02637101485291297,
+              "k_E": 0.00030798597750351833,
+              "k_g": 0.00047028032186454007,
+              "s_E": 2.06557553436488e-05,
+              "nonconverged": false
+            }
+          ],
+          "fit_E": {
+            "k0_extrapolated": 0.00010160062645949707,
+            "c_per_a2": 0.5779180332951148,
+            "max_residual": 3.234263209515669e-08,
+            "supported": true
+          },
+          "fit_g": {
+            "k0_extrapolated": 0.00025498697832544113,
+            "c_per_a2": 0.6029183180484797,
+            "max_residual": 5.8040256380143766e-08,
+            "supported": true
+          },
+          "central": {
+            "e_total": -301.87483609926426,
+            "max_abs_grad": 1.3842392731228154e-05,
+            "scf_converged": true,
+            "n_grid_points": 318464
+          },
+          "s_g": -4.711215183020368e-06
+        },
+        "7": {
+          "rows": [
+            {
+              "amp_a": 0.002,
+              "q_bohr": 0.005274202970582594,
+              "k_E": 0.00014043486526041653,
+              "k_g": 0.00029085561570265685,
+              "s_E": 2.320737804838172e-05,
+              "nonconverged": false
+            },
+            {
+              "amp_a": 0.005,
+              "q_bohr": 0.013185507426456486,
+              "k_E": 0.0001841430407859581,
+              "k_g": 0.00033574587362290674,
+              "s_E": 2.3132600681841254e-05,
+              "nonconverged": false
+            },
+            {
+              "amp_a": 0.01,
+              "q_bohr": 0.02637101485291297,
+              "k_E": 0.0003399911658522219,
+              "k_g": 0.0004956652944166499,
+              "s_E": 2.2888804178776306e-05,
+              "nonconverged": false
+            }
+          ],
+          "fit_E": {
+            "k0_extrapolated": 0.0001321468235551769,
+            "c_per_a2": 0.5820438412583879,
+            "max_residual": 3.3310015070775294e-08,
+            "supported": true
+          },
+          "fit_g": {
+            "k0_extrapolated": 0.0002823646517268463,
+            "c_per_a2": 0.5973351944157369,
+            "max_residual": 5.315434534831822e-08,
+            "supported": true
+          },
+          "central": {
+            "e_total": -301.87483530422185,
+            "max_abs_grad": 1.783880110293981e-05,
+            "scf_converged": true,
+            "n_grid_points": 447216
+          },
+          "s_g": -6.465789207686525e-06
+        }
+      }
+    },
+    "c06_plus": {
+      "direction_construction": "fd",
+      "verdict": {
+        "verdict": "待定",
+        "reason": "能量层与梯度层符号不一致；k_g 与 k_E 幅值差超过 50%%；网格依赖大：网格变化引起的曲率相对变化最大 117%",
+        "grid_stable": false,
+        "eg_consistent": false,
+        "grid_comparison": [
+          {
+            "amp_a": 0.002,
+            "d_grid_k_E": 0.0003380648252470986,
+            "d_grid_k_g": 0.0001920834134618024,
+            "rel_d_E": 1.1742988606485538,
+            "rel_d_g": 1.1354185832994446
+          },
+          {
+            "amp_a": 0.005,
+            "d_grid_k_E": 0.0003337616659265729,
+            "d_grid_k_g": 0.00018684574721314383,
+            "rel_d_E": 0.997620618789947,
+            "rel_d_g": 0.8585705827437601
+          },
+          {
+            "amp_a": 0.01,
+            "d_grid_k_E": 0.0003187025006351293,
+            "d_grid_k_g": 0.00016912049589581807,
+            "rel_d_E": 0.635476075034006,
+            "rel_d_g": 0.4317117330691907
+          }
+        ],
+        "advice": "优先设计最小导数诊断（同方向能量/梯度层交叉核对），而非继续长时间优化。"
+      },
+      "tables": {
+        "6": {
+          "rows": [
+            {
+              "amp_a": 0.002,
+              "q_bohr": 0.0037971891511224647,
+              "k_E": 0.00028788653091291313,
+              "k_g": 0.00016917409692522546,
+              "s_E": -7.119743881945658e-06,
+              "nonconverged": false
+            },
+            {
+              "amp_a": 0.005,
+              "q_bohr": 0.009492972877806162,
+              "k_E": 0.00033455770624649426,
+              "k_g": 0.00021762421281199177,
+              "s_E": -7.062660782796921e-06,
+              "nonconverged": false
+            },
+            {
+              "amp_a": 0.01,
+              "q_bohr": 0.018985945755612323,
+              "k_E": 0.0005015177016980139,
+              "k_g": 0.0003917440341347244,
+              "s_E": -6.863474718427555e-06,
+              "nonconverged": false
+            }
+          ],
+          "fit_E": {
+            "k0_extrapolated": 0.0002789558033556756,
+            "c_per_a2": 0.6232143888155302,
+            "max_residual": 3.657168096322678e-08,
+            "supported": true
+          },
+          "fit_g": {
+            "k0_extrapolated": 0.00015978531085403068,
+            "c_per_a2": 0.649463008758731,
+            "max_residual": 1.42960698986522e-07,
+            "supported": true
+          },
+          "central": {
+            "e_total": -301.8740929720181,
+            "max_abs_grad": 1.4667612197723093e-05,
+            "scf_converged": true,
+            "n_grid_points": 318464
+          },
+          "s_g": 1.764800246043212e-05
+        },
+        "7": {
+          "rows": [
+            {
+              "amp_a": 0.002,
+              "q_bohr": 0.0037971891511224647,
+              "k_E": -5.017829433418545e-05,
+              "k_g": -2.2909316536576956e-05,
+              "s_E": -7.0298498269818045e-06,
+              "nonconverged": false
+            },
+            {
+              "amp_a": 0.005,
+              "q_bohr": 0.009492972877806162,
+              "k_E": 7.960403199213329e-07,
+              "k_g": 3.0778465598847944e-05,
+              "s_E": -6.984089935688964e-06,
+              "nonconverged": false
+            },
+            {
+              "amp_a": 0.01,
+              "q_bohr": 0.018985945755612323,
+              "k_E": 0.00018281520106288454,
+              "k_g": 0.00022262353823890635,
+              "s_E": -6.829267073964956e-06,
+              "nonconverged": false
+            }
+          ],
+          "fit_E": {
+            "k0_extrapolated": -5.988295604777827e-05,
+            "c_per_a2": 0.6796266474536842,
+            "max_residual": 4.2259816617838885e-09,
+            "supported": true
+          },
+          "fit_g": {
+            "k0_extrapolated": -3.315078536405416e-05,
+            "c_per_a2": 0.716232731523839,
+            "max_residual": 1.3586904024194752e-08,
+            "supported": true
+          },
+          "central": {
+            "e_total": -301.87409240877406,
+            "max_abs_grad": 1.8772119348187728e-05,
+            "scf_converged": true,
+            "n_grid_points": 447216
+          },
+          "s_g": 2.0150857476220598e-05
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,525 @@
+{
+  "job": "JOB-2026-0906-011",
+  "title": "c06 aqueous order=47 single controlled re-optimization",
+  "scope": "c06 only; c14 not optimized; no frequency",
+  "gate_A_source_crosscheck": "PASS",
+  "gate_B_preopt_path": "PASS",
+  "config": {
+    "order": 47,
+    "baseline_order": 41,
+    "grid_level": 8,
+    "conv_params": {
+      "trust": 0.1,
+      "gradientmax": 1e-07,
+      "gradientrms": 1e-07
+    },
+    "acceptance_cartesian_gmax": 1e-05,
+    "method_fingerprint": {
+      "xc": "wb97xd",
+      "basis": "def2-TZVP",
+      "grid_level": 8,
+      "scf_tol": 1e-12,
+      "scf_tol_grad": 1e-09,
+      "solvent": "smd",
+      "d2_attached": true,
+      "d2_params": {
+        "s6": 1.0,
+        "sr6": 1.1,
+        "a": 6.0,
+        "m": 12
+      },
+      "grid_response_default": true
+    }
+  },
+  "optimization": {
+    "n_steps": 28,
+    "hit_maxsteps": false,
+    "optimizer_converged": true,
+    "config_error": null,
+    "optimizer_error": null,
+    "seconds": 1882.4
+  },
+  "acceptance": {
+    "reached_maxsteps": false,
+    "n_steps": 28,
+    "optimizer_own_criteria_met": true,
+    "scf_converged": true,
+    "finite": true,
+    "unprojected_max_abs_g_le_1e5": false,
+    "surface_order_actual": 47,
+    "config_error": null,
+    "optimizer_error": null
+  },
+  "status": "NOT PASSED: optimizer internal-coordinate criteria met, but unprojected Cartesian max|g| > 1e-5 (threshold NOT relaxed, no gear switch)",
+  "endpoint_independent_verification": {
+    "coords_angstrom": [
+      [
+        -0.0570354601784993,
+        0.03186215743903855,
+        -0.06994280991619414
+      ],
+      [
+        0.7410905884827971,
+        0.6253918752555763,
+        0.6689662761543778
+      ],
+      [
+        -0.884516755046088,
+        0.7104831506504321,
+        -0.6802807351018876
+      ],
+      [
+        2.5446271555142936,
+        -1.50673357848704,
+        1.961040735228787
+      ],
+      [
+        1.9633232115627017,
+        -0.8460250199422588,
+        1.5671546432689756
+      ],
+      [
+        2.168120515664792,
+        -1.671532034715744,
+        2.8290303154659395
+      ]
+    ],
+    "coord_sha_full": "bf912a791b3e9761",
+    "coord_sha_actual_input": "3fc5ee3f0e8fbfa1",
+    "e_total": -301.89165921477604,
+    "e_d2_analytic": -0.0001664489143910183,
+    "e_dft_part": -301.89149276586164,
+    "e_solvent": -0.02304727127904012,
+    "e_cds": 0.0016499703513303441,
+    "gradient_full_6x3": [
+      [
+        4.4263074939024664e-06,
+        -1.323316184074757e-05,
+        -1.0095413963914311e-05
+      ],
+      [
+        -1.8341984169899242e-05,
+        -3.5088225972614332e-06,
+        6.613214280467547e-06
+      ],
+      [
+        -2.4222185363876995e-06,
+        -2.5034176988003434e-05,
+        -1.4071292611685563e-05
+      ],
+      [
+        1.10889937213701e-05,
+        2.257782880196402e-05,
+        8.383784030703896e-06
+      ],
+      [
+        1.951333435327656e-06,
+        1.3906515055807326e-05,
+        7.514304960092312e-06
+      ],
+      [
+        3.297567848611261e-06,
+        5.291817542304156e-06,
+        1.6554032461775351e-06
+      ]
+    ],
+    "grad_max": 2.5034176988003434e-05,
+    "grad_rms": 1.1827399146568486e-05,
+    "scf_converged": true,
+    "finite": true,
+    "surface_order_actual": 47,
+    "surface_points": 2742,
+    "dft_grid_level": 8,
+    "dft_grid_points": 520384,
+    "pass_gmax_cartesian": false,
+    "decomposition": {
+      "net_force_norm": 2.166457737312089e-13,
+      "T_g": [
+        -0.0002354384621348664,
+        -6.500251314585847e-05,
+        0.00028997442863295186
+      ],
+      "T_g_norm": 0.0003791329126160314,
+      "g_translation_norm": 8.844526661708157e-14,
+      "g_rotation_norm": 5.01792329753957e-05,
+      "g_internal_norm": 1.3133278891004693e-07,
+      "g_norm": 5.0179404842031374e-05,
+      "int_norm_fraction": 0.0026172647787173374,
+      "int_sq_fraction": 6.850074921914313e-06
+    }
+  },
+  "structure_mapping": {
+    "c06_endpoint_vs_c06_start": {
+      "type": "same isomer (c06_plus), original orientation",
+      "rmsd_A": 0.031910707825161436,
+      "max_atom_move_A": 0.03312969259944043,
+      "start_gap_A": 3.6111101402258625,
+      "endpoint_gap_A": 3.618083074262855,
+      "gap_change_A": 0.006972934036992395
+    },
+    "c06_endpoint_vs_c14_aqueous": {
+      "type": "DIFFERENT isomer (c14_plus); no rotation/permutation registration; rough only",
+      "c14_source": "/mnt/e/dft-service/ozone_mnb_uv_simulation/models/01_water_matrices/pure_water_o3_h2o/validated/c14_plus_validated_pending.xyz",
+      "rmsd_A": 1.5998088050709252,
+      "endpoint_gap_A": 3.618083074262855,
+      "c14_gap_A": 2.8745976773068547,
+      "note": "Energies of different surface settings (and different isomers) must NOT be used to give a precise config energy difference."
+    }
+  },
+  "trajectory_summary": [
+    {
+      "step": 1,
+      "e_total": -301.8916552674347,
+      "grad_max": 9.104064822288334e-05,
+      "grad_rms": 4.75068864309324e-05,
+      "surface_order_actual": 47,
+      "surface_points": 2750,
+      "dft_grid_points": 520384,
+      "trust": null,
+      "norm_grad_internal": null,
+      "scf_converged": true
+    },
+    {
+      "step": 2,
+      "e_total": -301.8916567167702,
+      "grad_max": 6.273234399863097e-05,
+      "grad_rms": 3.2966125355788123e-05,
+      "surface_order_actual": 47,
+      "surface_points": 2749,
+      "dft_grid_points": 520384,
+      "trust": null,
+      "norm_grad_internal": null,
+      "scf_converged": true
+    },
+    {
+      "step": 3,
+      "e_total": -301.8916577913896,
+      "grad_max": 0.00016499465633264176,
+      "grad_rms": 7.001005559273224e-05,
+      "surface_order_actual": 47,
+      "surface_points": 2745,
+      "dft_grid_points": 520384,
+      "trust": null,
+      "norm_grad_internal": null,
+      "scf_converged": true
+    },
+    {
+      "step": 4,
+      "e_total": -301.89165793994295,
+      "grad_max": 0.00013150383352321214,
+      "grad_rms": 5.771571427926978e-05,
+      "surface_order_actual": 47,
+      "surface_points": 2744,
+      "dft_grid_points": 520384,
+      "trust": null,
+      "norm_grad_internal": null,
+      "scf_converged": true
+    },
+    {
+      "step": 5,
+      "e_total": -301.8916580661106,
+      "grad_max": 5.323513521382202e-05,
+      "grad_rms": 2.5996281885372703e-05,
+      "surface_order_actual": 47,
+      "surface_points": 2745,
+      "dft_grid_points": 520384,
+      "trust": null,
+      "norm_grad_internal": null,
+      "scf_converged": true
+    },
+    {
+      "step": 6,
+      "e_total": -301.8916581818774,
+      "grad_max": 6.158637951683845e-05,
+      "grad_rms": 3.3480253522639064e-05,
+      "surface_order_actual": 47,
+      "surface_points": 2745,
+      "dft_grid_points": 520384,
+      "trust": null,
+      "norm_grad_internal": null,
+      "scf_converged": true
+    },
+    {
+      "step": 7,
+      "e_total": -301.891658438541,
+      "grad_max": 9.865304013439897e-05,
+      "grad_rms": 5.4675036137074535e-05,
+      "surface_order_actual": 47,
+      "surface_points": 2744,
+      "dft_grid_points": 520384,
+      "trust": null,
+      "norm_grad_internal": null,
+      "scf_converged": true
+    },
+    {
+      "step": 8,
+      "e_total": -301.89165864666,
+      "grad_max": 8.157511171442371e-05,
+      "grad_rms": 4.9499913098734754e-05,
+      "surface_order_actual": 47,
+      "surface_points": 2744,
+      "dft_grid_points": 520384,
+      "trust": null,
+      "norm_grad_internal": null,
+      "scf_converged": true
+    },
+    {
+      "step": 9,
+      "e_total": -301.89165879810736,
+      "grad_max": 5.7556399452107814e-05,
+      "grad_rms": 2.5823989370207156e-05,
+      "surface_order_actual": 47,
+      "surface_points": 2743,
+      "dft_grid_points": 520384,
+      "trust": null,
+      "norm_grad_internal": null,
+      "scf_converged": true
+    },
+    {
+      "step": 10,
+      "e_total": -301.8916588863346,
+      "grad_max": 3.6698291067808466e-05,
+      "grad_rms": 1.7863996804531307e-05,
+      "surface_order_actual": 47,
+      "surface_points": 2744,
+      "dft_grid_points": 520384,
+      "trust": null,
+      "norm_grad_internal": null,
+      "scf_converged": true
+    },
+    {
+      "step": 11,
+      "e_total": -301.891658999228,
+      "grad_max": 5.887694985812324e-05,
+      "grad_rms": 2.8763268984384644e-05,
+      "surface_order_actual": 47,
+      "surface_points": 2746,
+      "dft_grid_points": 520384,
+      "trust": null,
+      "norm_grad_internal": null,
+      "scf_converged": true
+    },
+    {
+      "step": 12,
+      "e_total": -301.8916590853611,
+      "grad_max": 5.893809206649082e-05,
+      "grad_rms": 2.8318416560021305e-05,
+      "surface_order_actual": 47,
+      "surface_points": 2745,
+      "dft_grid_points": 520384,
+      "trust": null,
+      "norm_grad_internal": null,
+      "scf_converged": true
+    },
+    {
+      "step": 13,
+      "e_total": -301.8916591207726,
+      "grad_max": 2.9148244601365115e-05,
+      "grad_rms": 1.6705775090205756e-05,
+      "surface_order_actual": 47,
+      "surface_points": 2741,
+      "dft_grid_points": 520384,
+      "trust": null,
+      "norm_grad_internal": null,
+      "scf_converged": true
+    },
+    {
+      "step": 14,
+      "e_total": -301.89165912831686,
+      "grad_max": 2.9114534016929573e-05,
+      "grad_rms": 1.4025347711446975e-05,
+      "surface_order_actual": 47,
+      "surface_points": 2741,
+      "dft_grid_points": 520384,
+      "trust": null,
+      "norm_grad_internal": null,
+      "scf_converged": true
+    },
+    {
+      "step": 15,
+      "e_total": -301.8916591311336,
+      "grad_max": 3.314664329292905e-05,
+      "grad_rms": 1.4841154478813436e-05,
+      "surface_order_actual": 47,
+      "surface_points": 2741,
+      "dft_grid_points": 520384,
+      "trust": null,
+      "norm_grad_internal": null,
+      "scf_converged": true
+    },
+    {
+      "step": 16,
+      "e_total": -301.8916591370536,
+      "grad_max": 3.727136343402832e-05,
+      "grad_rms": 1.6615071087672318e-05,
+      "surface_order_actual": 47,
+      "surface_points": 2741,
+      "dft_grid_points": 520384,
+      "trust": null,
+      "norm_grad_internal": null,
+      "scf_converged": true
+    },
+    {
+      "step": 17,
+      "e_total": -301.89165914824184,
+      "grad_max": 4.0260313875338505e-05,
+      "grad_rms": 1.8456205432654145e-05,
+      "surface_order_actual": 47,
+      "surface_points": 2742,
+      "dft_grid_points": 520384,
+      "trust": null,
+      "norm_grad_internal": null,
+      "scf_converged": true
+    },
+    {
+      "step": 18,
+      "e_total": -301.8916591673233,
+      "grad_max": 3.9096379902828786e-05,
+      "grad_rms": 1.817354628986673e-05,
+      "surface_order_actual": 47,
+      "surface_points": 2742,
+      "dft_grid_points": 520384,
+      "trust": null,
+      "norm_grad_internal": null,
+      "scf_converged": true
+    },
+    {
+      "step": 19,
+      "e_total": -301.8916591885271,
+      "grad_max": 3.231889146948367e-05,
+      "grad_rms": 1.4762684650089877e-05,
+      "surface_order_actual": 47,
+      "surface_points": 2743,
+      "dft_grid_points": 520384,
+      "trust": null,
+      "norm_grad_internal": null,
+      "scf_converged": true
+    },
+    {
+      "step": 20,
+      "e_total": -301.8916592019429,
+      "grad_max": 2.4921552443590745e-05,
+      "grad_rms": 1.2433098350766768e-05,
+      "surface_order_actual": 47,
+      "surface_points": 2742,
+      "dft_grid_points": 520384,
+      "trust": null,
+      "norm_grad_internal": null,
+      "scf_converged": true
+    },
+    {
+      "step": 21,
+      "e_total": -301.89165920698304,
+      "grad_max": 2.4693833849817003e-05,
+      "grad_rms": 1.234634545190114e-05,
+      "surface_order_actual": 47,
+      "surface_points": 2741,
+      "dft_grid_points": 520384,
+      "trust": null,
+      "norm_grad_internal": null,
+      "scf_converged": true
+    },
+    {
+      "step": 22,
+      "e_total": -301.8916592093043,
+      "grad_max": 2.477133606167347e-05,
+      "grad_rms": 1.2200727026836506e-05,
+      "surface_order_actual": 47,
+      "surface_points": 2741,
+      "dft_grid_points": 520384,
+      "trust": null,
+      "norm_grad_internal": null,
+      "scf_converged": true
+    },
+    {
+      "step": 23,
+      "e_total": -301.89165921163914,
+      "grad_max": 2.486578482007358e-05,
+      "grad_rms": 1.1962593597742273e-05,
+      "surface_order_actual": 47,
+      "surface_points": 2741,
+      "dft_grid_points": 520384,
+      "trust": null,
+      "norm_grad_internal": null,
+      "scf_converged": true
+    },
+    {
+      "step": 24,
+      "e_total": -301.8916592136759,
+      "grad_max": 2.5036182192173825e-05,
+      "grad_rms": 1.1916799165450649e-05,
+      "surface_order_actual": 47,
+      "surface_points": 2742,
+      "dft_grid_points": 520384,
+      "trust": null,
+      "norm_grad_internal": null,
+      "scf_converged": true
+    },
+    {
+      "step": 25,
+      "e_total": -301.89165921458857,
+      "grad_max": 2.5091275637123417e-05,
+      "grad_rms": 1.1904081958663434e-05,
+      "surface_order_actual": 47,
+      "surface_points": 2742,
+      "dft_grid_points": 520384,
+      "trust": null,
+      "norm_grad_internal": null,
+      "scf_converged": true
+    },
+    {
+      "step": 26,
+      "e_total": -301.8916592147601,
+      "grad_max": 2.5084918307589888e-05,
+      "grad_rms": 1.1842584026724464e-05,
+      "surface_order_actual": 47,
+      "surface_points": 2742,
+      "dft_grid_points": 520384,
+      "trust": null,
+      "norm_grad_internal": null,
+      "scf_converged": true
+    },
+    {
+      "step": 27,
+      "e_total": -301.891659214775,
+      "grad_max": 2.504075268844569e-05,
+      "grad_rms": 1.1828836016470989e-05,
+      "surface_order_actual": 47,
+      "surface_points": 2742,
+      "dft_grid_points": 520384,
+      "trust": null,
+      "norm_grad_internal": null,
+      "scf_converged": true
+    },
+    {
+      "step": 28,
+      "e_total": -301.89165921477496,
+      "grad_max": 2.5034200433908855e-05,
+      "grad_rms": 1.1827392646591516e-05,
+      "surface_order_actual": 47,
+      "surface_points": 2742,
+      "dft_grid_points": 520384,
+      "trust": null,
+      "norm_grad_internal": null,
+      "scf_converged": true
+    }
+  ],
+  "artifacts": {
+    "protocols/smd_source_crosscheck.py": "8ac3e11714bde777",
+    "protocols/test_source_crosscheck.py": "39ca6e28b4e33536",
+    "protocols/smd_order47_preopt_verify.py": "c51727717c1323c8",
+    "protocols/smd_order47_optimize.py": "8c5fb8ee77ef469e",
+    "run_artifacts/.../source_crosscheck.json": "b1f0b94d421c6d01",
+    "run_artifacts/.../preopt_verify.json": "666c1f2dcb926378",
+    "run_artifacts/.../order47_optimization.json": "a439031c498270aa"
+  },
+  "stop": "batch complete; no further optimization/frequency/thermochemistry/reaction-path in this batch",
+  "revision_JOB_2026_0906_012": {
+    "wording_stationary": "was \"numerical stationary point located\" -> \"internal residual significantly reduced under current config, optimizer internal criteria met; full Cartesian stationary NOT passed\"",
+    "wording_torque": "was \"surface-discretisation spurious torque numerical floor\" -> \"measured orientation dependence and rotation-type residual; results sensitive to surface discretisation; no converged error upper bound established\"",
+    "not_convergence": "the 41->47 change is NOT called systematic convergence; default gear (41) is NOT auto-selected (default != precision-accepted)",
+    "order47_did_not_pass": "explicitly recorded: the order47 re-optimisation did NOT make the full gradient pass the original max|g|<=1e-5 standard",
+    "c14_comparison_superseded": "section-5 unregistered c14 comparison (RMSD 1.5998 A, unverified source) SUPERSEDED by the 012 registered comparison (RMSD 0.6625 A; c14 source = 008 cumulative-120-step saved endpoint)",
+    "next_step_superseded": "section-6 two-point gear-control recommendation SUPERSEDED (sensitivity data already exists; two-point proof rule rejected); see 012 report"
+  }
+}

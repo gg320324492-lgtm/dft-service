@@ -1,0 +1,88 @@
+{
+  "job": "JOB-2026-0906-026",
+  "title": "NH3/O3 gas monomer frequency and stability verification",
+  "new_evaluations": "SCF+grad 2/2; stability 2/2; analytic Hessian 2/2; D2 FD checks 4 (not SCF)",
+  "method": "wb97xd(libxc)+project -D2 full derivative / def2-TZVP / L8 / grid_response / SCF 1e-12,1e-9, gas",
+  "endpoints": {
+    "NH3": {
+      "endpoint": "NH3_gas_v5_final",
+      "e_total": -56.564219135911,
+      "grad_max": 7.661e-07,
+      "coords_match_index": true,
+      "coords_hash": "7c02c6ca816c716d"
+    },
+    "O3": {
+      "endpoint": "O3_gas_final",
+      "e_total": -225.433902699575,
+      "grad_max": 3.514e-06,
+      "coords_match_index": true,
+      "coords_hash": "6675bc7b5bf2aaf4"
+    }
+  },
+  "stability": {
+    "call": "mf.stability(return_status=True)",
+    "NH3_stable_i": true,
+    "O3_stable_i": true,
+    "stable_e": "None (external not requested)",
+    "scope": "internal only; no external search/following/UKS; internal stability does NOT exclude multireference"
+  },
+  "hessian": {
+    "composition": "combined (analytic DFT + central-FD D2 of analytic D2 gradient); DFT part = combined - D2; NOT called fully analytic; no double counting",
+    "grid_level_before_after": 8,
+    "antisym_residual": {
+      "NH3": 9.94e-07,
+      "O3": 1.54e-05
+    },
+    "d2_step_check_maxdiff": {
+      "NH3": 5.26e-13,
+      "O3": 4.06e-13
+    },
+    "layout": "(natm,natm,3,3) -> transpose(0,2,1,3).reshape(3n,3n); matches PySCF thermo convention (022 lesson applied)"
+  },
+  "frequencies": {
+    "masses": "mol.atom_mass_list() (most abundant isotope)",
+    "projection": "mass-weighted standard TR basis (rank 6 for both, nonlinear); orthogonality max dev <= 1.1e-15",
+    "NH3": {
+      "n_internal": 6,
+      "freq_cm": [
+        1024.4,
+        1680.7,
+        1681.2,
+        3531.7,
+        3659.4,
+        3659.4
+      ],
+      "negative_modes": []
+    },
+    "O3": {
+      "n_internal": 3,
+      "freq_cm": [
+        784.5,
+        1328.7,
+        1340.3
+      ],
+      "negative_modes": []
+    },
+    "pyscf_cross_check_max_diff_cm": {
+      "NH3": 3.64e-06,
+      "O3": 1.33e-06
+    },
+    "cross_check_scope": "validates matrix handling and mass conventions ONLY"
+  },
+  "verdict": {
+    "NH3": "local minimum SUPPORTED within this batch method and check scope",
+    "O3": "local minimum SUPPORTED within this batch method and check scope",
+    "scope": "this batch method (wb97xd+-D2/def2-TZVP/L8, gas) and checks (internal stability + harmonic frequencies); multireference not excluded (O3); no enthalpy/free energy/rates/binding energy; gas results are NOT aquaculture-mechanism interpretations"
+  },
+  "sum_of_monomer_reference_energies_hartree": -281.998121836,
+  "unfinished": [
+    "adduct initial-guess task (requires visual verification of S13 Figure 1 coordinates first)",
+    "water type/pH/UV wavelength still pending"
+  ],
+  "artifacts": {
+    "report": "results/phase2_preparation/nh3o3_monomer_freq_report.md",
+    "raw": "run_artifacts/02_nh3o3_reference/freq_check/",
+    "stdout_logs": "freq_check/NH3_stdout.log, O3_stdout.log",
+    "matrices": "freq_check/*_hess_{combined,d2,dft}.npy"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "source": "JOB-033 trajectory step 30 (last completed evaluation)",
+  "coords_hash": "650e5246519bcb69",
+  "e_total": -282.00164583088053,
+  "grad_max": 0.0003019864004372415,
+  "unevaluated_next_geometry": "not stored in JOB-033 record; optimizer-proposed next geometry NOT used per batch rule",
+  "note": "hash recomputed from the saved XYZ file (12-decimal rounding)"
+}

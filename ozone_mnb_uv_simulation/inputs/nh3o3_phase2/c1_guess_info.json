@@ -1,0 +1,46 @@
+{
+  "guess_label": "初猜：结合 S13 Figure 1 图示与 JOB-026 项目单体几何的刚体放置（非作者原始坐标）",
+  "fig_values": {
+    "oO_1_252_x2": "5O-6O, 6O-7O",
+    "angle_6O_deg": 117.7,
+    "NH": 1.012,
+    "contact_5O_1N": 2.967,
+    "contact_7O_1N": 2.963,
+    "dashed": "non-covalent contacts; C1 is a CONTACT complex, not a new-bond structure"
+  },
+  "guess_choice": {
+    "contact_avg": 2.965,
+    "note": "2.967/2.963 slight asymmetry averaged to symmetric bisector placement in the guess"
+  },
+  "distances": {
+    "O5_N": 2.965,
+    "O7_N": 2.9649990481251476,
+    "O5_O6": 1.2378770068635738,
+    "O7_O6": 1.2378757975810502,
+    "O5_O7": 2.1235792000000147,
+    "NH3_bonds": [
+      1.0111126442823803,
+      1.0111142943989213,
+      1.0111142943989124
+    ],
+    "min_interfragment": 2.132011817873698
+  },
+  "atom_order": "S13 numbering: 1N, 2H, 3H, 4H, 5O, 7O, 6O",
+  "fragments": {
+    "NH3": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "O3": [
+      4,
+      5,
+      6
+    ]
+  },
+  "n_atoms": 7,
+  "charge": 0,
+  "electrons": 34,
+  "overall": "singlet, RKS start"
+}

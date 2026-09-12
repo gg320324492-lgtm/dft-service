@@ -1,0 +1,104 @@
+{
+  "species": "o2",
+  "name": "O2 (triplet dioxygen)",
+  "phase": "gas",
+  "charge": 0,
+  "multiplicity": 3,
+  "xc": "wb97xd",
+  "basis": "def2-TZVP",
+  "solvent_model": "none",
+  "grid_level": 5,
+  "scf_conv_tol": 1e-11,
+  "opt_conv": {
+    "gradientmax": 2e-05,
+    "gradientrms": 1e-05,
+    "stepmax": 0.0001,
+    "steprms": 6e-05,
+    "maxsteps": 200
+  },
+  "T": 298.15,
+  "P": 101325.0,
+  "structure_source": "experimental gas-phase bond length",
+  "initial_geometry_angstrom": "O        0.0000000000       0.0000000000       0.0000000000\nO        0.0000000000       0.0000000000       1.2075000000",
+  "opt_seconds": 19.1,
+  "optimised_geometry_angstrom": [
+    [
+      "O ",
+      [
+        0.0,
+        0.0,
+        0.00647453
+      ]
+    ],
+    [
+      "O ",
+      [
+        0.0,
+        0.0,
+        1.20102547
+      ]
+    ]
+  ],
+  "geom_string": "O  0.00000000 0.00000000 0.00647453; O  0.00000000 0.00000000 1.20102547",
+  "scf_converged": true,
+  "e_dft_hartree": -150.34006992717428,
+  "max_gradient_hartree_bohr": 1.0907850622743354e-08,
+  "rms_gradient_hartree_bohr": 6.297650493321198e-09,
+  "optimisation_converged": true,
+  "n_grid_points": 85960,
+  "n_basis_functions": 62,
+  "spin_s2": 2.0094590157155015,
+  "e_dispersion_d2_hartree": -6.603395902070673e-08,
+  "e_total_wb97xd_hartree": -150.34006999320823,
+  "e_dispersion_d2_kcal_mol": -4.143693489538798e-05,
+  "hessian_seconds": 13.9,
+  "hessian_method": "analytic",
+  "hessian_asymmetry": 2.525677982546003e-15,
+  "raw_3n_frequencies_cm1": [
+    6.76,
+    6.76,
+    6.94,
+    6.94,
+    8.76,
+    1715.84
+  ],
+  "tr_rot_mode_max_abs_cm1": 8.76,
+  "n_imaginary": 0,
+  "frequencies_cm1": [
+    1715.84
+  ],
+  "lowest_frequency_cm1": 1715.84,
+  "n_vibrational_modes": 1,
+  "n_expected_modes": 1,
+  "thermo": {
+    "T": 298.15,
+    "P": 101325.0,
+    "sigma": 2,
+    "linear": true,
+    "rot_constants_cm1": [
+      0.0,
+      1.476809,
+      1.476809
+    ],
+    "ZPE": 10262.9735056758,
+    "E_0K": -394707535.9527771,
+    "H_298": -394698854.4010375,
+    "G_298": -394759909.52638507,
+    "S_tot": 204.7798938371,
+    "S_trans": 151.968625351,
+    "S_rot": 43.6573348798,
+    "S_vib": 0.0195658289,
+    "S_elec": 9.1343677774,
+    "thermal_H_corr": 18944.5252452493,
+    "thermal_G_corr": -42110.6001023054
+  },
+  "thermo_hartree": {
+    "ZPE": 0.0039089602,
+    "E_0K": -150.336161033,
+    "H_298": -150.3328544046,
+    "G_298": -150.3561090737
+  },
+  "is_minimum": true,
+  "total_seconds": 38.1,
+  "pyscf_version": "2.14.0"
+}

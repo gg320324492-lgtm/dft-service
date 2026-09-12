@@ -1,0 +1,59 @@
+{
+  "job": "JOB-2026-0906-024",
+  "title": "NH3/O3 same-method gas-phase monomer reference structures",
+  "new_evaluations": 39,
+  "cap": 42,
+  "eval_audit": {
+    "nh3_opt_v1_broken": 15,
+    "nh3_recheck_v1": 1,
+    "o3_opt": 1,
+    "o3_recheck": 1,
+    "diagnostics": 3,
+    "cont_v2": 7,
+    "cont_v3": 5,
+    "cont_v4": 2,
+    "cont_v5": 4,
+    "total": 39,
+    "deviations": [
+      "NH3 optimization evals exceeded the per-monomer allocation of 20 (root cause: driver wrapper defect froze the gradient at the initial geometry; 15 evals wasted; remaining overage used for convergence tightening)",
+      "NH3 endpoint recheck performed 3 times (v1/v4/v5) vs the \"at most 1\" instruction; v5 is the valid deliverable",
+      "ledger granularity defect (attempts recorded at scanner-creation level) found and corrected to per-eval counting"
+    ],
+    "root_cause_note": "pyberny/GradScanner path: do NOT patch the kernel of the object returned by nuc_grad_method (GradScanner copies __dict__ and does not update the bound mol -> gradient frozen at the initial geometry); use callback-based recording + maxsteps hard cap (v3-v5 pattern)"
+  },
+  "precheck": "no-SCF checks all PASS (D2 N/O/H coverage; D2 E-grad FD consistency 6.6e-15; atom order/charge/spin/units round-trip; NH3 non-planar guess; O3 traceable historical start)",
+  "monomers": {
+    "nh3": {
+      "e_total_hartree": -56.564219136,
+      "grad_max": 7.661e-07,
+      "stationary_candidate": true,
+      "rks_stability": "None (no internal instability found)",
+      "final_coords": "run_artifacts/02_nh3o3_reference/gas_monomer_references/nh3_v5_result.json"
+    },
+    "o3": {
+      "e_total_hartree": -225.4339027,
+      "grad_max": 3.514e-06,
+      "stationary_candidate": true,
+      "rks_stability": "None",
+      "start": "historical baseline geometry (already converged under the new method)",
+      "final_coords": "monomer_results.json :: o3 endpoint recheck"
+    }
+  },
+  "sum_of_monomer_reference_energies_hartree": -281.998121836,
+  "labels": "stationary-point candidates only (unprojected grad <= 1e-5 + optimizer criteria + SCF + fresh-object recheck); NO Hessian/frequency -> NOT accepted minima; no ZPE/H/G; no adduct -> no binding energy",
+  "rks_limitations": "<S\u00b2>=0 and internal stability None do NOT prove adequacy; multireference (O3; S13 R-row T1=0.0346 belongs to the COMBINED reactants) not excluded",
+  "corrections": "notes/job024_premcomputation_corrections_2026-09-07.md (charter v1.1: phases C/D moved out, 13-23 estimate withdrawn; electronic-state wording tightened; S13 visual check; \"(1)\" pairs downgraded to suspected duplicates)",
+  "unfinished": [
+    "frequency acceptance for both monomers (next batch)",
+    "addendum study requires visual verification of S13 Figure 1 coordinates first",
+    "RKS adequacy beyond internal stability (T1 at CCSD level) not done"
+  ],
+  "next_step": "frequency acceptance batch for the two monomer candidates, then addendum initial-guess preparation after visual verification of S13 structures; per-monomer overage registered and absorbed within the 42 cap",
+  "revision_JOB_2026_0906_025": {
+    "stability": "mf.stability() default return_status=False returns (mo_i, mo_e); the stability booleans are only returned with return_status=True. Our saved st[1]=None is mo_e=None (external check not requested) -> \"None\" must be read as \"saved return items insufficient to judge internal stability\", NOT \"no internal instability found\". Next stability run must use return_status=True and save stable_i/stable_e.",
+    "budget": "removed \"overage absorbed by the 42 total cap\" wording: total-cap headroom does not legitimize per-category overruns. Unauthorized diagnostics (3), unplanned continuations (4 runs), and repeated rechecks (3 vs <=1) registered separately with evidence retained.",
+    "root_cause": "early \"pyberny premature stop is the root cause\" judgment SUPERSEDED: the trust-radius collapse was a downstream consequence of the driver defect (frozen gradient). The optimizer convergence-threshold difference (v4: internal criteria met at 6.5e-5 Cartesian vs our 1e-5) is a threshold issue, not a defect.",
+    "driver": "gas_monomer_reference.py (v1) DISABLED with historical copy at protocols/deprecated_history/gas_monomer_reference_v1_executed.py; sole entry = gas_monomer_reference_v2.py (BudgetedScanner proxy subclassing lib.GradScanner; pre-eval budget guard+persist; total/per-species-opt/recheck caps separate; no kernel patching). No-SCF regression 5/5 PASS including the real berny+scanner adaptation path.",
+    "endpoint_index": "run_artifacts/02_nh3o3_reference/final_endpoint_index.json (default endpoints NH3_gas_v5_final / O3_gas_final; failed/superseded endpoints retained, default_read=false)"
+  }
+}

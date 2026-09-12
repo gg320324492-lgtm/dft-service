@@ -1,0 +1,483 @@
+{
+  "job": "JOB-2026-0905-009 / JOB-2026-0906-002",
+  "document": "unit_consistency_summary (supersedes the quantitative tables in directional_summary.json and grid_response_summary.json)",
+  "defect": {
+    "b": 0.52917721092,
+    "amplification": 1.8897261245650618,
+    "affected_batches": [
+      "directional_confirmation (28 points)",
+      "grid_response_diagnostic (10 points)"
+    ],
+    "unaffected": [
+      "curvature_audit probes (Bohr-consistent)",
+      "mode scans (Bohr)",
+      "H2O layer tests (Bohr)",
+      "unit tests (synthetic, Bohr convention)",
+      "all spectra/subspace analyses (no displacement)"
+    ]
+  },
+  "call_sites": [
+    {
+      "script": "protocols/directional_confirmation.py",
+      "scope": "directional_confirmation 28 points",
+      "status": "AFFECTED",
+      "note": "q*d added to Angstrom coordinates (L117); q used as Bohr denominator in k_E/k_g/s_E",
+      "exists": true,
+      "sha256_16": "8e678d36bd48c33b"
+    },
+    {
+      "script": "protocols/grid_response_diagnostic.py",
+      "scope": "grid_response_diagnostic 10 points",
+      "status": "AFFECTED",
+      "note": "same pattern (L158-160): q*d on Angstrom coordinates",
+      "exists": true,
+      "sha256_16": "a71001255a4e8e98"
+    },
+    {
+      "script": "protocols/curvature_audit_candidates.py",
+      "scope": "curvature_audit 3-layer probes (both candidates)",
+      "status": "NOT AFFECTED",
+      "note": "q*d added to mol.atom_coords(unit=Bohr) -> Bohr displacement, matching the Bohr convention of q",
+      "exists": true,
+      "sha256_16": "5b50e5fae7373f6d"
+    },
+    {
+      "script": "protocols/validation_stepD_softmode.py",
+      "scope": "mode energy scans",
+      "status": "NOT AFFECTED",
+      "note": "q*dx_cart_bohr added to atom_coords(unit=Bohr)",
+      "exists": true,
+      "sha256_16": "db9d6384726ca38c"
+    },
+    {
+      "script": "protocols/curvature_audit_unit_test.py",
+      "scope": "synthetic quadratic round-trip",
+      "status": "NOT AFFECTED",
+      "note": "synthetic model defined directly in the Bohr convention; no coordinate-unit translation involved",
+      "exists": true,
+      "sha256_16": "4fe7cd170e94fe1f"
+    },
+    {
+      "script": "protocols/curvature_audit_h2o_layers.py",
+      "scope": "H2O three-layer localization",
+      "status": "NOT AFFECTED",
+      "note": "q_for_atom_disp on d reshaped (3,3) added to atom_coords(Bohr)",
+      "exists": true,
+      "sha256_16": "b4124cc1698b22de"
+    },
+    {
+      "script": "protocols/curvature_audit_h2o_worst.py",
+      "scope": "H2O worst-element probe",
+      "status": "NOT AFFECTED",
+      "note": "same Bohr-consistent pattern",
+      "exists": true,
+      "sha256_16": "6de20ebfeb517fab"
+    }
+  ],
+  "corrected_tables": {
+    "directional_confirmation/c14_plus": {
+      "rowsF": [
+        {
+          "grid_level": 6,
+          "amp_nominal_a": 0.002,
+          "amp_actual_a": 0.003779,
+          "q_actual_bohr": 0.009967,
+          "k_E": 3.076858075295881e-05,
+          "k_gF": 0.0001394638944059395,
+          "s_E": 1.0835828761697714e-05,
+          "xcheck": {
+            "k_E_via_bfactor": true,
+            "s_E_via_bfactor": true
+          }
+        },
+        {
+          "grid_level": 6,
+          "amp_nominal_a": 0.005,
+          "amp_actual_a": 0.009449,
+          "q_actual_bohr": 0.024917,
+          "k_E": 4.2889959684446625e-05,
+          "k_gF": 0.00016344775989991705,
+          "s_E": 1.0861870067032644e-05,
+          "xcheck": {
+            "k_E_via_bfactor": true,
+            "s_E_via_bfactor": true
+          }
+        },
+        {
+          "grid_level": 6,
+          "amp_nominal_a": 0.01,
+          "amp_actual_a": 0.018897,
+          "q_actual_bohr": 0.049834,
+          "k_E": 8.624484274510014e-05,
+          "k_gF": 0.00024886160759566715,
+          "s_E": 1.0930554058785144e-05,
+          "xcheck": {
+            "k_E_via_bfactor": true,
+            "s_E_via_bfactor": true
+          }
+        },
+        {
+          "grid_level": 7,
+          "amp_nominal_a": 0.002,
+          "amp_actual_a": 0.003779,
+          "q_actual_bohr": 0.009967,
+          "k_E": 3.932418254233321e-05,
+          "k_gF": 0.0001539110617386959,
+          "s_E": 1.2280568098947341e-05,
+          "xcheck": {
+            "k_E_via_bfactor": true,
+            "s_E_via_bfactor": true
+          }
+        },
+        {
+          "grid_level": 7,
+          "amp_nominal_a": 0.005,
+          "amp_actual_a": 0.009449,
+          "q_actual_bohr": 0.024917,
+          "k_E": 5.15652943810018e-05,
+          "k_gF": 0.0001776690496471067,
+          "s_E": 1.2241244053604776e-05,
+          "xcheck": {
+            "k_E_via_bfactor": true,
+            "s_E_via_bfactor": true
+          }
+        },
+        {
+          "grid_level": 7,
+          "amp_nominal_a": 0.01,
+          "amp_actual_a": 0.018897,
+          "q_actual_bohr": 0.049834,
+          "k_E": 9.520720674146008e-05,
+          "k_gF": 0.00026229475541066246,
+          "s_E": 1.2112232511215766e-05,
+          "xcheck": {
+            "k_E_via_bfactor": true,
+            "s_E_via_bfactor": true
+          }
+        }
+      ],
+      "rowsT": [],
+      "central": {
+        "max_abs_grad_false": 1.3842392731228154e-05,
+        "max_abs_grad_true": null,
+        "s_g_false": -4.711215183020368e-06,
+        "s_g_true": null
+      },
+      "construction": "analytic",
+      "lam_mw": -0.00022962556108849984,
+      "nu_claim": -77.88090430751383
+    },
+    "directional_confirmation/c06_plus": {
+      "rowsF": [
+        {
+          "grid_level": 6,
+          "amp_nominal_a": 0.002,
+          "amp_actual_a": 0.003779,
+          "q_actual_bohr": 0.007176,
+          "k_E": 8.060852031257659e-05,
+          "k_gF": 8.951867969556946e-05,
+          "s_E": -3.7674211576497485e-06,
+          "xcheck": {
+            "k_E_via_bfactor": true,
+            "s_E_via_bfactor": true
+          }
+        },
+        {
+          "grid_level": 6,
+          "amp_nominal_a": 0.005,
+          "amp_actual_a": 0.009449,
+          "q_actual_bohr": 0.017939,
+          "k_E": 9.368694087232283e-05,
+          "k_gF": 0.00011516253691834294,
+          "s_E": -3.7374238952135797e-06,
+          "xcheck": {
+            "k_E_via_bfactor": true,
+            "s_E_via_bfactor": true
+          }
+        },
+        {
+          "grid_level": 6,
+          "amp_nominal_a": 0.01,
+          "amp_actual_a": 0.018897,
+          "q_actual_bohr": 0.035878,
+          "k_E": 0.00014044112088330474,
+          "k_gF": 0.00020730338876655946,
+          "s_E": -3.632018470903677e-06,
+          "xcheck": {
+            "k_E_via_bfactor": true,
+            "s_E_via_bfactor": true
+          }
+        },
+        {
+          "grid_level": 7,
+          "amp_nominal_a": 0.002,
+          "amp_actual_a": 0.003779,
+          "q_actual_bohr": 0.007176,
+          "k_E": -1.4049973249047914e-05,
+          "k_gF": -1.2122492783210772e-05,
+          "s_E": -3.7198536088399446e-06,
+          "xcheck": {
+            "k_E_via_bfactor": true,
+            "s_E_via_bfactor": true
+          }
+        },
+        {
+          "grid_level": 7,
+          "amp_nominal_a": 0.005,
+          "amp_actual_a": 0.009449,
+          "q_actual_bohr": 0.017939,
+          "k_E": 2.2291694673894948e-07,
+          "k_gF": 1.628737048611146e-05,
+          "s_E": -3.695845718025214e-06,
+          "xcheck": {
+            "k_E_via_bfactor": true,
+            "s_E_via_bfactor": true
+          }
+        },
+        {
+          "grid_level": 7,
+          "amp_nominal_a": 0.01,
+          "amp_actual_a": 0.018897,
+          "q_actual_bohr": 0.035878,
+          "k_E": 5.1194148611005864e-05,
+          "k_gF": 0.00011780808353103188,
+          "s_E": -3.613916445088577e-06,
+          "xcheck": {
+            "k_E_via_bfactor": true,
+            "s_E_via_bfactor": true
+          }
+        }
+      ],
+      "rowsT": [],
+      "central": {
+        "max_abs_grad_false": 1.4667612197723093e-05,
+        "max_abs_grad_true": null,
+        "s_g_false": 1.764800246043212e-05,
+        "s_g_true": null
+      },
+      "construction": "fd",
+      "lam_mw": -4.443369837353523e-05,
+      "nu_claim": -34.259190875562666
+    },
+    "grid_response_diagnostic/c14_plus": {
+      "rowsF": [
+        {
+          "grid_level": 7,
+          "amp_nominal_a": 0.002,
+          "amp_actual_a": 0.003779,
+          "q_actual_bohr": 0.009967,
+          "k_E": 3.934020426853054e-05,
+          "k_gF": 0.00015391106967153022,
+          "s_E": 1.2280585208434306e-05,
+          "xcheck": {
+            "k_E_via_bfactor": true,
+            "s_E_via_bfactor": true
+          }
+        },
+        {
+          "grid_level": 7,
+          "amp_nominal_a": 0.005,
+          "amp_actual_a": 0.009449,
+          "q_actual_bohr": 0.024917,
+          "k_E": 5.1564378817047077e-05,
+          "k_gF": 0.00017766904973283982,
+          "s_E": 1.22412337877066e-05,
+          "xcheck": {
+            "k_E_via_bfactor": true,
+            "s_E_via_bfactor": true
+          }
+        }
+      ],
+      "rowsT": [
+        {
+          "amp_nominal_a": 0.002,
+          "q_actual_bohr": 0.009967,
+          "k_gT": 4.1647747059952815e-05,
+          "amp_actual_a": 0.003779,
+          "k_E_corrected": 3.934020426853054e-05,
+          "gap_T_corrected": 2.3075427914222724e-06
+        },
+        {
+          "amp_nominal_a": 0.005,
+          "q_actual_bohr": 0.024917,
+          "k_gT": 6.612735334972293e-05,
+          "amp_actual_a": 0.009449,
+          "k_E_corrected": 5.1564378817047077e-05,
+          "gap_T_corrected": 1.4562974532675857e-05
+        }
+      ],
+      "central": {
+        "max_abs_grad_false": 1.7838801966249235e-05,
+        "max_abs_grad_true": 2.200561178872909e-05,
+        "s_g_false": -6.4657899887118004e-06,
+        "s_g_true": 1.2288414639191158e-05
+      },
+      "construction": "analytic",
+      "lam_mw": -0.00022962556108849984,
+      "nu_claim": -77.88090430751383
+    },
+    "grid_response_diagnostic/c06_plus": {
+      "rowsF": [
+        {
+          "grid_level": 7,
+          "amp_nominal_a": 0.002,
+          "amp_actual_a": 0.003779,
+          "q_actual_bohr": 0.007176,
+          "k_E": -1.4063219609747834e-05,
+          "k_gF": -1.212251365360357e-05,
+          "s_E": -3.7197981595740547e-06,
+          "xcheck": {
+            "k_E_via_bfactor": true,
+            "s_E_via_bfactor": true
+          }
+        },
+        {
+          "grid_level": 7,
+          "amp_nominal_a": 0.005,
+          "amp_actual_a": 0.009449,
+          "q_actual_bohr": 0.017939,
+          "k_E": 2.243300494124135e-07,
+          "k_gF": 1.6287375662050524e-05,
+          "s_E": -3.6958916642637715e-06,
+          "xcheck": {
+            "k_E_via_bfactor": true,
+            "s_E_via_bfactor": true
+          }
+        }
+      ],
+      "rowsT": [
+        {
+          "amp_nominal_a": 0.002,
+          "q_actual_bohr": 0.007176,
+          "k_gT": -1.133841306267201e-05,
+          "amp_actual_a": 0.003779,
+          "k_E_corrected": -1.4063219609747834e-05,
+          "gap_T_corrected": 2.7248065470758237e-06
+        },
+        {
+          "amp_nominal_a": 0.005,
+          "q_actual_bohr": 0.017939,
+          "k_gT": 1.7216268965146663e-05,
+          "amp_actual_a": 0.009449,
+          "k_E_corrected": 2.243300494124135e-07,
+          "gap_T_corrected": 1.6991938915734248e-05
+        }
+      ],
+      "central": {
+        "max_abs_grad_false": 1.877211935462702e-05,
+        "max_abs_grad_true": 2.431623416969129e-05,
+        "s_g_false": 2.0150857475613902e-05,
+        "s_g_true": -3.7245634533586958e-06
+      },
+      "construction": "fd",
+      "lam_mw": -4.443369837353523e-05,
+      "nu_claim": -34.259190875562666
+    }
+  },
+  "verdicts": {
+    "directional_confirmation/c14_plus": {
+      "all_positive": true,
+      "kE": [
+        3.076858075295881e-05,
+        4.2889959684446625e-05,
+        8.624484274510014e-05,
+        3.932418254233321e-05,
+        5.15652943810018e-05,
+        9.520720674146008e-05
+      ],
+      "kgF": [
+        0.0001394638944059395,
+        0.00016344775989991705,
+        0.00024886160759566715,
+        0.0001539110617386959,
+        0.0001776690496471067,
+        0.00026229475541066246
+      ],
+      "kE_range": [
+        3.076858075295881e-05,
+        9.520720674146008e-05
+      ],
+      "kgF_range": [
+        0.0001394638944059395,
+        0.00026229475541066246
+      ]
+    },
+    "directional_confirmation/c06_plus": {
+      "all_positive": false,
+      "kE": [
+        8.060852031257659e-05,
+        9.368694087232283e-05,
+        0.00014044112088330474,
+        -1.4049973249047914e-05,
+        2.2291694673894948e-07,
+        5.1194148611005864e-05
+      ],
+      "kgF": [
+        8.951867969556946e-05,
+        0.00011516253691834294,
+        0.00020730338876655946,
+        -1.2122492783210772e-05,
+        1.628737048611146e-05,
+        0.00011780808353103188
+      ],
+      "kE_range": [
+        -1.4049973249047914e-05,
+        0.00014044112088330474
+      ],
+      "kgF_range": [
+        -1.2122492783210772e-05,
+        0.00020730338876655946
+      ]
+    },
+    "grid_response_diagnostic/c14_plus": {
+      "all_positive": true,
+      "kE": [
+        3.934020426853054e-05,
+        5.1564378817047077e-05
+      ],
+      "kgF": [
+        0.00015391106967153022,
+        0.00017766904973283982
+      ],
+      "kE_range": [
+        3.934020426853054e-05,
+        5.1564378817047077e-05
+      ],
+      "kgF_range": [
+        0.00015391106967153022,
+        0.00017766904973283982
+      ]
+    },
+    "grid_response_diagnostic/c06_plus": {
+      "all_positive": false,
+      "kE": [
+        -1.4063219609747834e-05,
+        2.243300494124135e-07
+      ],
+      "kgF": [
+        -1.212251365360357e-05,
+        1.6287375662050524e-05
+      ],
+      "kE_range": [
+        -1.4063219609747834e-05,
+        2.243300494124135e-07
+      ],
+      "kgF_range": [
+        -1.212251365360357e-05,
+        1.6287375662050524e-05
+      ]
+    }
+  },
+  "withdrawn": [
+    "grid_response 过冲 (c14_plus)",
+    "grid_response 假设未获支持 (c06_plus)",
+    "几何收敛与网格响应彼此独立",
+    "曲率阈值=固定 cm⁻¹ 阈值",
+    "解析 Hessian 偏差解释 E–G 残差"
+  ],
+  "next_batch": "scanner call-path verification + capped endpoint re-optimisation with grid_response=True gradient",
+  "artifacts": {
+    "raw": "/mnt/e/dft-service/ozone_mnb_uv_simulation/run_artifacts/01_pure_water_o3_h2o/unit_consistency_revision",
+    "processed": "/mnt/e/dft-service/ozone_mnb_uv_simulation/results/01_water_matrices/pure_water_o3_h2o/unit_consistency_revision"
+  }
+}

@@ -1,0 +1,633 @@
+{
+  "job": "JOB-2026-0906-008",
+  "title": "SMD \u6c34\u76f8\u53d7\u63a7\u7eed\u4f18\u5316\u4e0e c06 \u6b8b\u4f59\u68af\u5ea6\u5206\u89e3\u6279",
+  "phase_statuses": {
+    "c14": "executed; 60/60 steps, optimizer internal criteria converged, Cartesian 1.2504e-05 (1.25x threshold) -> NOT accepted, site preserved",
+    "c06_decomp_diag": "pass; residual is ~pure rigid-rotation torque -> branch stopped by evidence rule, continuation NOT triggered",
+    "c06_continuation": "not executed (evidence rule)"
+  },
+  "pre_checks": {
+    "config_assertion": "pre-SCF from actual objects: dft_grid_level=8, solvent=water, grid_response=True, d2_attached=True",
+    "trajectory_sources": "phaseC_smd_optimize.json (hashed in 006); cumulative optimizer steps: c14 60+60=120, c06 40 (not continued)",
+    "trajectory_description_revision": "total energy lowering != stepwise monotonic; rises counted and recorded"
+  },
+  "c14": {
+    "trust": {
+      "param": "trust (BernyParams)",
+      "default": 0.3,
+      "initial_used": 0.1,
+      "units": "atomic units = max RMS of the quadratic step in internal coords",
+      "dynamics": "Fletcher parameter r=dE/dE_pred via update_trust; read per step from optimizer.trust",
+      "NOT": "initial trust radius is NOT a hard Cartesian step cap"
+    },
+    "n_steps": 60,
+    "hit_cap": true,
+    "optimizer_converged": true,
+    "indep": {
+      "e_total": -301.8920007495772,
+      "grad_max": 1.250429638477179e-05,
+      "pass_gmax": false,
+      "dE_vs_last_step": -2.8421709430404007e-13
+    },
+    "verdict": "maxsteps_reached_not_converged",
+    "endpoint_decomposition": {
+      "external_rank": 6,
+      "g_norm": 2.421980768454349e-05,
+      "g_trans_norm": 1.0229932581241664e-13,
+      "g_rot_norm": 2.4217653246904437e-05,
+      "g_int_norm": 3.2304100199606473e-07,
+      "int_fraction": 0.013337884685278566,
+      "net_force_norm": 2.505811477069412e-13,
+      "net_torque_norm": 9.86802034976799e-05,
+      "g_trans_vec": [
+        2.3490108731414374e-14,
+        -2.6881816964356004e-14,
+        -2.1674287041569674e-14,
+        2.349010873141437e-14,
+        -2.6881816964355998e-14,
+        -2.167428704156967e-14,
+        2.349010873141437e-14,
+        -2.6881816964355998e-14,
+        -2.167428704156967e-14,
+        2.349010873141437e-14,
+        -2.6881816964355998e-14,
+        -2.167428704156967e-14,
+        2.349010873141437e-14,
+        -2.6881816964355998e-14,
+        -2.167428704156967e-14,
+        2.349010873141437e-14,
+        -2.6881816964355998e-14,
+        -2.167428704156967e-14
+      ],
+      "g_rot_vec": [
+        1.1004820271975167e-05,
+        -1.5376351370695685e-06,
+        -8.785064927489928e-07,
+        9.488061840254329e-06,
+        1.965198111513051e-06,
+        3.740312978473808e-06,
+        5.0908137794163825e-06,
+        -4.346830658867256e-06,
+        -5.375127408255851e-06,
+        -9.355040934610757e-06,
+        2.335453384779283e-06,
+        2.1522443995892666e-06,
+        -1.2512815953957354e-05,
+        -3.7292447286555745e-07,
+        -1.9002772137812336e-06,
+        -3.715839003077761e-06,
+        1.9567387725100484e-06,
+        2.2613537367230044e-06
+      ],
+      "g_int_vec": [
+        8.887476029680631e-08,
+        -9.813929915636027e-08,
+        -2.0514278983860873e-07,
+        -1.2517369922815391e-08,
+        3.735201058977807e-09,
+        4.755616916594679e-08,
+        -6.331821547854185e-08,
+        7.219019449227578e-08,
+        1.550908616849136e-07,
+        3.4225248629061436e-09,
+        -7.76174678970035e-09,
+        6.628910796854627e-08,
+        8.51954569545393e-09,
+        -8.325684921953418e-09,
+        -1.9610427982566704e-08,
+        -2.4981245453821002e-08,
+        3.830133531675982e-08,
+        -4.418292099823195e-08
+      ],
+      "metric": "unweighted Cartesian force space; translations = unit vectors on all atoms; rotations = e_a x (r_i - COM), unweighted, about mass-COM; QR-orthonormalised; units Eh/Bohr (torque Eh)"
+    },
+    "per_step_full_gradients": "c14_smd_cont_traj.json"
+  },
+  "c06": {
+    "decomposition": {
+      "external_rank": 6,
+      "g_norm": 5.009852524541814e-05,
+      "g_trans_norm": 1.299083388235538e-13,
+      "g_rot_norm": 5.008535986370376e-05,
+      "g_int_norm": 1.148459441639169e-06,
+      "int_fraction": 0.022924016944874115,
+      "net_force_norm": 3.1820914308699866e-13,
+      "net_torque_norm": 8.478854793443624e-05,
+      "g_trans_vec": [
+        -3.935285309968918e-14,
+        3.411706005539171e-14,
+        -1.0003761729484118e-14,
+        -3.9352853099689175e-14,
+        3.41170600553917e-14,
+        -1.0003761729484116e-14,
+        -3.9352853099689175e-14,
+        3.41170600553917e-14,
+        -1.0003761729484116e-14,
+        -3.9352853099689175e-14,
+        3.41170600553917e-14,
+        -1.0003761729484116e-14,
+        -3.9352853099689175e-14,
+        3.41170600553917e-14,
+        -1.0003761729484116e-14,
+        -3.9352853099689175e-14,
+        3.41170600553917e-14,
+        -1.0003761729484116e-14
+      ],
+      "g_rot_vec": [
+        -9.541860855756992e-06,
+        -4.905029827756485e-06,
+        7.490364309500287e-06,
+        2.113735718271209e-05,
+        -1.0721768258421248e-06,
+        -2.5566440904805997e-05,
+        -4.03572212535903e-06,
+        -2.325615163390652e-06,
+        2.9793415453524456e-06,
+        -1.0850990905167355e-05,
+        -1.026051237355684e-05,
+        4.998230580571802e-06,
+        -6.789611139070801e-07,
+        -7.067894177380121e-06,
+        -4.517521589089953e-06,
+        3.970177817478367e-06,
+        2.563122836792622e-05,
+        1.4616026058471423e-05
+      ],
+      "g_int_vec": [
+        -7.959400201527804e-08,
+        -5.90917852325168e-07,
+        -1.3912835021223744e-07,
+        -3.18507470323524e-07,
+        4.0939609183162516e-07,
+        -2.3693450977345452e-07,
+        4.045727465874465e-07,
+        2.26987169773054e-07,
+        3.882433205436939e-07,
+        -1.0953848615809746e-07,
+        2.7083800115031966e-07,
+        -1.1587863538381998e-07,
+        1.4050989443224988e-07,
+        -3.378133711008205e-07,
+        1.3270709615954874e-07,
+        -3.7442682522794966e-08,
+        2.1509960670993507e-08,
+        -2.9008921333736616e-08
+      ],
+      "metric": "unweighted Cartesian force space; translations = unit vectors on all atoms; rotations = e_a x (r_i - COM), unweighted, about mass-COM; QR-orthonormalised; units Eh/Bohr (torque Eh)"
+    },
+    "jacobian": {
+      "available": false,
+      "error": "AttributeError(\"module 'berny.geomlib' has no attribute 'Molecule'\")"
+    },
+    "diagnostic": {
+      "centre": {
+        "e_total": -301.8916484802485,
+        "gradient_full_6x3": [
+          [
+            -9.621440977919253e-06,
+            -5.495957284454879e-06,
+            7.3511419927987255e-06
+          ],
+          [
+            2.081883522248841e-05,
+            -6.627589649819717e-07,
+            -2.5803354073389494e-05
+          ],
+          [
+            -3.6311492554144595e-06,
+            -2.0986395385179325e-06,
+            3.367657832681938e-06
+          ],
+          [
+            -1.0960524896604204e-05,
+            -9.989695549430735e-06,
+            4.8823918996376095e-06
+          ],
+          [
+            -5.384654098339927e-07,
+            -7.405692187489597e-06,
+            -4.384822540934895e-06
+          ],
+          [
+            3.9327451333299504e-06,
+            2.5652743658966852e-05,
+            1.4586984775630024e-05
+          ]
+        ],
+        "grad_max": 2.5803354073389494e-05,
+        "scf_converged": true,
+        "grid_response_actual": true,
+        "e_solvent": -0.02292357106173369,
+        "e_cds": 0.0016454472347846368,
+        "e_d2_analytic": -0.00016578666979331731,
+        "seconds": 65.7
+      },
+      "directions": {
+        "g_full": {
+          "p_unit": [
+            -0.19205066117200872,
+            -0.109702783046837,
+            0.14673557581331417,
+            0.4155581341177252,
+            -0.013229545114285686,
+            -0.5150525948254957,
+            -0.07248016583994218,
+            -0.0418900147104125,
+            0.06721924127298272,
+            -0.2187794825693142,
+            -0.1994005669698448,
+            0.09745500314164927,
+            -0.010747846492286288,
+            -0.1478228646070013,
+            -0.08752382393402267,
+            0.07850001724277095,
+            0.512045778534377,
+            0.29116659733348155
+          ],
+          "s_g_center": 5.0098497734401153e-05,
+          "points": [
+            {
+              "dir": "g_full",
+              "amp_a": 0.002,
+              "sign": 1,
+              "coords_angstrom": [
+                [
+                  -0.046049866925254264,
+                  0.03365919672248771,
+                  -0.07415101160014732
+                ],
+                [
+                  0.7187568525452591,
+                  0.6255603447170637,
+                  0.7005397388519089
+                ],
+                [
+                  -0.8692332682189126,
+                  0.7098744247996559,
+                  -0.6930625688423387
+                ],
+                [
+                  2.5213372340674067,
+                  -1.5326363918951633,
+                  1.94231253772913
+                ],
+                [
+                  1.9517951083913803,
+                  -0.8553672960692811,
+                  1.5594371129801639
+                ],
+                [
+                  2.1990031960258776,
+                  -1.63764372806242,
+                  2.840892615877665
+                ]
+              ],
+              "q_actual_bohr": 0.005709801932875522,
+              "e_total": -301.89164817217596,
+              "gradient_full_6x3": [
+                [
+                  -2.5360109886695434e-05,
+                  -4.5120167173580014e-05,
+                  -3.4937784105363452e-06
+                ],
+                [
+                  2.1392455332770242e-05,
+                  2.7091301179494944e-05,
+                  -3.027313783862196e-05
+                ],
+                [
+                  1.1632264375867301e-05,
+                  9.943855707190664e-06,
+                  1.9274225383470092e-05
+                ],
+                [
+                  -3.194181837251874e-05,
+                  1.9526234953540326e-05,
+                  -1.8413528466299748e-05
+                ],
+                [
+                  2.332315109078039e-05,
+                  -3.557010521314103e-05,
+                  1.0211853183708168e-05
+                ],
+                [
+                  9.540574948547808e-07,
+                  2.4128880618756308e-05,
+                  2.269436609947248e-05
+                ]
+              ],
+              "grad_max": 4.5120167173580014e-05,
+              "scf_converged": true,
+              "grid_response_actual": true,
+              "e_solvent": -0.02292296643265202,
+              "e_cds": 0.0016454441385974452,
+              "e_d2_analytic": -0.00016578862688666478,
+              "seconds": 63.0
+            },
+            {
+              "dir": "g_full",
+              "amp_a": 0.002,
+              "sign": -1,
+              "coords_angstrom": [
+                [
+                  -0.04488930590837951,
+                  0.03432212999577021,
+                  -0.07503773382249405
+                ],
+                [
+                  0.7162456371828173,
+                  0.6256402907804457,
+                  0.7036521986557275
+                ],
+                [
+                  -0.8687952710026723,
+                  0.7101275659123839,
+                  -0.6934687743223368
+                ],
+                [
+                  2.5226593171949134,
+                  -1.5314314154407442,
+                  1.94172361771784
+                ],
+                [
+                  1.9518600575645733,
+                  -0.8544740033671436,
+                  1.5599660189338627
+                ],
+                [
+                  2.198528820882986,
+                  -1.6407380176930608,
+                  2.8391330978410223
+                ]
+              ],
+              "q_actual_bohr": 0.005709801932875804,
+              "e_total": -301.89164874588823,
+              "gradient_full_6x3": [
+                [
+                  3.082950526897247e-06,
+                  2.9302332597246807e-05,
+                  1.622387243712463e-05
+                ],
+                [
+                  2.40201232480631e-05,
+                  -2.5053613133139643e-05,
+                  -1.8627432154656213e-05
+                ],
+                [
+                  -1.9634547355971564e-05,
+                  -1.2669466256694817e-05,
+                  -1.324202800328167e-05
+                ],
+                [
+                  1.2545139871665775e-05,
+                  -3.918286641891956e-05,
+                  2.2676757873046544e-05
+                ],
+                [
+                  -2.4842450172889943e-05,
+                  2.118281816903039e-05,
+                  -1.918222263948663e-05
+                ],
+                [
+                  4.8287838221339415e-06,
+                  2.642079526870775e-05,
+                  1.2151052295875939e-05
+                ]
+              ],
+              "grad_max": 3.918286641891956e-05,
+              "scf_converged": true,
+              "grid_response_actual": true,
+              "e_solvent": -0.022924141342802996,
+              "e_cds": 0.001645455052218468,
+              "e_d2_analytic": -0.00016578483132692975,
+              "seconds": 59.3
+            },
+            {
+              "dir": "g_full",
+              "amp_a": 0.004,
+              "sign": 1,
+              "coords_angstrom": [
+                [
+                  -0.046630147433691635,
+                  0.03332773008584646,
+                  -0.07370765048897396
+                ],
+                [
+                  0.7200124602264799,
+                  0.6255203716853727,
+                  0.6989835089499996
+                ],
+                [
+                  -0.8694522668270327,
+                  0.709747854243292,
+                  -0.6928594661023397
+                ],
+                [
+                  2.520676192503654,
+                  -1.533238880122373,
+                  1.9426069977347746
+                ],
+                [
+                  1.9517626338047838,
+                  -0.8558139424203499,
+                  1.5591726600033147
+                ],
+                [
+                  2.1992403835973238,
+                  -1.6360965832470995,
+                  2.8417723748959864
+                ]
+              ],
+              "q_actual_bohr": 0.011419603865751261,
+              "e_total": -301.89164781764777,
+              "gradient_full_6x3": [
+                [
+                  -4.396757292194395e-05,
+                  -8.97445110541223e-05,
+                  -1.649805142085018e-05
+                ],
+                [
+                  2.5577361875855435e-05,
+                  5.837829122051553e-05,
+                  -3.1847182444848016e-05
+                ],
+                [
+                  2.6159977753851927e-05,
+                  2.3462193007379915e-05,
+                  3.4472510751435094e-05
+                ],
+                [
+                  -5.041717239628194e-05,
+                  4.931349234414998e-05,
+                  -4.722937240082975e-05
+                ],
+                [
+                  4.6731094808154556e-05,
+                  -6.331143988541655e-05,
+                  2.461099044000586e-05
+                ],
+                [
+                  -4.08368931835446e-06,
+                  2.190197445180881e-05,
+                  3.64911049044996e-05
+                ]
+              ],
+              "grad_max": 8.97445110541223e-05,
+              "scf_converged": true,
+              "grid_response_actual": true,
+              "e_solvent": -0.022922324433946144,
+              "e_cds": 0.0016454457635779742,
+              "e_d2_analytic": -0.00016579070258756096,
+              "seconds": 60.3
+            },
+            {
+              "dir": "g_full",
+              "amp_a": 0.004,
+              "sign": -1,
+              "coords_angstrom": [
+                [
+                  -0.04430902539994214,
+                  0.03465359663241146,
+                  -0.07548109493366742
+                ],
+                [
+                  0.7149900295015965,
+                  0.6256802638121367,
+                  0.7052084285576368
+                ],
+                [
+                  -0.8685762723945522,
+                  0.7102541364687478,
+                  -0.6936718770623358
+                ],
+                [
+                  2.5233203587586663,
+                  -1.5308289272135345,
+                  1.9414291577121954
+                ],
+                [
+                  1.9518925321511698,
+                  -0.8540273570160748,
+                  1.5602304719107118
+                ],
+                [
+                  2.19829163331154,
+                  -1.6422851625083814,
+                  2.838253338822701
+                ]
+              ],
+              "q_actual_bohr": 0.011419603865751476,
+              "e_total": -301.8916489735794,
+              "gradient_full_6x3": [
+                [
+                  1.2774772031426584e-05,
+                  5.92937245176339e-05,
+                  2.3054446000217677e-05
+                ],
+                [
+                  3.097186438023259e-05,
+                  -4.6096091216875274e-05,
+                  -8.676544497643208e-06
+                ],
+                [
+                  -3.6381007057836814e-05,
+                  -2.1772736055734884e-05,
+                  -3.0550813094117186e-05
+                ],
+                [
+                  3.860022528322984e-05,
+                  -6.800393986495723e-05,
+                  3.4985151021725546e-05
+                ],
+                [
+                  -4.958254001436831e-05,
+                  5.019363868748957e-05,
+                  -3.418212895531884e-05
+                ],
+                [
+                  3.6166853967664873e-06,
+                  2.6385404065939557e-05,
+                  1.5369889528434152e-05
+                ]
+              ],
+              "grad_max": 6.800393986495723e-05,
+              "scf_converged": true,
+              "grid_response_actual": true,
+              "e_solvent": -0.022924681341282012,
+              "e_cds": 0.0016454675907996825,
+              "e_d2_analytic": -0.00016578311150614538,
+              "seconds": 53.4
+            }
+          ],
+          "analysis": {
+            "a0.002": {
+              "q_actual_bohr": 0.005709801932875522,
+              "s_E": 5.023924448904961e-05,
+              "s_g_center": 5.0098497734401153e-05,
+              "slope_resid": 1.4074675464845557e-07,
+              "k_E": 0.0013015049023627793,
+              "k_g": 0.0012990867375198406
+            },
+            "a0.004": {
+              "q_actual_bohr": 0.011419603865751261,
+              "s_E": 5.0611721173874146e-05,
+              "s_g_center": 5.0098497734401153e-05,
+              "slope_resid": 5.132234394729921e-07,
+              "k_E": 0.0012979985934566487,
+              "k_g": 0.0012966209989698214
+            }
+          }
+        }
+      }
+    },
+    "decision": {
+      "internal_residual_significant": false,
+      "derivative_checks_consistent": false,
+      "jacobian_info": {
+        "available": false,
+        "error": "AttributeError(\"module 'berny.geomlib' has no attribute 'Molecule'\")"
+      },
+      "decision": "branch_stopped_evidence_insufficient",
+      "note": "FD consistency only shows current numerical E/G consistency; it does NOT alone prove the residual is free of discretisation influence; same-geometry repeat consistency is not a noise bound; acceptance uses the FULL gradient"
+    },
+    "continuation": {
+      "authorized": false
+    }
+  },
+  "key_finding": {
+    "pattern": "BOTH water-phase endpoint residuals are ~100% rigid-body torque with zero net force (c14: trans 1.0e-13, rot 2.42e-5, int 1%; c06: trans 1.3e-13, rot 5.01e-5, int 2%)",
+    "interpretation": "consistent with rotational-invariance-breaking numerical effects of the space-anchored DFT/solvent-surface grids; internal-coordinate optimizers cannot remove this component",
+    "boundary": "rotational invariance NOT measured this batch (and rotating structures to reduce gradients is forbidden); interpretation, not proven conclusion"
+  },
+  "dedup": {
+    "c14_cont_vs_step60": {
+      "rmsd_A": 0.9115638378842562,
+      "same_structure": false,
+      "note": "water position moved substantially during continuation; recorded honestly"
+    },
+    "c14_cont_vs_c06": {
+      "rmsd_A": 3.917154113213113,
+      "same_structure": false
+    },
+    "origins_retained": true
+  },
+  "acceptance": {
+    "threshold": "full max|g| <= 1e-5 Eh/Bohr (unchanged)",
+    "passed": [
+      "none"
+    ],
+    "status": "both candidates remain unconverged water-phase relaxed geometries; NO SMD converged-stationary-candidate claim"
+  },
+  "not_executed": "Hessian, thermochemistry, CP, higher-level, excited states, reaction paths, frequency checks; no extra attempts beyond authorization",
+  "artifacts": {
+    "protocols/smd_cont_c14.py": "f5bcb8cef9f45ed7",
+    "protocols/smd_c06_decomp.py": "443db7d53dcf4d66",
+    "run_artifacts/01_pure_water_o3_h2o/smd_controlled_opt/c14_cont_result.json": "2cc62bec3040b029",
+    "run_artifacts/01_pure_water_o3_h2o/smd_controlled_opt/c06_decomp_diag.json": "154cf300dcd3db3d",
+    "run_artifacts/01_pure_water_o3_h2o/smd_controlled_opt/c14_decomp_dedup.json": "c67fbdfde0d556ab",
+    "run_artifacts/01_pure_water_o3_h2o/smd_controlled_opt/c14_smd_cont_traj.json": "3a0dfe46d755fe52"
+  },
+  "report": "results/01_water_matrices/pure_water_o3_h2o/smd_controlled_opt/smd_controlled_optimization_report.md",
+  "next_batch": "user decision among: (a) acceptance-criterion discussion adding net-force/torque tests, (b) rotational-invariance verification batch, (c) other algorithm paths; only structures passing stationary acceptance get frequency checks",
+  "stop": "batch complete"
+}

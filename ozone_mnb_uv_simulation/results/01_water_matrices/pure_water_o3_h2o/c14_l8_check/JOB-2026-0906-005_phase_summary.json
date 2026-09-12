@@ -1,0 +1,246 @@
+{
+  "job": "JOB-2026-0906-005",
+  "title": "\u9891\u7387\u4ea4\u53c9\u6838\u5bf9\u4fee\u8ba2\u4e0e c14_plus L8 \u9a7b\u70b9\u6838\u67e5\u6279",
+  "phase_statuses": {
+    "A": "pass",
+    "B": "pass",
+    "C": "pass"
+  },
+  "phaseA": {
+    "step3_fix": "each step size cross-checked against PySCF with ITS OWN symmetrized Cartesian Hessian; same-matrix round-trip assertion; test hook override_hess_pqxy reproduces the 004 wrong-matrix path",
+    "withdrawn": "h=0.004 \"independent diagonalisation rounding\" explanation WITHDRAWN (004 script passed the h=0.002 matrix; wrong-matrix diff exactly equals inter-step max|d_wn|, ratio=1.000000)",
+    "same_matrix_xcheck_wn": {
+      "c14_plus": {
+        "0.002": 2.7071678232459817e-11,
+        "0.004": 4.5062620301905554e-11
+      },
+      "c06_plus": {
+        "0.002": 9.541878398522385e-11,
+        "0.004": 1.0550849083301728e-10
+      }
+    },
+    "regression": "12/12 PASS (step3_revision_regression.json); T3 fails loudly on the pre-revision behaviour",
+    "matrix_comparisons_separated": {
+      "cartesian_max_diff": {
+        "c14_plus": 1.2498225688939435e-05,
+        "c06_plus": 9.631745579108397e-06
+      },
+      "internal_mw_sameUbasis_max_diff": {
+        "c14_plus": 9.749602486008868e-06,
+        "c06_plus": 3.250982910783795e-06
+      },
+      "min_overlap": {
+        "c14_plus": 0.9999950655016211,
+        "c06_plus": 0.992442884601821
+      },
+      "note": "antisym residuals reported with step trend / internal scale / lowest-mode change; NOT strict error bounds"
+    },
+    "actual_softmode_counts": {
+      "unique_displaced_points": 16,
+      "per_candidate": 8,
+      "directions_per_candidate": 1,
+      "new_L8_centres": 2,
+      "authorised_cap": 32,
+      "cap_is_not_executed_count": true
+    },
+    "conclusions_revised": {
+      "c14_plus": "L7 evidence supported, grid sensitivity PENDING -> resolved by Phases B/C of this batch",
+      "c06_plus": "robustness covers ONLY the checked lowest direction",
+      "L7_L8_ratios_from_data": {
+        "c14_kE": [
+          4.029,
+          3.69
+        ],
+        "c14_kG": [
+          3.91
+        ],
+        "c06_kE": [
+          0.995,
+          0.994
+        ],
+        "c06_kG": [
+          0.994
+        ]
+      }
+    },
+    "no_scf_rerun": true
+  },
+  "phaseB": {
+    "candidate": "c14_plus",
+    "grid_level": 8,
+    "start": "accepted L7 attempt2 endpoint (endpoints_fixed.json), not an old search structure",
+    "one_run_only": true,
+    "maxsteps": 60,
+    "conv_params": {
+      "gradientmax": 1e-06,
+      "gradientrms": 1e-06,
+      "stepmax": "default",
+      "steprms": "default"
+    },
+    "n_steps": 45,
+    "optimizer_converged": true,
+    "independent_verification": {
+      "e_total": -301.87483796711086,
+      "gradient_full_6x3": [
+        [
+          2.968529126999905e-07,
+          -3.493848669467596e-07,
+          -5.025654195012615e-08
+        ],
+        [
+          -1.9542996068109338e-07,
+          -2.5412224873388245e-06,
+          9.333930475619514e-07
+        ],
+        [
+          2.1049388385444554e-06,
+          7.798665999970988e-07,
+          -1.112180587888785e-06
+        ],
+        [
+          -1.1879357282417425e-06,
+          1.2882814920493433e-06,
+          1.4006387419039667e-07
+        ],
+        [
+          4.392618226211971e-07,
+          1.5198004833735394e-06,
+          -7.136927057938128e-07
+        ],
+        [
+          -1.4576880182805957e-06,
+          -6.973412413959649e-07,
+          8.026728498482832e-07
+        ]
+      ],
+      "grad_max": 2.5412224873388245e-06,
+      "grad_rms": 1.1356313079746575e-06,
+      "scf_converged": true,
+      "finite": true,
+      "d2_in_scf_summary": -0.00017220424218317038,
+      "e_d2_analytic": -0.00017220424218317038,
+      "grid_level_actual": 8,
+      "pass_gmax": true,
+      "dE_vs_last_step": -4.547473508864641e-13
+    },
+    "all_steps_full_gradient_saved": true,
+    "formal_mapping": {
+      "L7_vs_L8_rmsd_A": 0.020431828280093402,
+      "structure_preserved": true,
+      "L8_vs_c06_rmsd_A": 3.7426605421626857
+    },
+    "endpoint_E_hartree": -301.87483796711086,
+    "verdict": "converged_stationary_candidate_L8",
+    "artifact": "run_artifacts/01_pure_water_o3_h2o/c14_l8_check/l8_optimize_result.json"
+  },
+  "phaseC": {
+    "hessian_points": 72,
+    "all_accepted": true,
+    "failed_points_excluded": true,
+    "unsym_and_sym_saved": true,
+    "antisym_max": {
+      "0.002": 2.094356077453341e-06,
+      "0.004": 8.368752468818075e-06
+    },
+    "freq_wavenumber_signed": {
+      "0.002": [
+        38.24633753715844,
+        69.68274280335177,
+        83.10552975326921,
+        93.90449737030006,
+        170.9519417148172,
+        247.49567185502238,
+        788.2258358006917,
+        1331.9829296193943,
+        1341.8193064363975,
+        1631.2816016878533,
+        3870.295277819413,
+        3976.084066394302
+      ],
+      "0.004": [
+        38.533000012993185,
+        69.78555209263402,
+        83.1223986202912,
+        93.88691142909677,
+        171.02896106546604,
+        247.55030344404153,
+        788.2247588322232,
+        1331.9972914027376,
+        1341.8295769780043,
+        1631.2838821816595,
+        3870.333740377097,
+        3976.1227486812995
+      ]
+    },
+    "n_negative": {
+      "0.002": 0,
+      "0.004": 0
+    },
+    "same_matrix_xcheck_wn": {
+      "0.002": 2.4805046905385097e-11,
+      "0.004": 1.27613475342514e-11
+    },
+    "step_comparison": {
+      "cartesian_max_diff": 1.2201095498709513e-05,
+      "internal_mw_diff": 6.435665361848031e-06,
+      "min_overlap": 0.999974255214601,
+      "max_abs_d_wn": 0.2866624758347456
+    },
+    "lowest_mode_check": {
+      "analysis": {
+        "a0.002": {
+          "q_actual_bohr": 0.0049948075246343815,
+          "s_E": -1.3533864123323557e-06,
+          "s_g_center": -1.3554132665659766e-06,
+          "k_E": 6.018341809178715e-05,
+          "k_g": 6.0650281112121445e-05,
+          "hessian_projection": 5.969804719819921e-05,
+          "slope_check_resid": 2.0268542336209466e-09,
+          "k_E_minus_k_g": -4.668630203342924e-07
+        },
+        "a0.004": {
+          "q_actual_bohr": 0.009989615049268588,
+          "s_E": -1.3474144937148763e-06,
+          "s_g_center": -1.3554132665659766e-06,
+          "k_E": 6.193669817892607e-05,
+          "k_g": 6.441347932371686e-05,
+          "hessian_projection": 5.969804719819921e-05,
+          "slope_check_resid": 7.998772851100358e-09,
+          "k_E_minus_k_g": -2.4767811447907865e-06
+        }
+      },
+      "L8_centre_grad_max": 2.5412224873388245e-06,
+      "note": "at the L8 STATIONARY point the L7/L8 curvature ratio drops to ~1.18 (7.089/6.018), confirming the 004 ratio of 4.03 was dominated by comparing at a NON-stationary L8 position [REVISED by JOB-2026-0906-006: attribution softened, see note_revised]",
+      "note_revised_JOB_2026_0906_006": "after re-optimisation the lowest-direction curvature ratio decreased (4.03 -> ~1.18); re-optimisation changed geometry AND mode directions simultaneously; the two contributions are NOT yet separately decomposed, and the non-stationary position is NOT identified as the proven dominant root cause"
+    }
+  },
+  "verdicts": {
+    "l8_stationary_converged": true,
+    "structure_preserved": true,
+    "internal_modes_12_positive_L8": true,
+    "dual_step_and_lowest_mode_consistent": true,
+    "c14_plus": "local minimum SUPPORTED within the L7/L8 checks implemented (not global minimum, not infinite-grid-limit converged)",
+    "c06_plus": "unchanged from JOB-2026-0906-004: L7 evidence supported; L8 full spectrum NOT checked (outside this batch authorisation)"
+  },
+  "artifacts": {
+    "protocols/endpoint_freq_step3_regression.py": "7ddb583ca5e60252",
+    "protocols/endpoint_l8_optimize.py": "d451d30e2d9a0811",
+    "protocols/endpoint_freq_step2b_hessian_l8.py": "489f4a8aba289c1a",
+    "protocols/endpoint_freq_step3b_frequency_l8.py": "7d390f419d9b7257",
+    "protocols/endpoint_freq_step4b_softmode_l8.py": "0451bb4f1f5cabf6",
+    "run_artifacts/01_pure_water_o3_h2o/c14_l8_check/l8_optimize_result.json": "29ecc3617147fefb",
+    "run_artifacts/01_pure_water_o3_h2o/c14_l8_check/formal_mapping.json": "9c079fc3daab44f1",
+    "run_artifacts/01_pure_water_o3_h2o/endpoint_frequency/frequency_analysis_l8_c14.json": "9333a0d95fb47ac8",
+    "run_artifacts/01_pure_water_o3_h2o/endpoint_frequency/softmode_l8_c14.json": "54332998d84f0e86",
+    "run_artifacts/01_pure_water_o3_h2o/endpoint_frequency/frequency_analysis_revised.json": "a4e10cf9a94d3f78",
+    "run_artifacts/01_pure_water_o3_h2o/endpoint_frequency/step3_revision_regression.json": "45d10a3b0ebe5b67"
+  },
+  "report": "results/01_water_matrices/pure_water_o3_h2o/c14_l8_check/JOB-2026-0906-005_phase_report.md",
+  "supersedes": [
+    "004 frequency_analysis.json cross-check fields (kept for history)",
+    "004 report/JSON c14_plus \"grid sensitivity pending\" verdict",
+    "the vague \"~3x\" ratio wording (replaced by data-generated ratios)"
+  ],
+  "not_executed": "L9, new c06 full frequencies, SMD, higher-level single points, thermochemistry, binding free energies, reaction paths",
+  "stop": "batch complete; next batch decides hydrate retention, water-phase update, higher-level cross-checks"
+}

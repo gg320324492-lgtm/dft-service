@@ -1,0 +1,29 @@
+{
+  "job": "JOB-2026-0905-009",
+  "step": "final_validation_B2_platform_minimal_repro",
+  "system": "H2O/def2-TZVP, pure PySCF (no project hooks)",
+  "results": {
+    "b3lyp": {
+      "step_0.005": {
+        "max_abs_diff": 4.9863454164356114e-05,
+        "relative": 6.518067004077723e-05
+      },
+      "step_0.02": {
+        "max_abs_diff": 0.0004456041390854537,
+        "relative": 0.0005824862486019999
+      },
+      "grad_sensitivity_prune": 2.8285125353022522e-09
+    },
+    "wb97xd": {
+      "step_0.005": {
+        "max_abs_diff": 0.0019176101392958667,
+        "relative": 0.0024695021312063467
+      },
+      "step_0.02": {
+        "max_abs_diff": 0.0018210314006727457,
+        "relative": 0.002345127840535046
+      },
+      "grad_sensitivity_prune": 1.628125251951218e-05
+    }
+  }
+}

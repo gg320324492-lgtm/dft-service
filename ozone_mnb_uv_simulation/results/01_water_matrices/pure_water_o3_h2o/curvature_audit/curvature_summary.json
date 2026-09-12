@@ -1,0 +1,71 @@
+{
+  "job": "JOB-2026-0905-009",
+  "document": "curvature_summary (supersedes the soft-mode section of final_minima_validation/validation_summary.json)",
+  "tool_fixes": [
+    "T1 曲率分母 q^2（撤回 sqrt2 表述）",
+    "T2 最大原子位移=每原子位移向量长度",
+    "T3 三层统一笛卡尔度量（撤回度量混用数据）",
+    "T4 质量加权 TR 投影，12 内模，外模重叠落盘"
+  ],
+  "unit_test": {
+    "passed": true,
+    "old_denominator_bug_reproduced": true,
+    "vector_length_convention": true
+  },
+  "platform_issue": {
+    "layer": "analytic Hessian (2nd-derivative) layer",
+    "root_cause": "pending localization",
+    "wb97xd_worst_direction_gap": 0.00075,
+    "energy_layer_noise_floor_eh": 6.6e-08,
+    "note": "notes/platform_issue_wb97xd_hessian.md"
+  },
+  "verdicts": {
+    "c14_plus": "待定",
+    "c06_plus": "待定"
+  },
+  "candidate_detail": {
+    "c14_plus": {
+      "verdict": "待定",
+      "reason": "两种 Hessian 构造在投影内模子空间中互相矛盾（解析最低内模 λ=-2.296e-04 vs 差分最低内模 λ=-4.438e-17），且能量/梯度层沿争议方向给出正曲率（k_E 随幅度漂移、最小幅度处接近噪声底）。解析 Hessian 的已知平台误差（~7.5×10⁻⁴–2×10⁻³）与差分噪声（~4×10⁻⁴–1.6×10⁻³）均 ≥ 争议曲率信号 → 符号不可分辨。；另外几何收敛未完成：新鲜复核 max|grad|=1.38e-05 > 1e-5 目标（400 步上限，未放宽标准）",
+      "analytic_lowest_internal": -0.0002296255610891124,
+      "analytic_external_overlap": 4.1002492587237627e-14,
+      "fd_lowest_internal": -4.437889208634366e-17,
+      "fd_external_overlap": 0.9999999999999991,
+      "gradient_target_met": false,
+      "fresh_max_gradient": 1.38423927787457e-05,
+      "energy_gradient_layer_signs": {
+        "analytic_lowest": "positive",
+        "fd_lowest": "negative"
+      }
+    },
+    "c06_plus": {
+      "verdict": "待定",
+      "reason": "两种 Hessian 构造在投影内模子空间中互相矛盾（解析最低内模 λ=-1.696e-17 vs 差分最低内模 λ=-4.443e-05），且能量/梯度层沿争议方向给出正曲率（k_E 随幅度漂移、最小幅度处接近噪声底）。解析 Hessian 的已知平台误差（~7.5×10⁻⁴–2×10⁻³）与差分噪声（~4×10⁻⁴–1.6×10⁻³）均 ≥ 争议曲率信号 → 符号不可分辨。；另外几何收敛未完成：新鲜复核 max|grad|=1.47e-05 > 1e-5 目标（400 步上限，未放宽标准）",
+      "analytic_lowest_internal": -1.6957202610094837e-17,
+      "analytic_external_overlap": 1.0,
+      "fd_lowest_internal": -4.443369837322915e-05,
+      "fd_external_overlap": 5.000929374394527e-13,
+      "gradient_target_met": false,
+      "fresh_max_gradient": 1.4667612212378037e-05,
+      "energy_gradient_layer_signs": {
+        "analytic_lowest": "positive",
+        "fd_lowest": "positive"
+      }
+    }
+  },
+  "withdrawn_statements": [
+    "0.2 Å 内不存在更低结构",
+    "不存在可跟进的下降方向",
+    "软模低于平台可分辨极限（未量化版本）",
+    "RMSD<0.1 Å 因此所有能量不受影响"
+  ],
+  "conclusion_classes": {
+    "old_tool_errors_fixed": true,
+    "remaining_numerical_issues": true,
+    "geometry_convergence_incomplete": true
+  },
+  "artifacts": {
+    "raw": "/mnt/e/dft-service/ozone_mnb_uv_simulation/run_artifacts/01_pure_water_o3_h2o/curvature_audit",
+    "processed": "/mnt/e/dft-service/ozone_mnb_uv_simulation/results/01_water_matrices/pure_water_o3_h2o/curvature_audit"
+  }
+}

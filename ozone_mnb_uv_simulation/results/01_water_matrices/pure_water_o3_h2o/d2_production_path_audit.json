@@ -1,0 +1,178 @@
+{
+  "backend": "PySCF 2.14.0 / WSL2",
+  "implementation": "attach_d2 v2 (subclass re-class; energy_tot-routed, no kernel wrapper)",
+  "settings": {
+    "basis": "def2-TZVP",
+    "grid_level": 5,
+    "scf_conv": 1e-11,
+    "shift_far_A": 5.0,
+    "opt_maxsteps": 10,
+    "solver": "berny_solver.kernel"
+  },
+  "thresholds": {
+    "scanner_energy": 1e-11,
+    "scanner_grad": 3.162277660168379e-06,
+    "machine": 1e-09,
+    "scf_noise": 1e-08,
+    "ratio": 1e-06,
+    "separation": 1e-06,
+    "d2_variation": 1e-08
+  },
+  "d2_reference": {
+    "e_d2_R1": -0.00010354715496462164,
+    "e_d2_R2": -8.276875894571798e-05,
+    "d2_delta": 2.077839601890366e-05
+  },
+  "A_scanner_propagation": {
+    "e_scanner_R1": -301.857416597574,
+    "e_scanner_R2_moved": -301.8685994685509,
+    "e_fresh_R2": -301.86859946855765,
+    "dE_scanner_vs_fresh_R2": 6.764366844436154e-12,
+    "maxdG_scanner_vs_fresh_R2": 9.344235704089598e-07,
+    "d2_part_scanner": 2.223736772250396e-16,
+    "d2_part_fresh": 4.440892098500626e-16,
+    "d2_contributes_zero_to_diff": 4.440892098500626e-16,
+    "dft_path_noise_grad": 9.344235704089598e-07,
+    "d2_delta_scale": 2.077839601890366e-05,
+    "note": "cross-SCF comparison: scanner seeded dm0 from the previous step, fresh object from minao; total-gradient difference is bounded by the PySCF orbital-gradient tolerance conv_tol_grad = sqrt(conv_tol); the D2 part is attributed by the parent-class bypass and must vanish from the difference",
+    "pass": true
+  },
+  "A2_hessian_tracking_631G": {
+    "basis": "6-31G",
+    "e_tot_attr_minus_bare_over_d2": 0.9999999999735649,
+    "max_hess_wrap_minus_bypass_minus_d2": 8.579757255811104e-12,
+    "note": "mutating mol after attach must move the D2 term: the wrapped Hessian difference against the same-SCF parent-class bypass must equal the analytic D2 Hessian at the NEW geometry",
+    "pass": true
+  },
+  "B_single_count": {
+    "gas": {
+      "e_kernel": -301.8574165975749,
+      "e_energy_tot": -301.8574165975749,
+      "e_tot_attribute": -301.8574165975749,
+      "e_bare_bypass": -301.85731305041986,
+      "e_d2": -0.00010354715496462164,
+      "ratio_kernel": 1.0000000008192718,
+      "ratio_energy_tot": 1.0000000008192718,
+      "ratio_e_tot_attr": 1.0000000008192718,
+      "residual_once_kernel": 8.483324990832958e-14,
+      "residual_once_energy_tot": 8.483324990832958e-14,
+      "residual_once_e_tot_attr": 8.483324990832958e-14,
+      "separation_from_zero": 0.00010354715504945489,
+      "separation_from_double": 0.00010354715487978839,
+      "pass": true
+    },
+    "smd_water": {
+      "e_kernel": -301.8708152769238,
+      "e_energy_tot": -301.8708152769238,
+      "e_tot_attribute": -301.8708152769238,
+      "e_bare_bypass": -301.8707117297688,
+      "e_d2": -0.00010354715496462164,
+      "ratio_kernel": 1.00000000027031,
+      "ratio_energy_tot": 1.00000000027031,
+      "ratio_e_tot_attr": 1.00000000027031,
+      "residual_once_kernel": 2.7989831047521563e-14,
+      "residual_once_energy_tot": 2.7989831047521563e-14,
+      "residual_once_e_tot_attr": 2.7989831047521563e-14,
+      "separation_from_zero": 0.00010354715499261147,
+      "separation_from_double": 0.0001035471549366318,
+      "pass": true
+    }
+  },
+  "C_optimizer_end_to_end": {
+    "optimizer_converged": false,
+    "n_steps": 10,
+    "steps": [
+      {
+        "step": 1,
+        "contact_distance_A": 2.462412335629255,
+        "e_total_optimizer": -301.8574165975752,
+        "e_d2_analytic": -0.00010354715496462164,
+        "e_dft_component": -301.8573130504202,
+        "grad_norm": 0.0813729158310163
+      },
+      {
+        "step": 2,
+        "contact_distance_A": 2.4815059871979446,
+        "e_total_optimizer": -301.86250873699265,
+        "e_d2_analytic": -0.00010322130795845132,
+        "e_dft_component": -301.8624055156847,
+        "grad_norm": 0.03738054249357761
+      },
+      {
+        "step": 3,
+        "contact_distance_A": 2.511656985667708,
+        "e_total_optimizer": -301.86630771835974,
+        "e_d2_analytic": -0.00010372607277187791,
+        "e_dft_component": -301.86620399228696,
+        "grad_norm": 0.034923790001197406
+      },
+      {
+        "step": 4,
+        "contact_distance_A": 2.590083642641043,
+        "e_total_optimizer": -301.8704764568199,
+        "e_d2_analytic": -0.00010528241244724579,
+        "e_dft_component": -301.87037117440747,
+        "grad_norm": 0.03289816866296523
+      },
+      {
+        "step": 5,
+        "contact_distance_A": 2.646869953991135,
+        "e_total_optimizer": -301.8723250758548,
+        "e_d2_analytic": -0.00010726700594687662,
+        "e_dft_component": -301.87221780884886,
+        "grad_norm": 0.018014898278342763
+      },
+      {
+        "step": 6,
+        "contact_distance_A": 2.6995662543125665,
+        "e_total_optimizer": -301.87303570415065,
+        "e_d2_analytic": -0.00010951153431997133,
+        "e_dft_component": -301.8729261926163,
+        "grad_norm": 0.008917148017702896
+      },
+      {
+        "step": 7,
+        "contact_distance_A": 2.737437149095361,
+        "e_total_optimizer": -301.87329003318445,
+        "e_d2_analytic": -0.00011166121249722393,
+        "e_dft_component": -301.87317837197196,
+        "grad_norm": 0.007580354136841273
+      },
+      {
+        "step": 8,
+        "contact_distance_A": 2.7733695769748015,
+        "e_total_optimizer": -301.87345618787725,
+        "e_d2_analytic": -0.00011425694314385744,
+        "e_dft_component": -301.8733419309341,
+        "grad_norm": 0.007346492786732494
+      },
+      {
+        "step": 9,
+        "contact_distance_A": 2.801384146112878,
+        "e_total_optimizer": -301.8736592307435,
+        "e_d2_analytic": -0.00011845585498165865,
+        "e_dft_component": -301.8735407748885,
+        "grad_norm": 0.00787494899902097
+      },
+      {
+        "step": 10,
+        "contact_distance_A": 2.8511917456530584,
+        "e_total_optimizer": -301.87389786143314,
+        "e_d2_analytic": -0.00012563938988208482,
+        "e_dft_component": -301.87377222204327,
+        "grad_norm": 0.007038540171719764
+      }
+    ],
+    "endpoint": {
+      "e_fresh_object": -301.87389786143166,
+      "e_last_trajectory_step": -301.87389786143314,
+      "dE_fresh_vs_last": 1.4779288903810084e-12,
+      "contact_distance_final_A": 2.8511917456530584,
+      "e_d2_endpoint": -0.00012563938988208482,
+      "max_grad_wrap_minus_bypass_minus_d2": 1.3323523328449133e-15,
+      "max_hess_wrap_minus_bypass_minus_d2": 1.8473286289078569e-13
+    },
+    "pass": true
+  },
+  "overall_pass": true
+}

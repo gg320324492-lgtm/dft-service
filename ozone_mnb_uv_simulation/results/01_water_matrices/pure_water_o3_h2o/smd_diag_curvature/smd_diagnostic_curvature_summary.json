@@ -1,0 +1,154 @@
+{
+  "job": "JOB-2026-0906-013",
+  "title": "c06 order47 new-endpoint diagnostic internal-frequency (curvature) batch",
+  "authorization": "diagnostic computation approved by user; formal stationary acceptance standard UNCHANGED",
+  "budget": {
+    "hessian_points": [
+      72,
+      72
+    ],
+    "direction_points": [
+      8,
+      16
+    ],
+    "centers": [
+      2,
+      2
+    ],
+    "total": [
+      82,
+      90
+    ],
+    "note": "no auto-expansion; no retries; all points config-verified"
+  },
+  "center": {
+    "source": "endpoint_index::c06_order47_reopt -> order47_optimization.json (hash bf912a791b3e9761 verified); step-40 geometry NOT used",
+    "recheck": {
+      "dE": 5.7e-14,
+      "dG": 1.8e-12,
+      "tol_E": 1e-09,
+      "tol_G": 1e-08,
+      "tol_fixed": "before any run",
+      "passed": true
+    },
+    "max_g_unprojected": 2.5034e-05,
+    "acceptance": "NOT passed (unchanged); authorized non-stationary diagnostic"
+  },
+  "hessian": {
+    "points": "72/72 (18 dirs x h=0.002/0.004 Bohr x +/-), all SCF converged & finite",
+    "antisym_residual": {
+      "h002": {
+        "max": 3.073e-06,
+        "rel": 5.4e-06
+      },
+      "h004": {
+        "max": 1.131e-05,
+        "rel": 2e-05
+      }
+    },
+    "raw_saved_first": true,
+    "symmetrized_separate": true
+  },
+  "analysis": {
+    "convention": "mass amu [15.9949x4,1.0078x2]; H_mw=H/sqrt(m_i m_j); mass-weighted Eckart-type TR basis (rank 6); U 18x12",
+    "spectrum_h002_cm1": [
+      -52.3,
+      50.8,
+      66.1,
+      97.7,
+      203.7,
+      319.3,
+      790.4,
+      1265.2,
+      1351.9,
+      1603.9,
+      3790.4,
+      3907.4
+    ],
+    "spectrum_h004_cm1": [
+      -52.9,
+      50.7,
+      66.0,
+      97.7,
+      203.5,
+      319.2,
+      790.4,
+      1265.2,
+      1351.9,
+      1603.9,
+      3790.4,
+      3907.5
+    ],
+    "n_imaginary": 1,
+    "coupling_RMS_h002": 2.446e-05,
+    "grad_mw_norms": {
+      "internal": 1.5496e-05,
+      "external": 1.385e-05
+    },
+    "pyscf_cross_check": {
+      "max_diff_cm1": 0.35,
+      "n_imaginary_agrees": true,
+      "note": "validates matrix handling only; an initial 7-imaginary artifact was traced to OUR reshape(6,6,3,3) scrambling bug (fixed to reshape(6,3,6,3).transpose(0,2,1,3)); PySCF side correct; main analysis used the 18x18 matrix directly and was unaffected"
+    },
+    "two_step_matching": {
+      "min_overlap": 1.0,
+      "max_abs_dnu_cm1": 0.62,
+      "near_degenerate": false,
+      "note": "agreement is NOT a strict error bound"
+    }
+  },
+  "direction_checks": {
+    "rule_fixed_before_eval": true,
+    "selection": "dir1 = lowest internal mode; dir2 rule selected the SAME mode (negative = lowest) -> deduplicated to ONE direction (8 evals saved)",
+    "mode": "mode 0 (-52.3 cm^-1), normalized Cartesian (max atom |d|=1), fixed straight-line path, no realignment",
+    "gear47": {
+      "proj_grad_Eh_per_A": 1.0193e-05,
+      "slope_fd": 1.0209e-05,
+      "curv_energy_fd": -0.00042479,
+      "curv_gradient_fd": -0.00042588,
+      "hessian_projection": -0.00042684,
+      "center_max_g": 2.5e-05
+    },
+    "gear41": {
+      "proj_grad_Eh_per_A": -1.1182e-05,
+      "slope_fd": -1.1184e-05,
+      "curv_energy_fd": 0.00021764,
+      "curv_gradient_fd": 0.00022161,
+      "center_max_g": 0.000126
+    },
+    "finding": "SELF-CONSISTENT NEGATIVE curvature at order47 (three estimates agree <=5e-3); curvature SIGN FLIPS to positive at order41 same geometry/direction; projected gradient sign also flips with gear"
+  },
+  "classification": "NEGATIVE internal-curvature diagnostic evidence (order47 conventions); mode physical reality PENDING due to gear sign-flip (missing evidence: gear-convergence behaviour of dT Hd along this direction)",
+  "boundaries": "no threshold change; no mode following; no transition-state claim; spectrum (positive OR negative) must not enter thermochemistry/binding free energies/reaction conclusions; non-stationary-point caveat recorded",
+  "cache_statement": "every evaluation freshly computed and immediately persisted; no filename-based cache reuse; per-point coords+full fingerprint verified",
+  "next_step_recommendation": {
+    "proposal": "user decision: gear-convergence characterization batch for the soft-mode curvature (verify order59 support read-only first; each gear 1 center + 4 displaced points; <=10 new evaluations; existing 41/47 8 points reused)",
+    "interpretation_rules": "fixed before running: monotonic trend toward negative -> soft-mode evidence strengthens; no trend/divergence -> numerical sensitivity dominates",
+    "basis": "the only evidence gap blocking the soft-mode reality judgment is the gear-convergence behaviour of the curvature (sign flip 41/47)"
+  },
+  "artifacts": {
+    "protocols/smd_diag_hessian.py": "f6d03f571ad6cdde",
+    "protocols/smd_diag_analysis.py": "7cdf886d8c690ee4",
+    "protocols/smd_diag_directions.py": "1058d6e92bf5ee07",
+    "run_artifacts/01_pure_water_o3_h2o/smd_diag_curvature/center_order47.json": "7adaa7fdabcedaf1",
+    "run_artifacts/01_pure_water_o3_h2o/smd_diag_curvature/center_order41.json": "67e8fdb1363d669d",
+    "run_artifacts/01_pure_water_o3_h2o/smd_diag_curvature/hessian_batch.json": "1f5597a357e6884d",
+    "run_artifacts/01_pure_water_o3_h2o/smd_diag_curvature/analysis.json": "7007f8eee1b0e5f2",
+    "run_artifacts/01_pure_water_o3_h2o/smd_diag_curvature/projection_matrices.json": "c3c992ba87b19546",
+    "run_artifacts/01_pure_water_o3_h2o/smd_diag_curvature/direction_checks.json": "fcc3234067506b4a"
+  },
+  "report": "results/01_water_matrices/pure_water_o3_h2o/smd_diag_curvature/smd_diagnostic_curvature_report.md",
+  "ending": {
+    "formal_acceptance": "STILL NOT PASSED (unprojected max|g|=2.5034e-5 > 1e-5; unchanged)",
+    "diagnostic_status": "negative internal-curvature evidence at order47 with gear sign-flip warning; auxiliary label \"internal optimisation criteria met\" (internal residual 1.31e-7) retained",
+    "next_step": "see next_step_recommendation"
+  },
+  "stop": "batch complete; no re-optimisation, no mode following, no threshold change, no thermochemistry",
+  "revision_JOB_2026_0906_014": {
+    "wording_estimates": "\"three independent estimates\" -> \"three mutually cross-checked estimates\": gradient-difference and Hessian-projection share the SAME FD derivative implementation (only the energy FD follows a pure energy path)",
+    "wording_scope": "removed over-strong claims: gear-convergence is \"an important evidence gap\", NOT \"the only\" one; mode-following/thermochemistry \"not prioritised before the baseline question is resolved\", NOT \"meaningless\"",
+    "wording_limits": "the fixed-geometry/fixed-direction curvature check ONLY answers the numerical-sensitivity question for that direction; it cannot alone prove a full stationary point or a physical minimum",
+    "wording_criterion": "\"monotonically more negative with gear\" is NOT a convergence or reality criterion -- only an observation of whether gear sensitivity weakens",
+    "raw_data": "all raw artifacts unchanged; corrections marked inline in the report and traceable via this block"
+  }
+}

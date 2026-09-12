@@ -1,0 +1,236 @@
+{
+  "job": "JOB-2026-0905-009",
+  "document": "grid_response_summary (supersedes the gradient-non-smoothness attribution in directional_summary.json)",
+  "q1_was_enabled": {
+    "default_and_actual": "Gradients.grid_response 默认 = False（grad_rks_Gradients_grid_response 配置未覆盖）；本项目所有历史梯度（含全部定向补测与优化）均在默认 False 下计算——日志无 grid_response = True 记录",
+    "switch_owner": "开关属于 Gradients 对象实例；本项目 D2 包装（attach_d2_grad 子类）不遮蔽该属性——实例赋值后父类 kernel/extra_force 路径可见（调用验证见 §4）",
+    "response_path_true": "get_veff 改用 get_vxc_full_response（全响应 XC 贡献）；extra_force 逐原子返回 vhf.exc1_grid",
+    "source_refs": "pyscf/grad/rks.py L50（get_veff 分支）、L745（默认值）、L772（extra_force 分支）；PySCF 2.14.0"
+  },
+  "q2_explains": {
+    "c14_plus": {
+      "k_E": [
+        0.00014049208218939755,
+        0.0001841397712471592
+      ],
+      "k_gF": [
+        0.0002908556306938432,
+        0.0003357458737849189
+      ],
+      "k_gT": [
+        7.870442174141376e-05,
+        0.00012496259795879947
+      ],
+      "explained": [
+        0.00021215120895242944,
+        0.00021078327582611944
+      ],
+      "residual_gap_T": [
+        -6.178766044798379e-05,
+        -5.917717328835973e-05
+      ],
+      "response_shape": "slowly varying offset ~2.5-3.0e-5"
+    },
+    "c06_plus": {
+      "k_E": [
+        -5.022560259408569e-05,
+        8.010865343106916e-07
+      ],
+      "k_gF": [
+        -2.2909355977840684e-05,
+        3.07784753798904e-05
+      ],
+      "k_gT": [
+        -2.1427547825391496e-05,
+        3.2533817692433974e-05
+      ],
+      "explained": [
+        -1.4818081524491882e-06,
+        -1.7553423125435717e-06
+      ],
+      "residual_gap_T": [
+        2.8798054768694192e-05,
+        3.1732731158123284e-05
+      ],
+      "grid_sign_flip_confirmed": true
+    }
+  },
+  "q3_central_standard": {
+    "c14_plus": {
+      "disputed_direction": "analytic",
+      "lam_mw": -0.00022962556108849984,
+      "claimed_nu_cm1": -77.88090430751383,
+      "central": {
+        "max_grad_F": 1.7838801966249235e-05,
+        "max_grad_T": 2.200561178872909e-05,
+        "standard_met_F": false,
+        "standard_met_T": false,
+        "slope_gF": -6.4657899887118004e-06,
+        "slope_gT": 1.2288414639191158e-05,
+        "grid_response_slope_contribution": 1.8754204627902954e-05
+      },
+      "probes": [
+        {
+          "amp_a": 0.002,
+          "q_bohr": 0.005274202970582594,
+          "k_E": 0.00014049208218939755,
+          "k_gF": 0.0002908556306938432,
+          "k_gT": 7.870442174141376e-05,
+          "s_E": 2.3207410381277805e-05,
+          "gap_F": 0.00015036354850444565,
+          "gap_T": -6.178766044798379e-05,
+          "explained": 0.00021215120895242944,
+          "d_resp_disp": 1.8704300303592116e-05
+        },
+        {
+          "amp_a": 0.005,
+          "q_bohr": 0.013185507426456486,
+          "k_E": 0.0001841397712471592,
+          "k_gF": 0.0003357458737849189,
+          "k_gT": 0.00012496259795879947,
+          "s_E": 2.3132581282103606e-05,
+          "gap_F": 0.0001516061025377597,
+          "gap_T": -5.917717328835973e-05,
+          "explained": 0.00021078327582611944,
+          "d_resp_disp": 1.8448299929690083e-05
+        }
+      ],
+      "verdict": "待定（部分解释）",
+      "advice": "定量分解已解释/剩余部分；剩余部分优先做最小导数诊断，暂不进行终点优化。"
+    },
+    "c06_plus": {
+      "disputed_direction": "fd",
+      "lam_mw": -4.443369837353523e-05,
+      "claimed_nu_cm1": -34.259190875562666,
+      "central": {
+        "max_grad_F": 1.877211935462702e-05,
+        "max_grad_T": 2.431623416969129e-05,
+        "standard_met_F": false,
+        "standard_met_T": false,
+        "slope_gF": 2.0150857475613902e-05,
+        "slope_gT": -3.7245634533586958e-06,
+        "grid_response_slope_contribution": -2.3875420928972597e-05
+      },
+      "probes": [
+        {
+          "amp_a": 0.002,
+          "q_bohr": 0.0037971891511224647,
+          "k_E": -5.022560259408569e-05,
+          "k_gF": -2.2909355977840684e-05,
+          "k_gT": -2.1427547825391496e-05,
+          "s_E": -7.0297450379085746e-06,
+          "gap_F": 2.7316246616245004e-05,
+          "gap_T": 2.8798054768694192e-05,
+          "explained": -1.4818081524491882e-06,
+          "d_resp_disp": -2.3824701197688957e-05
+        },
+        {
+          "amp_a": 0.005,
+          "q_bohr": 0.009492972877806162,
+          "k_E": 8.010865343106916e-07,
+          "k_gF": 3.07784753798904e-05,
+          "k_gT": 3.2533817692433974e-05,
+          "s_E": -6.984176760921069e-06,
+          "gap_F": 2.9977388845579712e-05,
+          "gap_T": 3.1732731158123284e-05,
+          "explained": -1.7553423125435717e-06,
+          "d_resp_disp": -2.3558827875005386e-05
+        }
+      ],
+      "verdict": "待定（假设未获支持）",
+      "advice": "grid_response 假设未获支持：提交剩余差异与最小后续诊断建议；不增加网格或批量计算。"
+    }
+  },
+  "q4_scanner": {
+    "status": "待下批验证（本批仅完成开关实例赋值与读取验证）",
+    "plan": "统一梯度工厂（grid_response=True 默认）+ 同一 scanner 两个几何调用验证：开关保持生效（instance attr 存活于 scanner 复制）且 D2 恰好计入一次",
+    "note": "attach_d2_grad 子类不复制 Gradients 实例属性到 scanner 的路径尚未验证——scanner.copy() 的属性继承需在调用验证中确认"
+  },
+  "q5_verdicts": {
+    "c14_plus": {
+      "verdict": "待定（部分解释）",
+      "advice": "定量分解已解释/剩余部分；剩余部分优先做最小导数诊断，暂不进行终点优化。",
+      "k_E": [
+        0.00014049208218939755,
+        0.0001841397712471592
+      ],
+      "k_gF": [
+        0.0002908556306938432,
+        0.0003357458737849189
+      ],
+      "k_gT": [
+        7.870442174141376e-05,
+        0.00012496259795879947
+      ],
+      "gap_F": [
+        0.00015036354850444565,
+        0.0001516061025377597
+      ],
+      "gap_T": [
+        -6.178766044798379e-05,
+        -5.917717328835973e-05
+      ],
+      "explained": [
+        0.00021215120895242944,
+        0.00021078327582611944
+      ],
+      "d_resp_center": 1.8754204627902954e-05,
+      "d_resp_displacements": [
+        1.8704300303592116e-05,
+        1.8448299929690083e-05
+      ],
+      "resp_consinstant_across_geometries": true,
+      "central_max_grad_F": 1.7838801966249235e-05,
+      "central_max_grad_T": 2.200561178872909e-05,
+      "central_gradient_standard_met_F": false,
+      "central_gradient_standard_met_T": false,
+      "s_gF": -6.4657899887118004e-06,
+      "s_gT": 1.2288414639191158e-05
+    },
+    "c06_plus": {
+      "verdict": "待定（假设未获支持）",
+      "advice": "grid_response 假设未获支持：提交剩余差异与最小后续诊断建议；不增加网格或批量计算。",
+      "k_E": [
+        -5.022560259408569e-05,
+        8.010865343106916e-07
+      ],
+      "k_gF": [
+        -2.2909355977840684e-05,
+        3.07784753798904e-05
+      ],
+      "k_gT": [
+        -2.1427547825391496e-05,
+        3.2533817692433974e-05
+      ],
+      "gap_F": [
+        2.7316246616245004e-05,
+        2.9977388845579712e-05
+      ],
+      "gap_T": [
+        2.8798054768694192e-05,
+        3.1732731158123284e-05
+      ],
+      "explained": [
+        -1.4818081524491882e-06,
+        -1.7553423125435717e-06
+      ],
+      "d_resp_center": -2.3875420928972597e-05,
+      "d_resp_displacements": [
+        2.3824701197688957e-05,
+        2.3558827875005386e-05
+      ],
+      "resp_consinstant_across_geometries": true,
+      "central_max_grad_F": 1.877211935462702e-05,
+      "central_max_grad_T": 2.431623416969129e-05,
+      "central_gradient_standard_met_F": false,
+      "central_gradient_standard_met_T": false,
+      "s_gF": 2.0150857475613902e-05,
+      "s_gT": -3.7245634533586958e-06
+    }
+  },
+  "energy_invariance_control": "passed (E identical under switch)",
+  "artifacts": {
+    "raw": "/mnt/e/dft-service/ozone_mnb_uv_simulation/run_artifacts/01_pure_water_o3_h2o/grid_response_diagnostic",
+    "processed": "/mnt/e/dft-service/ozone_mnb_uv_simulation/results/01_water_matrices/pure_water_o3_h2o/grid_response_diagnostic"
+  }
+}

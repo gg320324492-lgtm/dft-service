@@ -1,0 +1,8 @@
+# 原始计算输出通常体积较大；确认后的输入、记录和整理结果可单独纳入版本控制。
+scratch/
+run_artifacts/
+*.chk
+*.fchk
+*.trr
+*.xtc
+*.edr
